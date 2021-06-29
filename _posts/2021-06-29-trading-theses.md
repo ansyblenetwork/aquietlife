@@ -43,4 +43,4 @@ A remark: There are some clips of Warren Buffett criticizing diversification as 
 3. Someone who understands business that well should honestly be running a business, rather than trading equity.
 4. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
 
-While value investors benefit from extensive research and deep understanding of individual companies, options traders benefit from broad knowledge of market trends. Stock picking profits from private information and knowledge. Options trades profit from public fear and exuberance.
+While value investors benefit from extensive research and deep understanding of individual companies, options traders benefit from broad knowledge of market trends. Stock picking profits from private information and knowledge. Options trades profit from public fear and exuberance - apt for today's social media environment.

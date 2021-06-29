@@ -36,10 +36,11 @@ Keep in mind that there are many ways to diversify, and you should use all of th
 
 Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.
 
-A remark: There are some clips of Warren Buffett criticizing diversification as protection against ignorance. I don't disagree with this. My issue with this is as follows:
+A remark: There are some clips of Warren Buffett criticizing diversification as protection against ignorance. I don't disagree, but my issue with this is as follows:
 
 1. It's a bit much to presume you can evaluate businesses as well as Buffett.
 2. Even if you can, healthy humility would dictate that you couldn't be sure without a few decades in the market. Life is too short for such experimentation.
-3. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
+3. Someone who understands business that well should honestly be running a business, rather than trading equity.
+4. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
 
 While value investors benefit from extensive research and deep understanding of individual companies, options traders benefit from broad knowledge of market trends. Stock picking profits from private information and knowledge. Options trades profit from public fear and exuberance.

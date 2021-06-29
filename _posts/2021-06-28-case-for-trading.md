@@ -1,5 +1,5 @@
 ---
-title: "The case for investing in risky assets"
+title: "The case for shorting options"
 ---
 
 Spoiler: This is a case for investing in the riskiest asset of all: Being short options contracts. There are many articles about this online, but I wanted to do this systematically, myself.

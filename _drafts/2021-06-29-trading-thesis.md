@@ -1,0 +1,43 @@
+---
+title: "Trading theses"
+---
+
+Every trading decision should be backed by a thesis. I group my theses into three categories:
+
+1. Opportunism,
+2. Capital efficiency,
+3. Diversification.
+
+OCD for short. Opportunistic theses should happen the least often, while decisions backed by diversification should happen almost all the time.
+
+
+### Opportunism and market inefficiencies
+
+Opportunism refers to market inefficiencies, including instances of irrationality, misinformation, or arbitrage. These opportunities occur with low uncertainty/varience, and thus are very potent. They should be rare.
+
+However, I should point out that the options market conceivably enlarges what one would consider opportunistic. It is very hard to predict whether a stock will go up or down, at least on time scales short enough for trading to be meaningful. The conventional wisdom is that it is much easier to predict whether an options contract will expire out of the money. This is particularly true near expiration - precisely the time scale at which trading is meaningful, and at which impulsive traders enjoy speculating.
+
+Recent market conditions appear to be full of inefficiencies. The most transparent I found recently involved the merger/dividend debacle regarding TRCH. I honestly felt a little guilty entering the trade; the stock was evidently rife with novice and misinformed investors.
+
+### Capital efficiency
+
+The [general case for shorting options]({% post_url 2021-06-28-case-for-trading %}) suggests that one should be invested at all times, using as much capital as possible.
+
+There is more to this than the expectation that being short options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk, by weakening your strikes and chasing less volatile stocks.
+
+### Diversification
+
+Keep in mind that there are many ways to diversify, and you should use all of them. Here is a sample list:
+
+1. Trade in different stocks.
+2. Trade in both small caps and large caps.
+3. Open both bullish and bearish trades.
+4. Leg into your spreads rather than opening them at once.
+
+A remark: There are some clips of Warren Buffett criticizing diversification as protection against ignorance. I don't disagree with this. My issue with this is as follows:
+
+1. It's a bit much to presume you can evaluate businesses as well as Buffett.
+2. Even if you can, healthy humility would dictate that you couldn't be sure without a few decades in the market. Life is too short for such experimentation.
+3. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
+
+Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.

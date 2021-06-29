@@ -23,7 +23,7 @@ There is some ambiguity as to what "risk" means here.
 
 So is there reason to believe humans to be risk averse? I also think yes. This is a rough corollary of diminishing marginal utility. The extra 2x that company B potentially offers is less valuable not only because it is less likely, but also because its marginal utility is diminished. So company A is preferable.
 
-This claim has solid empirical backing at certain market scales. For instance, there is little doubt that the typical corporate stock has greater risk than the typical bond. Accordingly, a typical basket of stocks will appreciate faster than a basket of bonds.
+This claim has solid empirical backing at certain market scales. For instance, there is little doubt that the typical corporate stock has greater risk than the typical bond. Accordingly, a typical basket of stocks will appreciate faster than a typical basket of bonds.
 
 ### The case against investing in riskier assets
 
@@ -31,7 +31,7 @@ The core idea here is that risk aversion breaks down at the extremes.
 
 Is there reason to believe this to be true? Not that I know of.
 
-But the claim has solid empirical backing. For instance, within the equities market itself, backing for active investing is much weaker. By the risk-aversion principle, a basket of small caps should appreciate faster than a basket of blue chips. 
+But the claim has some empirical backing. For instance, within the equities market itself, backing for active investing is weak. By the risk-aversion principle, a basket of small caps should appreciate faster than a basket of blue chips. 
 
 However, historically, such an advantage has not been clear, if not [outright absent](https://www.longtermtrends.net/large-cap-vs-small-cap/). Competiting psychological forces are evidently at play. These are roughly the same forces which contribute to bubble formation, and which allow lotteries to function.
 

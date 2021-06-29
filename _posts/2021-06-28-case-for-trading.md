@@ -2,7 +2,7 @@
 title: "The case for shorting options"
 ---
 
-Spoiler: This is a case for investing in the riskiest asset of all: Being short options contracts. There are many articles about this online, but I wanted to do this systematically, myself.
+This is my case for investing in the riskiest asset of all: Being short options contracts. There are many articles about this online, but I wanted to do this systematically, myself.
 
 
 ### The case for investing

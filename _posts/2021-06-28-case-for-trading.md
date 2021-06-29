@@ -11,7 +11,7 @@ The core idea is that governments and corporations, in aggregate, produce more t
 
 Is there reason to believe this to be true? I think yes: This is a rough corollary of the axiom that humanity is not coming to an end, and that the earth has not run dry. For if people (in aggregate) consumed more than they produced, then humanity's inventory of goods would quickly deplete and that would be that. And since there is no reason to believe that humans consume exactly as much as they produce, we arrive at the claim.
 
-The claim has empirical backing. The usual claim is that the SP500 index appreciates at about a rate of 7% per year in the US, after inflation.
+The claim has empirical backing. The usual observation is that the SP500 index appreciates at about a rate of 7% per year in the US, after inflation.
 
 ### The case for investing in riskier assets
 

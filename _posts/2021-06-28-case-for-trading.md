@@ -29,7 +29,7 @@ This claim has solid empirical backing at certain market scales. For instance, t
 
 The core idea here is that risk aversion breaks down at the extremes.
 
-Is there reason to believe this to be true? Actually, I can't really think of a fundamental principle.
+Is there reason to believe this to be true? Not that I know of.
 
 But the claim has solid empirical backing. For instance, within the equities market itself, backing for active investing is much weaker. By the risk-aversion principle, a basket of small caps should appreciate faster than a basket of blue chips. 
 

@@ -25,7 +25,7 @@ The [general case for shorting options]({% post_url 2021-06-28-case-for-trading 
 
 There is more to this than the expectation that being short options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk, by weakening your strikes and chasing less volatile stocks.
 
-### Diversification
+### Diversification and exploration
 
 Keep in mind that there are many ways to diversify, and you should use all of them. Here is a sample list:
 
@@ -34,10 +34,12 @@ Keep in mind that there are many ways to diversify, and you should use all of th
 3. Open both bullish and bearish trades.
 4. Leg into your spreads rather than opening them at once.
 
+Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.
+
 A remark: There are some clips of Warren Buffett criticizing diversification as protection against ignorance. I don't disagree with this. My issue with this is as follows:
 
 1. It's a bit much to presume you can evaluate businesses as well as Buffett.
 2. Even if you can, healthy humility would dictate that you couldn't be sure without a few decades in the market. Life is too short for such experimentation.
 3. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
 
-Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.
+While value investors benefit from extensive research and deep understanding of individual companies, options traders benefit from broad knowledge of market trends. Stock picking profits from private information and knowledge. Options trading profits from public fear and exuberance.

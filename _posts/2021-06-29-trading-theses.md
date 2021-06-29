@@ -8,7 +8,7 @@ Every trading decision should be backed by a thesis. I group my theses into thre
 2. Capital efficiency,
 3. Diversification.
 
-OCD for short. Opportunistic theses should happen the least often, while decisions backed by diversification should happen almost all the time.
+OCD for short. Opportunistic theses should happen the least often, while decisions driven by diversification should happen almost all the time.
 
 
 ### Opportunism and market inefficiencies

@@ -19,7 +19,7 @@ The core idea here is that humans are risk averse, so that riskier assets enjoy 
 
 There is some ambiguity as to what "risk" means here. 
 
-> I will use an example of two companies A and B. Company A has a 50% chance of doubling its profits and a 50% chance of vanishing. Company B has a 25% chance of quadrupling and a 75% chance of vanishing. Then company B is riskier.
+> Consider two companies A and B. Company A has a 50% chance of doubling its profits and a 50% chance of vanishing. Company B has a 25% chance of quadrupling and a 75% chance of vanishing. Then company B is riskier.
 
 So is there reason to believe humans to be risk averse? I also think yes. This is a rough corollary of diminishing marginal utility. The extra 2x that company B potentially offers is less valuable not only because it is less likely, but also because its marginal utility is diminished. So company A is preferable.
 

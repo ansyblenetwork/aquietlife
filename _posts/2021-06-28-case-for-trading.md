@@ -51,7 +51,7 @@ To summarize, I have hinted at five strategies:
 
 1. passive investing, 
 2. active trading,
-3. active trading with protective options, 
+3. active trading, long protective options, 
 4. active trading, short options,
 5. short-stack trading, long options.
 

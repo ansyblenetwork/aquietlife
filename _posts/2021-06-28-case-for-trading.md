@@ -33,7 +33,7 @@ Is there reason to believe this to be true? Not that I know of.
 
 But the claim has some empirical support. For instance, within the equities market itself, active investing has a mixed record. By the risk-aversion principle, a basket of small caps should appreciate faster than a basket of blue chips. 
 
-However, historically, such an advantage has not been clear, if not [outright absent](https://www.longtermtrends.net/large-cap-vs-small-cap/). Competiting psychological forces are evidently at play. These are roughly the same forces which contribute to bubble formation, and which allow lotteries to function.
+However, historically, such an advantage has not been clear, if not [outright absent](https://www.longtermtrends.net/large-cap-vs-small-cap/). Competing psychological forces are evidently at play. These are roughly the same forces which contribute to bubble formation, and which allow lotteries to function.
 
 ### The case for shorting options contracts
 

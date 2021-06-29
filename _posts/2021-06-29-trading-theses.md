@@ -19,7 +19,7 @@ However, I should point out that the options market conceivably enlarges what on
 
 Recent market conditions appear to be full of inefficiencies. The most transparent I found recently involved the merger/dividend debacle regarding TRCH. I honestly felt a little guilty entering the trade; the stock was evidently rife with novice and misinformed investors.
 
-### Capital efficiency
+### Capital efficiency and risk management
 
 The [general case for shorting options]({% post_url 2021-06-28-case-for-trading %}) suggests that one should be invested at all times, using as much capital as possible.
 

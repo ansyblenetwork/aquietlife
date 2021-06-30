@@ -23,23 +23,23 @@ Recent market conditions appear to be full of inefficiencies. The most transpare
 
 The [general case for shorting options]({% post_url 2021-06-28-case-for-trading %}) suggests that one should be invested at all times, using as much capital as possible.
 
-There is more to this than the expectation that being short options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk, by weakening your strikes and chasing less volatile stocks.
+There is more to this than the fact that shorting options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk, by weakening your strikes and chasing less volatile stocks.
 
 ### Diversification and exploration
 
-Keep in mind that there are many ways to diversify, and you should use all of them. Here is a sample list:
+Keep in mind that there are many ways to diversify. Here is a sample list:
 
 1. Trade in different stocks.
 2. Trade in both small caps and large caps.
 3. Open both bullish and bearish trades.
 4. Leg into your spreads rather than opening them at once.
 
-Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.
+Unlike with opportunism and capital efficiency, options trading arguably hurts your ability to diversify due to the minimum size of options contracts. On the other hand, a judicious use of spreads makes options trading very flexible in this regard too.
 
 A remark: There are some clips of Warren Buffett criticizing diversification as protection against ignorance. I don't disagree, but my issue with this is as follows:
 
 1. It's a bit much to presume you can evaluate businesses as well as Buffett.
-2. Even if you can, healthy humility would dictate that you couldn't be sure without a few decades in the market. Life is too short for such experimentation.
+2. Even if it turns out you do have this natural ability, you couldn't be sure without a few decades in the market. Life is too short for such experimentation.
 3. Someone who understands business that well should honestly be running a business, rather than trading equity.
 4. Value investing has become much more difficult, as Buffett himself admits. Information is much more readily available. This has severely devalued non-ignorance.
 

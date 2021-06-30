@@ -2,7 +2,7 @@
 title: "The case for shorting options"
 ---
 
-This is my case for investing in the riskiest asset of all: Being short options contracts. There are many articles about this online, but I wanted to do this systematically, myself.
+This is my case for taking on the riskiest trade of all: Shorting options contracts. There are many articles about this online, but I wanted to do this systematically, myself.
 
 
 ### The case for investing
@@ -23,7 +23,7 @@ There is some ambiguity as to what "risk" means here.
 
 So is there reason to believe humans to be risk averse? I also think yes. This is a rough corollary of diminishing marginal utility. The extra 2x that company B potentially offers is less valuable not only because it is less likely, but also because its marginal utility is diminished. So company A is preferable.
 
-This claim has solid empirical support at certain market scales. For instance, there is little doubt that the typical corporate stock has greater risk than the typical bond. Accordingly, a typical basket of stocks will appreciate faster than a typical basket of bonds.
+This claim has solid empirical support at certain market scales. For instance, there is little disagreement that the typical corporate stock has greater risk than the typical bond. Accordingly, a typical basket of stocks will appreciate faster than a typical basket of bonds.
 
 ### The case against investing in riskier assets
 

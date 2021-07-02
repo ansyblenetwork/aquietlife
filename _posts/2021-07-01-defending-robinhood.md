@@ -39,5 +39,12 @@ It remains to discuss payment for order flow. What is it, and what are the conse
 
 ### How retail trades are executed
 
+The cast:
+
+1. The retail trader, Alice
+2. The broker
+3. The market maker
+4. The high-frequency trader
+5. The exchange
 
 

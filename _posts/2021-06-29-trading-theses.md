@@ -23,7 +23,7 @@ Recent market conditions appear to be full of inefficiencies. The most transpare
 
 The [general case for shorting options]({% post_url 2021-06-28-case-for-trading %}) suggests that one should be invested at all times, using as much capital as possible.
 
-There is more to this than the fact that shorting options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk, by weakening your strikes and chasing less volatile stocks.
+There is more to this than the fact that shorting options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk (for instance, by lowering your strikes).
 
 ### Diversification and exploration
 

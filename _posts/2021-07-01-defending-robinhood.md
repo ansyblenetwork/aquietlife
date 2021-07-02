@@ -8,7 +8,7 @@ There is a lot of criticism of Robinhood on all sides, including by Charlie Mung
 >
 > “Robinhood is not encouraging people to buy a very, very, very low-cost index fund and hold it for 50 years,” Buffett said. “I will guarantee you that you will not walk in there, get that advice. Instead, you’ll get advice on how you can trade options.”
 > 
-> Munger also suggested apps like Robinhood aren’t comission-free because the real costs—namely the process of payment for order flow—are hidden.
+> Munger also suggested apps like Robinhood aren’t comission-free because the real costs - namely the process of payment for order flow - are hidden.
 > 
 > “It’s basically a sleazy, disreputable operation,” Munger said. “And the interesting thing about it is that some good people you would be glad to have marry into your family have backed it.”
 

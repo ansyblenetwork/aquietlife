@@ -26,7 +26,7 @@ The second point is easy to set aside. 30-60 days is when theta decay starts to 
 
 Options greeks are a huge pet peeve for me, but that discussion is for another post. What is gamma risk? Essentially, it is just an unnecessary terminology to describe the risk associated with holding stock: Stocks can drop. In the case of options trading, you don't literally hold the stock, but closer to expiration, you adopt a larger portion of that risk.
 
-But this is a tautology and a non-thesis. Avoiding gamma risk captures none of the points of [OCD]({% post_URL 2021-06-29-trading-theses %}):
+But this is a tautology and a non-thesis. Avoiding gamma risk captures none of the points of [OCD]({% post_url 2021-06-29-trading-theses %}):
 
 1. It has nothing to do with opportunistic inefficiencies. 
 2. It runs _counter_ to capital efficiency: If you trust your strategy, then you should be willing to trade it without holding back.

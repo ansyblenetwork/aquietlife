@@ -14,7 +14,7 @@ But a thesis-less trading strategy also cannot be sustainable, because as soon a
 
 The 45 DTE strategy is empirical and popular, thanks to Tasty Works. Does it have a thesis?
 
-### Why the 45 DTE thesis is empty
+### Why the 45 DTE thesis is lacking
 
 There are some arguments for the 45 DTE strategy thrown around on Reddit. The main arguments are nicely summarized by this [reddit comment](https://www.reddit.com/r/thetagang/comments/h9ym51/why_45_dte_why_do_you_take_profits_why_do_you/):
 

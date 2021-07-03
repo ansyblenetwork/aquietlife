@@ -6,7 +6,7 @@ title: "A screener for weekly options"
 
 From my experience, it is much easier to trade weekly options. 
 
-Even if it wasn't, there is still a level of liquidity and repute that comes with having a weekly options chain, although I am not sure how these stocks are selected. For instance, a lot of IPOs that are far from making it to the SP500 immediately earn weeklys. At the time of writing, there are 519 stocks with weekly options chains; they would form a nice liquid index with a decent mix of both value and growth.
+Even if it wasn't, there is still a level of liquidity and repute that comes with having a weekly options chain, although I am not sure how these stocks are selected. For instance, a lot of IPOs that are far from making it to the SP500 immediately earn weeklys. At the time of writing, there are 519 stocks with weekly options chains. I personally think they would form a nice index, with high liquidity and a decent mix of both value and growth.
 
 There are also some theoretical reasons for why it is better to trade short-term options, which I may discuss in a future post.
 

@@ -10,6 +10,8 @@ My claim is that it is almost always sufficient, and often better, to understand
 
 
 
+### The mechanisms
+
 There are three ways to collateralize a short options contract:
 
 1. cash (or stock),

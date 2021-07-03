@@ -2,7 +2,7 @@
 title: "Collateral: The right way to think about trading options"
 ---
 
-I like fundamental ideas (generally - not only the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.
+I like fundamental ideas (generally - not only in the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.
 
 To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize a short contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
 

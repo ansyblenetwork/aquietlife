@@ -43,7 +43,7 @@ Similarly, any long call with a later expiration and higher strike, can be used 
 | ----------- | ----------- | ----------- | ----------- |
 | Strike 1      | High premium, high collateral    |
 | ...   |         |
-| strike M   |         | | | Low premium, low collateral |
+| strike M   |         | | Low premium, low collateral |
 
 
 

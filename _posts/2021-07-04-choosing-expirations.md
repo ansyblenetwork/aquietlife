@@ -22,7 +22,7 @@ There are some arguments for the 45 DTE strategy thrown around on Reddit. The ma
 
 The second point is easy to set aside. 30-60 days is when theta decay starts to pick up dramatically; but 0-1 days is when theta decay is maximal. So the 45 DTE strategy stands essentially on the first point about gamma risk.
 
-Options greeks are a huge pet peeve for me, but that discussion is for another post. What is gamma risk? Essentially, it is just an unnecessary terminology to describe the risk associated to holding stock: Stocks can drop. In the case of options trading, you don't literally hold the stock, but closer to expiration, you adopt a larger portion of that risk.
+Options greeks are a huge pet peeve for me, but that discussion is for another post. What is gamma risk? Essentially, it is just an unnecessary terminology to describe the risk associated with holding stock: Stocks can drop. In the case of options trading, you don't literally hold the stock, but closer to expiration, you adopt a larger portion of that risk.
 
 But this is a tautology and a non-thesis. Avoiding gamma risk captures none of the points of OCD:
 

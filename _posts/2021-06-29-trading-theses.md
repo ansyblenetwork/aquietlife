@@ -25,6 +25,8 @@ The [general case for shorting options]({% post_url 2021-06-28-case-for-trading 
 
 There is more to this than the fact that shorting options contracts has positive expected value. Options chains allow you to freely exchange capital for not just returns, but also reduced risk (for instance, by lowering your strikes).
 
+More generally, this principle stands on the principle that if you are trading a particular strategy that has better than expected returns relative to risk, then you should feel comfortable using all of your capital to trade that strategy. 
+
 ### Diversification and exploration
 
 Keep in mind that there are many ways to diversify. Here is a sample list:

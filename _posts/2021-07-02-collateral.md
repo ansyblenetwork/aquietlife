@@ -8,6 +8,8 @@ To my mind, there is only one thing one needs to study to deeply understand opti
 
 My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({$ post_url 2021-06-28-trading-theses}), which complex strategies obfuscate.
 
+
+
 There are three ways to collateralize a short options contract:
 
 1. cash (or stock),

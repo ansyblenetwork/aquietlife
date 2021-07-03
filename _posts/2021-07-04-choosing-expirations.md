@@ -4,7 +4,7 @@ title: "Choosing expirations for your options contracts"
 
 There is a lot of bad advice on the internet for how to choose an expiration for your options contracts.
 
-By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about this question.
+By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about the question of expiration length.
 
 ### Thesis-less, empirical trading
 
@@ -22,23 +22,23 @@ There are some arguments for the 45 DTE strategy thrown around on Reddit. The ma
 
 The second point is easy to set aside. 30-60 days is when theta decay starts to pick up dramatically; but 0-1 days is when theta decay is maximal. So the 45 DTE strategy stands essentially on the first point about gamma risk.
 
-Options greeks are a huge pet peeve for me, but that discussion is for another post. What is gamma risk? Essentially, it is just the condescending way of describe the risk associated to holding stock. Stocks can drop. In the case of options trading, you don't literally hold the stock, but closer to expiration, you adopt a larger probability of that risk.
+Options greeks are a huge pet peeve for me, but that discussion is for another post. What is gamma risk? Essentially, it is just an unnecessary terminology to describe the risk associated to holding stock: Stocks can drop. In the case of options trading, you don't literally hold the stock, but closer to expiration, you adopt a larger portion of that risk.
 
 But this is a tautology and a non-thesis. Avoiding gamma risk captures none of the points of OCD:
 
 1. It has nothing to do with opportunistic inefficiencies. 
-2. It runs _counter_ to capital efficiency: That if you trust your strategy, then you should in principle be willing to go all in on it.
+2. It runs _counter_ to capital efficiency: If you trust your strategy, then you should be willing to trade it without holding back.
 3. It has nothing to do with diversification.
 
 The most charitable thing I can say about the 45 DTE thesis is that it is a means of risk management, and precisely, disaster prevention. But there is a much easier way to achieve this: Just put something like 40% of your portfolio in cash. Easier and more reliable.
 
-### The thesis for trading 0-14 DTE
+### The case for trading 0-14 DTE
 
-With respect to opportunism, the goal here is to put as much of a differential between the useful knowledge you have, and the useful knowledge on the other side of the trade. It is difficult to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or irrationally influential on, novice traders.
+With respect to opportunism, the goal here is to put as much of a differential between the useful knowledge you have, and the useful knowledge on the other side of the trade.
 
-In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear.
+Expirations far in the future are unlikely to be useful here because it is difficult to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or disproportionally influential on, novice traders. 
 
-Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
+In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 
 With respect to capital efficiency, 0-14 DTE contracts have the greatest theta decay. Equivalently, they freeze your capital for the least amount of time.
 

@@ -40,7 +40,7 @@ Expirations far in the future are unlikely to be useful here because it is diffi
 
 In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 
-With respect to capital efficiency, 0-14 DTE contracts have the greatest theta decay. Equivalently, they freeze your capital for the least amount of time.
+With respect to capital efficiency, 0-14 DTE contracts have the greatest theta decay. Equivalently, they freeze your capital for the least amount of time per unit of premium.
 
 ### On diversification
 

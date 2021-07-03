@@ -1,8 +1,11 @@
 ---
-title: "Screener for weekly options"
+title: "A screener for weekly options"
 ---
 
-From my experience, it is much easier to trade stocks with weekly options. There are also some theoretical reasons for why short term options are easier to trade, which I may discuss in a future post.
+From my experience, it is much easier to trade stocks with weekly options. Even if it wasn't, it should be mostly harmless to have them available. There is also level of liquidity and repute that comes with having a weekly options chain, although I am actually not sure how stocks are chosen to have weeklys. For instance, a lot of IPOs that are far from making it to the SP500 immediately earn weeklys. At the time of writing, there are 519 tickers with weekly options chains; this would form a nice liquid index.
+
+There are also some theoretical reasons for why short term options are easier to trade, which I may discuss in a future post.
+
 
 It is not entirely obvious how to screen for stocks with weeklys. The only source I have found on the matter is a list on [CBOE](https://www.cboe.com/available_weeklys/). I converted the array to a comma separated list,
 

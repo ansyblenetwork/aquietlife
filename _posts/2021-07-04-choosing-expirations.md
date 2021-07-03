@@ -1,5 +1,5 @@
 ---
-title: "Choosing expirations for your options contracts"
+title: "How to choose expirations for your options contracts"
 ---
 
 There is a lot of bad advice on the internet for how to choose an expiration for your options contracts.

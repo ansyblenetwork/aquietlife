@@ -6,7 +6,7 @@ I like fundamental ideas (generally - not only in the sense of financial lingo).
 
 To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize a short contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
 
-My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({$ post_url 2021-06-28-trading-theses}), which complex strategies obfuscate.
+My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({% post_url 2021-06-28-trading-theses}), which complex strategies obfuscate.
 
 
 
@@ -62,7 +62,7 @@ The protective contract in a spread releases that collateral so that you can do 
 
 Iron condors are a form of perfect diversification, and in my opinion, underused because of it. Half of an iron condor increases in value exactly when the other half decreases.
 
-The right way to think about these strategies when trading is in terms of their relation to [OCD]({$ post_url 2021-06-28-trading-theses}):
+The right way to think about these strategies when trading is in terms of their relation to [OCD]({% post_url 2021-06-28-trading-theses}):
 
 1. Look to open cash secured puts Opportunistically,
 2. Spread your puts for Capital efficiency,

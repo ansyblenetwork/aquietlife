@@ -18,8 +18,7 @@ Because of convention, it is still convenient to refer to these in terms of the 
 
 1. cash secured put (or covered call),
 2. spreads,
-3. iron condors.
-4. 
+3. iron condors. 
 
 ### Cash and stock collateral
 
@@ -50,7 +49,7 @@ Here is a chart which depicts the properties of a put credit spread depending on
 
 ### Mutually exclusive cash collateral
 
-Cash collateral held for an out-of-the-money (OTM) call spread can simultaneously be used for an OTM put spread (with the same expiration). The idea is that call and put spreads cannot be in-the-money (ITM) at the same time, so the collateral will only ever be used to exercise one of the spreads, not both.
+Cash collateral held for an out-of-the-money (OTM) call spread can simultaneously be used for an OTM put spread (with the same expiration). The idea is that call and put spreads cannot be in-the-money (ITM) at the same time, so the collateral will only ever be needed to exercise one of the spreads, not both.
 
 
 ### Relation to OCD

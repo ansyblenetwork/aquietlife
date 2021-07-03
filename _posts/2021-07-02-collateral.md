@@ -1,0 +1,49 @@
+---
+title: "Collateral: The right way to think about trading options"
+---
+
+I like fundamental ideas (generally - not only the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.
+
+To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize an options contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
+
+My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({$ post_url 2021-06-28-trading-theses}), which complex strategies obfuscate.
+
+There are three ways to collateralize a short options contract:
+
+1. cash (or stock),
+2. a long options contract,
+3. a complement options contract.
+
+If you insisted, the corresponding strategies are:
+
+1. cash secured put (or covered call),
+2. spreads,
+3. iron condors.
+
+
+### Cash and stock collateral
+
+To short a put option, you need to be prepared to buy the underlying stock. Your broker will freeze the amount of capital required.
+
+To short a call option, you need to be prepared to sell the underlying stock. Your broker will require you to hold, and freeze, the amount of stock required. (I think of this mechanism as somewhat of an anomaly. Precisely, it does not interact with the other mechanisms of collateralization.)
+
+### Protective long contracts
+
+You can reduce the amount of capital required to collateralize a short put by pairing it with a long put for the same underlying. There are two degrees of freedom to consider when deciding which put to buy:
+
+First, there is time. A contract with the same strike but with an equal or later expiration perfectly collateralizes the short option. Note that such a pair of contracts will cost you premium. To earn more premium (precisely, to buy less premium), the expiration of your defensive put should be chosen closer to the expiration of your short put.
+
+Second, there is the strike. A contract with the same expiration but a lower strike will collateralize some of your short option; the difference in strikes must still be held in cash as collateral. To earn more premium, the strike should be chosen farther from the strike of your short put.
+
+These two degrees of freedom may be mixed arbitrarily. Any long put with a later expiration and lower strike, will reduce the amount of cash collateral required for your short put.
+
+Similarly, any long call with a later expiration and higher strike, can be used to collateralize a short call. 
+
+|      | Exp 1 |  .... | Exp N |
+| ----------- | ----------- | ----------- | ----------- |
+| Strike 1      | High premium, high collateral    |
+| ...   |         |
+| strike M   |         |
+
+
+

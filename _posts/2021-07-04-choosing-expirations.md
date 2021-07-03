@@ -38,7 +38,7 @@ The most charitable thing I can say about the 45 DTE thesis is that it is a mean
 
 With respect to opportunism, the goal here is to put as much of a differential between the useful knowledge you have, and the useful knowledge on the other side of the trade.
 
-Expirations far in the future are unlikely to be useful here because it is difficult to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or disproportionally influential on, novice traders. 
+Expirations far in the future are difficult to work with here because it is rare to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or disproportionally influential on, novice traders. 
 
 In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 

@@ -4,7 +4,7 @@ title: "Collateral: The right way to understand options trading"
 
 I like fundamental ideas (generally - not only in the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.
 
-To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize a short contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
+To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize a short contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms.
 
 My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({% post_url 2021-06-29-trading-theses %}), which complex strategies obfuscate.
 
@@ -23,6 +23,8 @@ Because of convention, it is still convenient to refer to these in terms of the 
 1. cash secured put (or covered call),
 2. spreads,
 3. iron condors. 
+
+__Remark:__ In fact, one can think of (1) as a degenerate version of (2), and (2) and a degenerate version of (3). So if one wanted to be very reductive, options strategies can be described entirely by the phrase, "mutually exclusive cash collateral."
 
 ### Cash and stock collateral (secured puts and calls)
 

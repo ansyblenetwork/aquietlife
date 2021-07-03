@@ -4,7 +4,7 @@ title: "Collateral: The right way to think about trading options"
 
 I like fundamental ideas (generally - not only the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.
 
-To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize an options contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
+To my mind, there is only one thing one needs to study to deeply understand options trading: How to collateralize a short contract. There are roughly three mechanisms to understand, and every options strategy is built on one or more of these mechanisms. 
 
 My claim is that it is almost always sufficient, and often better, to understand the underlying collateralization mechanisms, rather than the complex strategy itself. In particular, thinking in terms of these mechanisms brings one to think directly in terms of [capital efficiency and diversification]({$ post_url 2021-06-28-trading-theses}), which complex strategies obfuscate.
 
@@ -43,7 +43,7 @@ Similarly, any long call with a later expiration and higher strike, can be used 
 | ----------- | ----------- | ----------- | ----------- |
 | Strike 1      | High premium, high collateral    |
 | ...   |         |
-| strike M   |         |
+| strike M   |         | | | Low premium, low collateral |
 
 
 

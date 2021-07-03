@@ -15,7 +15,7 @@ OCD for short. Opportunistic theses should happen the least often, while decisio
 
 Opportunism refers to market inefficiencies, including instances of irrationality, misinformation, or arbitrage. These opportunities occur with low uncertainty/variance, and thus are very potent. They should be rare.
 
-However, I should point out that the options market conceivably enlarges what one would consider opportunistic. It is very hard to predict whether a stock will go up or down, at least on time scales short enough for trading to be meaningful. The conventional wisdom is that it is much easier to predict whether an options contract will expire out of the money. This is particularly true near expiration - precisely the time scale at which trading is meaningful, and at which impulsive traders enjoy speculating.
+However, I will point out that the options market conceivably enlarges what one would consider opportunistic. It is very hard to predict whether a stock will go up or down, at least on time scales short enough for trading to be meaningful. The conventional wisdom is that it is much easier to predict whether an options contract will expire out of the money. This is particularly true near expiration - precisely the time scale at which trading is meaningful, and at which impulsive traders enjoy speculating.
 
 Recent market conditions appear to be full of inefficiencies. The most transparent I found recently involved the merger/dividend debacle regarding TRCH. I honestly felt a little guilty entering the trade; the stock was evidently rife with novice and misinformed investors.
 

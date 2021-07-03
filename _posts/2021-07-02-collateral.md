@@ -41,11 +41,11 @@ Similarly, any long call with a later expiration and higher strike, can be used 
 
 Here is a chart which depicts the properties of a put credit spread depending on the expiration and strike of the protective put:
 
-| (Short put here)     | Expiration 1 |  ... | Expiration N |
+| (Short put here)     | Low days to expiration |  ... | High days to expiration |
 | ----------- | ----------- | ----------- | ----------- |
-| __Strike 1__   ||| low (negative) premium, low (no) collateral    |
+| __High strike__   ||| low (negative) premium, no collateral    |
 | __...__   | 
-| __strike M__   |high premium, high collateral |
+| __Low strike (naked put)__   |max premium, max collateral |
 
 
 

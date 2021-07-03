@@ -41,11 +41,11 @@ Similarly, any long call with a later expiration and higher strike, can be used 
 
 Here is a chart which depicts the outcome of a protective put depending on expiration and strike:
 
-| (Short put here)     | Expiration 1 |  ... | Expiration N |
+| __(Short put here)__     | Expiration 1 |  ... | Expiration N |
 | ----------- | ----------- | ----------- | ----------- |
-| Strike 1   ||| low (negative) premium, low (no) collateral    |
-| ...   | 
-| strike M   |high premium, high collateral |
+| __Strike 1__   ||| low (negative) premium, low (no) collateral    |
+| __...__   | 
+| __strike M__   |high premium, high collateral |
 
 
 

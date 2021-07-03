@@ -18,7 +18,7 @@ There are three ways to collateralize a short options contract:
 2. a long contract,
 3. mutually exclusive cash collateral.
 
-Due to habit and communication, it is still convenient to refer to these in terms of the corresponding options strategies:
+Due to habit and the need to communicate, it is still convenient to refer to these in terms of the corresponding options strategies:
 
 1. cash secured put (or covered call),
 2. spreads,

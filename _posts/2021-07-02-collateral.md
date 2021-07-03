@@ -22,13 +22,13 @@ Because of convention, it is still convenient to refer to these in terms of the 
 2. spreads,
 3. iron condors. 
 
-### Cash and stock collateral
+### Cash and stock collateral (secured puts and calls)
 
 To short a put contract, you need to be prepared to buy the underlying stock. Your broker will freeze the amount of capital required.
 
 To short a call contract, you need to be prepared to sell the underlying stock. Your broker will require you to hold, and freeze, the amount of stock required. (I think of this mechanism as somewhat of an anomaly. Precisely, it does not interact with the other mechanisms of collateralization.)
 
-### Protective long contracts
+### Protective long contracts (spreads)
 
 You can reduce the amount of capital required to collateralize a short put by pairing it with a long put for the same underlying. There are two degrees of freedom to consider when deciding which put to buy:
 
@@ -49,7 +49,7 @@ Here is a chart which depicts the properties of a put credit spread depending on
 | __Low strike (naked put)__   |max premium, max collateral |
 
 
-### Mutually exclusive cash collateral
+### Mutually exclusive cash collateral (iron condors)
 
 Cash collateral held for an out-of-the-money (OTM) call spread can simultaneously be used for an OTM put spread (with the same expiration). The idea is that call and put spreads cannot be in-the-money (ITM) at the same time, so the collateral will only ever be needed to exercise one of the spreads, not both.
 

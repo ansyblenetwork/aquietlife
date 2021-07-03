@@ -48,7 +48,7 @@ Here is a chart which depicts the properties of a put credit spread depending on
 | ----------- | ----------- | ----------- | ----------- |
 | __High strike__   ||| low (negative) premium, no collateral    |
 | __...__   | 
-| __Low strike (naked put)__   |max premium, max collateral |
+| __Low/zero strike (secured put)__   |max premium, max collateral |
 
 
 ### Mutually exclusive cash collateral (iron condors)

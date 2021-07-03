@@ -62,7 +62,7 @@ The protective contract in a spread releases that collateral so that you can do 
 
 Iron condors are a form of perfect diversification, and in my opinion, underused because of it. Half of an iron condor increases in value exactly when the other half decreases.
 
-The right way to think about these strategies when trading is in terms of their relation to OCD:
+The right way to think about these strategies when trading is in terms of their relation to [OCD]({$ post_url 2021-06-28-trading-theses}):
 
 1. Look to open cash secured puts Opportunistically,
 2. Spread your puts for Capital efficiency,

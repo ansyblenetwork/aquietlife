@@ -12,7 +12,7 @@ By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-t
 
 A thesis-less empirical trading strategy cannot work without thorough backtesting. This goes without saying.
 
-But a thesis-less trading strategy also cannot be sustainable, because as soon as it becomes public, the strategy will begin easing toward market efficiency. As soon as it becomes popular, it will begin to lose money.
+But a thesis-less trading strategy also cannot be sustainable, because it is vulnerable to crowding. As soon as it becomes public, the strategy will begin easing toward market efficiency. As soon as it becomes popular, it will begin to lose money.
 
 The 45 DTE strategy is empirical and popular, thanks to Tasty Works. Does it have a thesis?
 

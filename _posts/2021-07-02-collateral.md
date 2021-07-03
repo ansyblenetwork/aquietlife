@@ -39,11 +39,11 @@ These two degrees of freedom may be mixed arbitrarily. Any long put with a later
 
 Similarly, any long call with a later expiration and higher strike, can be used to collateralize a short call. 
 
-|      | Exp 1 |  .... | Exp N |
+|      | Exp 1 |  ... | Exp N |
 | ----------- | ----------- | ----------- | ----------- |
-| Strike 1      | High premium, high collateral    |
-| ...   |         |
-| strike M   |         | | Low premium, low collateral |
+| Strike 1   ||| low (negative) premium, low (no) collateral    |
+| ...   | 
+| strike M   |high premium, high collateral |
 
 
 

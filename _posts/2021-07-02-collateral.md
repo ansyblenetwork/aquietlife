@@ -39,7 +39,9 @@ These two degrees of freedom may be mixed arbitrarily. Any long put with a later
 
 Similarly, any long call with a later expiration and higher strike, can be used to collateralize a short call. 
 
-|      | Exp 1 |  ... | Exp N |
+Here is a chart which depicts the outcome of a protective put depending on expiration and strike:
+
+| (Short put here)     | Expiration 1 |  ... | Expiration N |
 | ----------- | ----------- | ----------- | ----------- |
 | Strike 1   ||| low (negative) premium, low (no) collateral    |
 | ...   | 

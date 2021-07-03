@@ -64,7 +64,7 @@ Spreads correspond to capital efficiency. One way to think about this is that pa
 
 The protective contract in a spread releases that collateral so that you can do something with it - precisely, to put it at risk, and thus earn premium.
 
-Iron condors are evidently another excellent means of capital efficiency, since they essentially double capital efficiency. Beyond this, they are also a form of perfect diversification: Half of an iron condor increases in value exactly when the other half decreases. They are, in my opinion, severely underused, perhaps because of fees, but also perhaps because of the complex way they are typically presented.
+Iron condors are evidently another excellent means of capital efficiency, since they essentially use the same capital twice. Beyond this, they are also a form of perfect diversification: Half of an iron condor increases in value exactly when the other half decreases. They are, in my opinion, severely underused, perhaps because of fees, but also perhaps because of the complex way they are typically presented.
 
 The right way to think about these strategies when trading is in terms of their relation to [OCD]({% post_url 2021-06-29-trading-theses %}):
 

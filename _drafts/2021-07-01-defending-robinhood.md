@@ -15,15 +15,15 @@ There is a lot of criticism of Robinhood on all sides, including by Charlie Mung
 I would like to consider myself part of that last category. I am on the whole, a supporter of Robinhood. Here are my thoughts.
 
 
-### Concessions and ground rules
+### Democratizing finance
 
 Lotteries are sleazy; I believe Buffett used the terminology, "a tax on hope." I will agree to that, and that a segment of Robinhood has lottery-like elements to it.
 
-I will also agree that Robinhood, in isolation, has not been transparent about its main revenue source, payment for order flow.
+There is however, one class of arguments that I cannot agree with: That, because Robinhood can be combined with ignorance and misinformation to do harm or self-harm, it should not have been created, or should be shut down.
 
-There is however, one class of arguments that I cannot agree with: That, because Robinhood can be combined with ignorance and misinformation to do harm, it should never have been created, or should be shut down.
+This perspective requires a paternalistic and pessimistic opinion of humanity that, when adopted, renders this and many other discussions irrelevant. It implies that humans are not just frail and stupid, but irreparably so. Robinhood observed that the equities market is in its natural state, essentially free and frictionless.
 
-This perspective requires a paternalistic and pessimistic opinion of humanity that, if true, would render this and many other discussions irrelevant. A sort of reverse Pascal's wager requires us to dismiss this point, and to instead adopt the belief that ignorance can be remedied and misinformation demonetized.
+A sort of reverse Pascal's wager requires us to dismiss this point, and to instead adopt the belief that ignorance can be remedied and misinformation demonetized.
 
 ### Comissions
 
@@ -38,6 +38,8 @@ The worst one could say about Robinhood is that it is dishonest in a dishonest i
 It remains to discuss payment for order flow. What is it, and what are the consequences for the retail trader?
 
 ### How retail trades are executed
+
+I will also agree that Robinhood, in isolation, has not been transparent about its main revenue source, payment for order flow.
 
 The cast:
 

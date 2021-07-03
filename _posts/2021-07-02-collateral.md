@@ -24,7 +24,7 @@ Because of convention, it is still convenient to refer to these in terms of the 
 2. spreads,
 3. iron condors. 
 
-__Remark:__ In fact, one can think of (1) as a degenerate version of (2), and (2) and a degenerate version of (3). So if one wanted to be reductive, options trading could be described entirely by the phrase "mutually exclusive cash collateral," and all strategies could be viewed as combinations of (possibly degnerate) iron condors.
+__Remark:__ In fact, one can think of (1) as a degenerate version of (2), and (2) a degenerate version of (3). So if one wanted to be reductive, options trading could be described entirely by the phrase "mutually exclusive cash collateral," and all strategies could be viewed as combinations of (possibly degnerate) iron condors.
 
 ### Cash and stock collateral (secured puts and calls)
 

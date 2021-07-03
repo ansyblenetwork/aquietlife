@@ -56,7 +56,7 @@ Cash collateral held for an out-of-the-money (OTM) call spread can simultaneousl
 
 ### Relation to OCD
 
-Spreads correspond to capital efficiency. One way to think about this is that part of the collateral held for a naked put is not truly at risk, and accordingly (assuming a reasonably efficient options market) not earning any premium. For instance, Google simply is not going to drop below 500 dollars anymore. The 500 dollars held as part of a naked put is not at risk, and also not earning any premium.
+Spreads correspond to capital efficiency. One way to think about this is that part of the collateral held for a naked put is not truly at risk, and accordingly (assuming a reasonably efficient options market) not earning any premium. For instance, Google simply is not going to drop below $500 anymore. The $500 held as part of a naked put is not at risk, and also not earning any premium.
 
 The protective contract in a spread releases that collateral so that you can do something with it - precisely, to put it at risk, and thus earn premium.
 

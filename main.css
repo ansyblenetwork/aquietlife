@@ -232,6 +232,7 @@ h1 {
     font-family: Segoe UI, Roboto, Helvetica, sans-serif;  
     font-size: 1.5em;
     margin: 0px;
+	width:70%;
 }
 
 h2 {     
@@ -333,6 +334,10 @@ ul::-webkit-scrollbar-thumb:hover {
     font-size:14px;
   }
     
+	  h1 {
+		  width:100%;
+	  }
+	  
   .main {    
     position: fixed;
     margin-left: 0px;

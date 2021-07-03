@@ -1,5 +1,5 @@
 ---
-title: "Trading theses"
+title: "Opportunism, capital efficiency, and diversification: The principles of trading"
 ---
 
 Every trading decision should be backed by a thesis. I group my theses into three categories:

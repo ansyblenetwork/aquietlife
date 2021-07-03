@@ -68,6 +68,6 @@ Iron condors are evidently another excellent means of capital efficiency, since 
 
 The right way to think about these strategies when trading is in terms of their relation to [OCD]({% post_url 2021-06-29-trading-theses %}):
 
-1. Look to open cash secured puts Opportunistically,
-2. Spread your puts for Capital efficiency,
-3. open a condor to Diversify.
+1. Look to open cash secured puts _opportunistically_,
+2. spread your puts for _capital efficiency_,
+3. open a condor to _diversify_.

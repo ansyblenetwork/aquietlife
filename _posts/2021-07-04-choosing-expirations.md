@@ -36,7 +36,7 @@ Second, the thesis is not explanatory. Risk alone doesn't explain why a particul
 
 ### The case for trading 0-14 DTE
 
-With respect to opportunism, the goal is to put as much of a differential between the useful knowledge you have, and the useful knowledge on the other side of the trade.
+The goal of opportunism is to put as much of a differential between the useful knowledge you have, and the useful knowledge on the other side of the trade.
 
 Expirations far in the future are difficult to work with here because it is rare to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or disproportionally influential on, novice traders. 
 

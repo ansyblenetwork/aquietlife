@@ -34,7 +34,7 @@ Here is the relevant anecdote:
 
 I've [noted before](% post_url 2021-07-04-choosing-expirations %}) that I do not like discussing options Greeks. Here is an example of why.
 
-I just watched a Tasty Trade video discussing the "perfect delta" to trade at. They roughly agreed with my point that it is not clear what delta is optimal, and their explanations were actually pretty similar to mine, at least in spirit. However, as part of their discussion, they kept saying something to the effect of:
+I just watched a Tasty Trade video discussing the "perfect delta" to trade at. They roughly agreed with my point that the answer is not clear, and their explanations were actually pretty similar to mine, at least in spirit. However, as part of their discussion, they kept saying something to the effect of:
 
 > Our research shows that 0.5 delta contracts are the most capital efficient.
 

@@ -18,7 +18,7 @@ The 45 DTE strategy is empirical and popular, thanks to Tasty Trade. Does it hav
 
 ### Why the 45 DTE thesis is lacking
 
-There are some arguments for the 45 DTE strategy thrown around on Reddit. The main arguments are nicely summarized by this [reddit comment](https://www.reddit.com/r/thetagang/comments/h9ym51/why_45_dte_why_do_you_take_profits_why_do_you/):
+There are some arguments for the 45 DTE strategy thrown around on Reddit. They are nicely summarized by this [reddit comment](https://www.reddit.com/r/thetagang/comments/h9ym51/why_45_dte_why_do_you_take_profits_why_do_you/):
 
 > 45 DTE is the sweet spot for theta decay, too close to expiration and you have gamma risk, too far out expirations have very little theta decay. 30-60 days is where theta decay starts to pick up dramatically.
 

@@ -25,7 +25,7 @@ Here is the relevant anecdote:
 >
 > The interesting thing about this situation is that this is a very intelligent group of people that’s come from all over the world. You’ve got a lot of bright people from China where people tend to average out a little smarter. And the issue is very simple. It’s a simple question. Why did that plausible idea fail? Just think about it for a minute. You’ve all been to fancy educational institutions. I’ll bet you there’s hardly one in the audience who knows why that thing failed. That’s a pretty ridiculous demonstration I’m making. How could you not know that?
 >
-> Now at a place like Berkshire Hathaway or even the Daily Journal, we’ve done better than average. And now there’s a question, why has that happened? Why has that happened? And the answer is pretty simple. __We tried to do less.__
+> __Now at a place like Berkshire Hathaway or even the Daily Journal, we’ve done better than average. And now there’s a question, why has that happened? Why has that happened? And the answer is pretty simple. We tried to do less.__
 >
 > __We never had the illusion we could just hire a bunch of bright young people and they would know more than anybody about canned soup and aerospace and utilities and so on and so on and so on. We never had that dream.__
 

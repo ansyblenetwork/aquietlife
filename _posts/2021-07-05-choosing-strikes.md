@@ -13,7 +13,7 @@ So in a nutshell, one should start with strikes deep out of the money (OTM), wit
 
 ### Rate of return
 
-In the presence of so many strikes in any single options chain, how does one ground oneself (preferably quantitatively) to make a choice? My answer is simple: rate of return. It is the quantity that is easiest to compute and understand, and at the end of all things, it is the only quantity that matters.
+In the presence of so many strikes in any single options chain, how does one ground oneself (preferably quantitatively) to make a choice? My recommendation is simple: rate of return. It is the quantity that is easiest to compute and understand, and at the end of all things, it is the only quantity that matters.
 
 However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, variable opportunistic factors should swamp almost any rule of thumb.
 

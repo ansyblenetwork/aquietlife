@@ -42,10 +42,7 @@ Expirations far in the future are difficult to work with here because it is rare
 
 In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 
-The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Trade's backtesting failed to perform well with shorter expirations is that the test was agnostic to external information. This is evidence that the other side of the trade - an options buyer - is able to leverage news and analysis to take advantage of an agnostic seller. Interpreted another way, this is evidence that the near-expiration segment of the options market is not efficient: An informed investor can outperform!
-
-Tying back to the previous discussion, it is not that gamma risk reduces expected returns, or equivalently, that holding stock is a losing strategy. Rather, Tasty Trade has discovered that informed stock trading on short time scales actually works.
-
+The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Trade's backtesting failed to perform well with shorter expirations is not that there is anything fundamentally wrong with short expirations or gamma risk: rather, it is that the test strategy was agnostic to external information. This is evidence that the other side of the trade - an options buyer - is able to leverage news and analysis to take advantage of an agnostic seller. Interpreted another way, this is evidence that the near-expiration segment of the options market is _not_ efficient: An informed investor can outperform!
 
 ### On capital efficiency and diversification
 

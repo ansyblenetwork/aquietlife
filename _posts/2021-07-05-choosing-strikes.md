@@ -4,7 +4,7 @@ title: "Choosing strikes for your options trades"
 
 Choosing an appropriate strike is a much harder task than choosing an appropriate expiration date.
 
-One way to see this is that the [OCD principles]({% post_url 2021-06-28-trading-theses %}) begin to conflict. Here, the desire for capital efficiency would suggest one should sell strikes at the current market price of the underlying stock. (The usual terminology here is at-the-money, or ATM.) This is the strike at which premium is maximized per unit of collateral. On the other hand, ATM contracts have the highest liquidity, and accordingly are most likely to be market efficient. There is much less opportunism to be found here.
+One way to see this is that the [OCD principles]({% post_url 2021-06-29-trading-theses %}) begin to conflict. Here, the desire for capital efficiency would suggest one should sell strikes at the current market price of the underlying stock. (The usual terminology here is at-the-money, or ATM.) This is the strike at which premium is maximized per unit of collateral. On the other hand, ATM contracts have the highest liquidity, and accordingly are most likely to be market efficient. There is much less opportunism to be found here.
 
 My soft recommendation here is to focus more on opportunism than capital efficiency. After all, in the absence of a promising opportunistic trade, there is nothing on which to be efficient. As a result, one should start with strikes deep out of the money (OTM), with low liquidity and the possibility of high inefficiency.
 

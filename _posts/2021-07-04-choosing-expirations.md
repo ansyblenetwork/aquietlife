@@ -4,7 +4,7 @@ title: "How to choose expirations for your options contracts"
 
 There is a lot of bad advice on the internet for how to choose an expiration for your options contracts.
 
-By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about the question of expiration length.
+By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about choosing expiration times.
 
 
 
@@ -46,4 +46,4 @@ With respect to capital efficiency, 0-14 DTE contracts have the greatest theta d
 
 ### On diversification
 
-I noted in my post about OCD that one way of diversification is by trading options at different expirations. This of course would include 45 DTE contracts. I am fine with this justification - but this is not what the 45 DTE proponents are saying.
+I noted in my post about OCD that one way to diversify is to trade options at various expirations. This of course would include 45 DTE contracts. I am fine with this justification - but this is not what the 45 DTE proponents are saying.

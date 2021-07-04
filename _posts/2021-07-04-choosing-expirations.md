@@ -14,7 +14,7 @@ A thesis-less empirical trading strategy cannot work without thorough backtestin
 
 But a thesis-less trading strategy also cannot be sustainable, because it is vulnerable to crowding. As soon as it becomes public, the strategy will begin easing toward market efficiency. As soon as it becomes popular, it will begin to lose money.
 
-The 45 DTE strategy is empirical and popular, thanks to Tasty Works. Does it have a thesis?
+The 45 DTE strategy is empirical and popular, thanks to Tasty Trade. Does it have a thesis?
 
 ### Why the 45 DTE thesis is lacking
 
@@ -42,7 +42,7 @@ Expirations far in the future are difficult to work with here because it is rare
 
 In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 
-The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Works' backtesting failed to perform well with shorter expirations is that the test was agnostic to external information. This is evidence that the other side of the trade - an options buyer - is able to leverage news and analysis to take advantage of an agnostic seller. Interpreted another way, this is evidence that the near-expiration segment of the options market is not efficient: An informed investor can outperform!
+The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Trade's backtesting failed to perform well with shorter expirations is that the test was agnostic to external information. This is evidence that the other side of the trade - an options buyer - is able to leverage news and analysis to take advantage of an agnostic seller. Interpreted another way, this is evidence that the near-expiration segment of the options market is not efficient: An informed investor can outperform!
 
 Tying back to the previous discussion, it is not that gamma risk reduces expected returns, or equivalently, that holding stock is a losing strategy. Rather, Tasty Trade has discovered that informed stock trading on short time scales actually works.
 

@@ -36,7 +36,7 @@ To short a call contract, you need to be prepared to sell the underlying stock. 
 
 You can reduce the amount of capital required to collateralize a short put by pairing it with a long put for the same underlying. There are two degrees of freedom to consider when deciding which put to buy:
 
-First, there is time. A contract with the same strike but with an equal or later expiration perfectly collateralizes the short contract. Note that such a pair of contracts will cost you premium. To earn more premium (precisely, to buy less premium), the expiration of your defensive put should be chosen closer to the expiration of your short put.
+First, there is time. A contract with the same strike but with an equal or later expiration perfectly collateralizes the short contract. Note that in an efficient market, such a pair of contracts will cost you premium. To earn more premium (precisely, to buy less premium), the expiration of your defensive put should be chosen closer to the expiration of your short put.
 
 Second, there is the strike. A contract with the same expiration but a lower strike will collateralize some of your short contract; the difference in strikes must still be held in cash as collateral. To earn more premium, the strike should be chosen farther from the strike of your short put.
 

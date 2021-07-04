@@ -19,7 +19,7 @@ However, this still doesn't help you decide which rate of return is best. There 
 
 There is a soft piece of wisdom, however, that I like to keep in mind. It comes from [an interview with Charlie Munger](https://www.youtube.com/watch?v=53vXIbsaBgw), which was about investing rather than trading, but one phrase sticks.
 
-Here is the relevant anecdote:
+Here is a transcript of the relevant anecdote:
 
 > Let me give you an interesting example. The investment world involves an enormous amount of high IQ people trying to be more skillful than normal. You can hardly imagine another activity that gets so much attention. And weird things have happened. Years ago one of our local investment counseling shops, a very big one, they were looking for a way to get an advantage over other investment counseling shops. And they reasoned as follows. We’ve got all these brilliant young people from Wharton and Harvard and so forth and they work so hard trying to understand business and market trends and everything else. And if we just ask each one of our most brilliant men for their single best idea then created a formula with this collection of best ideas, we would outperform averages by a big amount... So they tried it out, and of course it failed utterly.
 >

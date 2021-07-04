@@ -17,7 +17,7 @@ What quantity should one use to objectively choose a strike? The answer is simpl
 
 However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, opportunism should swamp almost any rule of thumb.
 
-There is soft piece of wisdom, however, that I like to keep in mind. It comes from [an interview with Charlie Munger](https://www.youtube.com/watch?v=53vXIbsaBgw), which was about investing, but one phrase sticks.
+There is soft piece of wisdom, however, that I like to keep in mind. It comes from [an interview with Charlie Munger](https://www.youtube.com/watch?v=53vXIbsaBgw), which was about investing rather than trading, but one phrase sticks.
 
 Here is the relevant anecdote:
 

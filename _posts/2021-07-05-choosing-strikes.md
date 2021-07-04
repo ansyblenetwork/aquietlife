@@ -7,13 +7,13 @@ Choosing an appropriate strike is a much harder task than choosing an appropriat
 One way to see this is that the [OCD principles]({% post_url 2021-06-29-trading-theses %}) begin to conflict. Here, the desire for capital efficiency would suggest one should sell strikes at the current market price of the underlying stock. (The usual terminology here is at-the-money, or ATM.) This is the strike at which premium is maximized per unit of collateral. On the other hand, ATM contracts have the highest liquidity, and accordingly are most likely to be market efficient. There is much less opportunism to be found here.
 
 
-My soft recommendation here is to focus more on opportunism than capital efficiency. After all, in the absence of a promising opportunistic trade, there is nothing on which to be efficient. As a result, one should start with strikes deep out of the money (OTM), with low liquidity and the possibility of high inefficiency.
+My soft recommendation is to focus more on opportunism than capital efficiency. After all, in the absence of a promising opportunistic trade, there is nothing on which to be efficient. As a result, one should start with strikes deep out of the money (OTM), with low liquidity and the possibility of high inefficiency.
 
 I have some remarks on quantiative recommendations.
 
 ### Rate of return
 
-What should one use to objectively choose a strike? The answer is simple: Rate of return, the quantity that is easiest to compute annd understand, and actually matters.
+What quantity should one use to objectively choose a strike? The answer is simple: Rate of return. It is the quantity that is easiest to compute and understand, and actually matters.
 
 However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, opportunism should swamp almost any rule of thumb.
 

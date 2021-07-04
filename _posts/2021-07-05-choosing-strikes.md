@@ -15,7 +15,7 @@ I have some remarks on quantiative recommendations.
 
 What quantity should one use to objectively choose a strike? The answer is simple: rate of return. It is the quantity that is easiest to compute and understand, and at the end of all things, it is the only quantity that matters.
 
-However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, opportunism should swamp almost any rule of thumb.
+However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, variable opportunistic factors should swamp almost any rule of thumb.
 
 There is soft piece of wisdom, however, that I like to keep in mind. It comes from [an interview with Charlie Munger](https://www.youtube.com/watch?v=53vXIbsaBgw), which was about investing rather than trading, but one phrase sticks.
 

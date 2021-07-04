@@ -46,6 +46,6 @@ The data from Tasty Trade, properly interpreted, actually supports this case for
 
 ### On capital efficiency and diversification
 
-With respect to capital efficiency, 0-14 DTE contracts have the greatest theta decay. Equivalently, they freeze your capital for the least amount of time per unit of premium.
+With respect to capital efficiency, the analysis is straightforward: 0-14 DTE contracts have the greatest theta decay. Equivalently, they freeze your capital for the least amount of time per unit of premium.
 
 That being said, I noted in my post about OCD that one way to diversify is to trade options at various expirations. This of course would include 45 DTE contracts. I am fine with this justification - but this is not what the 45 DTE proponents are saying.

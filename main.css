@@ -383,6 +383,7 @@ ul::-webkit-scrollbar-thumb:hover {
     box-shadow: #d4d4d4 0px 0px 7px; 
     background-color: white;
     pointer-events:auto;
+	  position:relative;
   }
     
     .sidebartab {

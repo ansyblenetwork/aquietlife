@@ -37,19 +37,19 @@
 		</div>
 			
 		<div style="overflow:auto;">
-		<div style="display:none; inset:0px; pointer-events:none; position:absolute; box-shadow: inset 0px 40px 20px -50px var(--textlight);"></div>	
-		<ul class="ulsidebar" id="postlist" style="overflow:auto;" onscroll="testTopScrollx(this)">
-			{% for post in site.posts %}					
-				{% if page.title == post.title %}	
-					<li id="specialPost" style="background-color:#f4f7f7"><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
-						{{ post.title }}</li>
-				{% else %}				
-					<a href="{{ post.url | relative_url }}"><li><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
-						{{ post.title }}</li></a>				
-				{% endif %}
-			{% endfor %}
-			<br>
-		</ul>
+			<div style="display:none; inset:0px; pointer-events:none; position:absolute; box-shadow: inset 0px 40px 20px -50px #333"></div>	
+			<ul class="ulsidebar" id="postlist" style="overflow:auto;" onscroll="testTopScrollx(this)">
+				{% for post in site.posts %}					
+					{% if page.title == post.title %}	
+						<li id="specialPost" style="background-color:#f4f7f7"><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
+							{{ post.title }}</li>
+					{% else %}				
+						<a href="{{ post.url | relative_url }}"><li><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
+							{{ post.title }}</li></a>				
+					{% endif %}
+				{% endfor %}
+				<br>
+			</ul>
 		<div>
 	</div>
 	<div class="sidebartab"></div>

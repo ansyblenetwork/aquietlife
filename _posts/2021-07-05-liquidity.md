@@ -1,5 +1,5 @@
 ---
-title: "Why you should favor illiquid contracts"
+title: "Favoring illiquid contracts"
 ---
 
 Given the opportunity, you should trade options at strikes with low liquidity. This is fairly obvious to me, but I have never heard anyone recommend it.

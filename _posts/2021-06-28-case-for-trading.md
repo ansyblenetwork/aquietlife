@@ -55,4 +55,4 @@ To summarize, I have hinted at five strategies:
 4. active trading, short options,
 5. short-stack trading, long options.
 
-Passive investors form the benchmark. Strategy (2) is conceivably effective (eg. Warren Buffett) but I have no idea how one might succeed there. Strategy (3) is also fair, but those using strategy (5) make things difficult on two fronts: By crowding both promising growth stocks, and the options contracts that might be used to protect them. The appeal of strategy (4) is that it has a natural gatekeeper in the way of high capital requirements, and thus works with the current rather than against it.
+Passive investors form the benchmark. Strategy (2) is conceivably effective (eg. Warren Buffett) but I have no idea how one might succeed there. Strategy (3) is also fair, but those using strategy (5) make things difficult on two fronts: By crowding both promising growth stocks, and the options contracts that might be used to protect them. The appeal of strategy (4) is that it has a natural gatekeeper in the way of high capital requirements and regulation, and thus works with the current rather than against it.

@@ -30,4 +30,4 @@ Another way to think about this is that you want to sell something at a price wh
 
 Some of my favorite trades recently have been on penny stocks, with 50 cent or 1 dollar strikes, and willing buyers. These are typically not easy to find, but they were reasonably common during the GME and AMC squeezes this year. Example tickers have included SNDL, SIEB, EXPR, and GNUS. When you do find such inefficiencies, you can be extremely confident in their disproportionate profitability relative to risk.
 
-Another one of my favorite trades is to find options chains which have recently been extended. These are of course, rare, but indicate extreme exuberance and sloppy trading. Example tickers have included the meme stocks: AMC, TRCH, and WISH.
+Another one of my favorite trades is to find options chains which have recently been extended. These are of course, rare, but indicate extreme exuberance and sloppy trading. Example tickers have included the meme stocks: AMC, TRCH, and WISH. The strategy here is typically to sell bearish call spreads. This is not for the faint of heart.

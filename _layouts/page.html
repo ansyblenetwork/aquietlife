@@ -35,8 +35,9 @@
 				</div>
 			</span>
 		</div>
-						
-		<ul class="ulsidebar" id="postlist" style="overflow:auto;">
+					
+		<div style="display:none; inset:0px; pointer-events:none; position:absolute; box-shadow: inset 0px 40px 20px -50px var(--textlight);"></div>	
+		<ul class="ulsidebar" id="postlist" style="overflow:auto;" onscroll="testTopScrollx(this)">
 			{% for post in site.posts %}					
 				{% if page.title == post.title %}	
 					<li id="specialPost" style="background-color:#f4f7f7"><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
@@ -167,6 +168,12 @@ for (let i = 0; i < list.length; i++) {
 			});	
 		}
 	}
+}
+		
+function testTopScrollx(elt) {	
+	let atTop = (elt.scrollTop <= 10);
+	if (!atTop) elt.previousElementSibling.style.display = "block";
+	else hide(elt.previousElementSibling);
 }
 	
 function D(string) { return document.getElementById(string); }	

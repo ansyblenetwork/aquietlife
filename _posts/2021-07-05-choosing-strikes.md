@@ -32,7 +32,7 @@ Here is a transcript of the relevant anecdote:
 
 
 
-### Do not use delta
+### Delta: mostly unnecessary
 
 I've [noted before](% post_url 2021-07-04-choosing-expirations %}) that I do not like discussing options Greeks. Here is an example of why.
 

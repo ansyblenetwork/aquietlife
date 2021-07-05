@@ -26,7 +26,7 @@ I think the thesis already stands without further justification, so I will just 
 Another way to think about this is that you want to sell something at a price where almost no one is willing to buy it (or conversely, to buy something at a price where almost no one is willing to sell it).
 
 
-### Example: Trading at the ends of an options chain
+### Example: Trading at the ends of options chains
 
 Some of my favorite trades recently have been on penny stocks, with 50 cent or 1 dollar strikes, and willing buyers. These are typically not easy to find, but they were reasonably common during the GME and AMC squeezes this year. Example tickers have included SNDL, SIEB, EXPR, and GNUS. When you do find such inefficiencies, you can be extremely confident in their disproportionate profitability relative to risk. (You needn't try these four tickers at the moment; no one is buying. People learn pretty quickly.)
 

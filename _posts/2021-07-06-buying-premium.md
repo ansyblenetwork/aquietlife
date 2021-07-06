@@ -22,7 +22,7 @@ Another way to think about this is to ask when you would buy an options contract
 
 The defensive leg of a spread offers two unrelated services: 
 
-1. speculation and
+1. speculation, and
 2. release of capital.
 
 You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. Accordingly, you should view the defensive leg of a spread as overpriced unless it is a good value for (2) alone. In other words, it should release capital to you at a reasonable interest rate. 

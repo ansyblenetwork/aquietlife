@@ -6,8 +6,9 @@ According to the principle of capital efficiency with respect to the [case for s
 
 This rule is absolute. Some contrarian implications include:
 
-1. You should not spend more than the least possible amount on defensive legs of spreads or other multi-leg strategies.
-2. You should not "take profits at 50% or 21 DTE," a popular recommendation of Tasty Trade.
+1. You should not spend more than the least possible amount on the defensive legs of spreads and other multi-leg strategies.
+2. You should not "take profits at 50% or 21 DTE," a popular recommendation by Tasty Trade.
+
 
 
 ### Never buy extrinsic value
@@ -21,13 +22,20 @@ Another way to think about this is to ask when you would buy an options contract
 
 The defensive leg of a spread offers two unrelated services: 
 
-1. speculation,
+1. speculation and
 2. release of capital.
 
-You should never sell a spread while expecting to take a total loss. (If you did, you should be buying the spread instead.) In particular, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. In other words, you should value (1) at essentially zero.
+You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. You should view the defensive leg of a spread as overvalued unless it is a good value for (2). In other words, it should release capital to you at a reasonable interest rate. 
 
-With this in mind, you should view the defensive leg of a spread as overvalued unless it releases capital to you at a reasonable interest rate. 
+What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay a 10% annual rate. Some benchmarks:
 
-What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay a 10% annual rate. This would be like buying a 7 DTE 10 dollar strike for 2 dollars.
+1. A 7 DTE 10 dollar strike should cost at most 2 dollars.
+2. A 7 DTE 25 dollar strike should cost at most 5 dollars.
+3. A 7 DTE 50 dollar tsrike should cost at most 10 dollars
 
 The same interest rate analysis answers the question of when to close a contract. (There are of course, exceptions. For instance, there are reasons to close a trade early if fundamental issues have arisen for the underlying stock.)
+
+
+### An exception: Bear spreads
+
+The one exception I habitually make to this rule is when building bear spreads. The defensive leg of a bear spread seems to be a necessary evil. In the midst of exuberance, even the highest strike in an options chain is often not priced at a sane interest rate. (However, in such situations, the CBOE often decides to extend the chain, which typically corresponds to sloppy trading and some good opportunities.)

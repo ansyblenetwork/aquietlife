@@ -25,17 +25,17 @@ The defensive leg of a spread offers two unrelated services:
 1. speculation and
 2. release of capital.
 
-You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. You should view the defensive leg of a spread as overvalued unless it is a good value for (2). In other words, it should release capital to you at a reasonable interest rate. 
+You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. Accordingly, you should view the defensive leg of a spread as overpriced unless it is a good value for (2) alone. In other words, it should release capital to you at a reasonable interest rate. 
 
 What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay a 10% annual rate. Some benchmarks:
 
 1. A 7 DTE 10 dollar strike should cost at most 2 dollars.
 2. A 7 DTE 25 dollar strike should cost at most 5 dollars.
-3. A 7 DTE 50 dollar tsrike should cost at most 10 dollars
+3. A 7 DTE 50 dollar strike should cost at most 10 dollars
 
 The same interest rate analysis answers the question of when to close a contract. (There are of course, exceptions. For instance, there are reasons to close a trade early if fundamental issues have arisen for the underlying stock.)
 
 
 ### An exception: Bear spreads
 
-The one exception I habitually make to this rule is when building bear spreads. The defensive leg of a bear spread seems to be a necessary evil. In the midst of exuberance, even the highest strike in an options chain is often not priced at a sane interest rate. (However, in such situations, the CBOE often decides to extend the chain, which typically corresponds to sloppy trading and some good opportunities.)
+The one systematic exception I make to this rule occurs when building bear spreads. Precisely, the defensive leg of a bear spread seems to be a necessary evil. In the midst of exuberance, even the highest strike in an options chain is often not priced at a sane interest rate. (However, in such situations, the CBOE often decides to extend the chain, which typically corresponds to sloppy trading and some good opportunities.)

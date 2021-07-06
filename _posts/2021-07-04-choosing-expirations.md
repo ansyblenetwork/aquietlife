@@ -4,7 +4,7 @@ title: "Choosing expirations for your options trades"
 
 There is a lot of bad advice on the internet for how to choose an expiration for your options contracts.
 
-By "a lot," I mean a lot of people recommending one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about choosing expiration times.
+By "a lot," I mean a lot of people parroting one strategy: Shorting 45 days-to-expiration contracts, or what I'll call the "45 DTE strategy." In this post I would like to enumerate why this is a bad idea, and to develop a thesis for how one should actually think about choosing expiration times.
 
 
 

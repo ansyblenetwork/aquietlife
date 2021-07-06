@@ -25,9 +25,9 @@ The defensive leg of a spread offers two unrelated services:
 1. speculation, and
 2. release of capital.
 
-You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. Accordingly, you should view the defensive leg of a spread as overpriced unless it is a good value for (2) alone. In other words, it should release capital to you at a reasonable interest rate. 
+You should never sell a spread while expecting to take a total loss. Equivalently, when you sell a spread, you should fully expect to take a total loss on the defensive leg of the spread. This means you should value (1) at essentially zero. Accordingly, you should view the defensive leg of a spread as overpriced unless it is a good value for (2) alone. In other words, it should release capital to you at a reasonable interest rate. Further, regardless of the price, you should only buy the defensive leg if you have an immediate need for capital.
 
-What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay a 10% annual rate. Some benchmarks:
+What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay up to a 10% annual rate. Some benchmarks:
 
 1. A 7 DTE 10 dollar strike should cost at most 2 dollars.
 2. A 7 DTE 25 dollar strike should cost at most 5 dollars.

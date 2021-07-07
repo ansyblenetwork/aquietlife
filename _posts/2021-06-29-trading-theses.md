@@ -17,7 +17,7 @@ Opportunism refers to market inefficiencies, including instances of irrationalit
 
 However, I will point out that the options market conceivably enlarges what one would consider opportunistic. It is very hard to predict whether a stock will go up or down, at least on time scales short enough for trading to be meaningful. The conventional wisdom is that it is much easier to predict whether an options contract will expire out of the money. This is particularly true near expiration - precisely the time scale at which trading is meaningful, and at which impulsive traders enjoy speculating.
 
-Recent market conditions appear to be full of inefficiencies. The most transparent I found recently involved the merger/dividend debacle regarding TRCH. I honestly felt a little guilty entering the trade; the stock was evidently rife with novice and misinformed investors.
+Recent market conditions appear to be full of inefficiencies. The most transparent I found recently involved the merger/dividend debacle regarding TRCH. I honestly felt pretty guilty entering the trade; the stock was evidently rife with novice and misinformed investors.
 
 ### Capital efficiency and risk management
 

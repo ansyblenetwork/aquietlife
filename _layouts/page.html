@@ -64,7 +64,7 @@
 			{{ content }}	
 		</div>
 		
-		<button onclick="loadComments(this)">Load Comments</button>
+		<button onclick="loadComments(this)" style="width:min-content; margin:top:100px auto;">Load Comments</button>
 		<div id="comment"></div>
 	</div>	
 	
@@ -73,7 +73,6 @@
 <script>
 // facebook comments
 function loadComments(elt) {
-	hide(elt);
 	D('comment').outerHTML = `<div id="comment" class="fb-comments" data-href="${window.location.href}" data-width="100%" data-numposts="10"></div>`;	
 	
 	var tag = make('script');
@@ -82,6 +81,7 @@ function loadComments(elt) {
 	tag.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0";
 	var firstScriptTag = document.getElementsByTagName('script')[0];
 	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	tag.onload = function() {hide(elt);};
 }
 
 // add base URL to relative links (for project pages)

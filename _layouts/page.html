@@ -37,7 +37,8 @@
 		</div>
 			
 		<div id="shadow" style="display:none; inset:0px; pointer-events:none; position:absolute; box-shadow: inset 0px 40px 15px -50px #333"></div>	
-		<ul class="ulsidebar" id="postlist" style="overflow:auto;" onscroll="testTopScrollx(this)">
+		<ul class="ulsidebar" id="postlist" style="overflow:auto;" onscroll="if (this.scrollTop > 5) elt.previousElementSibling.style.display = 'block';
+											else this.previousElementSibling.style.display = 'none';">
 			{% for post in site.posts reversed %}					
 				{% if page.title == post.title %}	
 					<li id="specialPost" style="background-color:#f4f7f7"><span class="date-format">{{ post.date | date: "%B %-d, %Y" }}</span><br>
@@ -173,12 +174,6 @@ for (let i = 0; i < list.length; i++) {
 	
 D('shadow').style.top = (D('shadow').previousElementSibling.offsetHeight + 60) + "px";
 		
-function testTopScrollx(elt) {	
-	let atTop = (elt.scrollTop <= 10);
-	if (!atTop) elt.previousElementSibling.style.display = "block";
-	else hide(elt.previousElementSibling);
-}
-	
 function D(string) { return document.getElementById(string); }	
 function DE(id) {
 	if (typeof id === 'string' || id instanceof String) return D(id);

@@ -55,9 +55,7 @@ iframe {
     max-width:640px;
 	
     max-height:60%;	
-    margin-left: auto;
-    margin-right: auto;  
-    margin-top:16px;
+    margin:25px auto;
     pointer-events: none;
 }
 

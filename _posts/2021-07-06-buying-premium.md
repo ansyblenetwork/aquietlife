@@ -20,7 +20,7 @@ Another way to think about this is to ask when you would buy an options contract
 
 ### Buy capital at a reasonable interest rate
 
-The defensive leg of a spread offers two unrelated services: 
+The defensive leg of a spread offers two unrelated benefits: 
 
 1. speculation, and
 2. release of capital.

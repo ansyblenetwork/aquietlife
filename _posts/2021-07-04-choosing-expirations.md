@@ -38,11 +38,14 @@ Second, the thesis is not explanatory. Risk alone doesn't explain why a particul
 
 The goal of opportunism is to put as much of a differential between your useful knowledge, and the useful knowledge on the other side of the trade.
 
-Expirations far in the future are difficult to work with here because it is rare to find information that 1) meaningfully affects a stock's price later but not earlier, and 2) is either not well known to, or disproportionally influential on, novice traders. 
+Expirations farther in the future are difficult to work with here because time quickly erodes the usefulness of any knowledge differential, except possibly for an extremely consistent stock about which you are particularly knowledgeable. But even if so, such long term information is unlikely to have a disproportionate influence on novice traders. Such a deep understanding also suggests you should invest rather than trade.
 
 In contrast, news that is current and immediate has a much larger chance of inspiring exuberance or fear. Further, novice traders or speculators looking for immediate gratification are more likely to trade options near expiration.
 
-The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Trade's backtesting fails to perform well with shorter expirations is not that there is anything fundamentally wrong with short expirations or gamma risk. Rather, it is that their test strategy is agnostic to external information. This is evidence that the other side of the trade - options buyers - can leverage news and analysis to take advantage of a news-agnostic seller. Interpreted another way, this is evidence that the near-expiration segment of the options market is _not_ efficient: An informed trader can outperform!
+The data from Tasty Trade, properly interpreted, actually supports this case for trading shorter expirations - assuming that you have time and energy to do a little homework. The reason that Tasty Trade's backtesting fails to perform well with shorter expirations is not that there is anything fundamentally wrong with short expirations or gamma risk. Rather, it is that their test strategy is agnostic to external information. This is evidence that the other side of the trade - options buyers - can leverage news and analysis to take advantage of a news-agnostic seller. But this goes both ways: Since the near-expiration segment of the options market is _not_ efficient, an informed options seller can also outperform!
+
+This makes a lot of sense when we return to the 45 DTE discussion. Expirations farther out are bought by investors with deeper knowledge of the stock, while expirations closer to the present are traded by technical analysts. The 45 DTE expirations should not be viewed as optimal, so much as the closest to market efficient, where no one knows any better than anyone else. They should be traded only if your goal is to avoid using individual judgment. The general case for shorting options still suggests that outperformance is possible, but the effect is almost certainly less pronounced.
+
 
 ### On capital efficiency and diversification
 

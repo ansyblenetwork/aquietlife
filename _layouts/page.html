@@ -22,7 +22,6 @@
 	
 <body>	
 	<div id="fb-root"></div>
-	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0" nonce="S4tJ3X3o"></script>
 	
 	<div id="outersidebar" class="outersidebar">
 	<div class="sidebar">
@@ -65,6 +64,7 @@
 			{{ content }}	
 		</div>
 		
+		<button onclick="loadComments(this)">Load Comments</button>
 		<div id="comment"></div>
 	</div>	
 	
@@ -72,7 +72,17 @@
 
 <script>
 // facebook comments
-D('comment').outerHTML = `<div id="comment" class="fb-comments" data-href="${window.location.href}" data-width="100%" data-numposts="10"></div>`;
+function loadComments(elt) {
+	hide(elt);
+	D('comment').outerHTML = `<div id="comment" class="fb-comments" data-href="${window.location.href}" data-width="100%" data-numposts="10"></div>`;	
+	
+	var tag = make('script');
+	tag.crossOrigin = "anonymous";
+	tag.nonce = "S4tJ3X3o";
+	tag.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
 
 // add base URL to relative links (for project pages)
 var relativelinks = document.getElementsByTagName("a");

@@ -36,6 +36,6 @@ What is a reasonable interest rate? I personally indulge a bit. In principle, yo
 The same interest rate analysis answers the question of when to close a contract. (There are of course, exceptions. For instance, there are reasons to close a trade early if fundamental issues have arisen for the underlying stock.)
 
 
-### An exception: Bear spreads
+### An exception: bear spreads
 
 The one systematic exception I make to this rule occurs when building bear spreads. Precisely, the defensive leg of a bear spread seems to be a necessary evil. In the midst of exuberance, even the highest strike of an options chain is often not priced at a sane interest rate. (However, in such situations, the CBOE often decides to extend the chain, which typically corresponds to sloppy trading and some good opportunities.)

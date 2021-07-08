@@ -40,7 +40,7 @@ I just watched a Tasty Trade video discussing the "perfect delta" to trade at. T
 
 > Our research shows that 0.5 delta contracts are the most capital efficient.
 
-I have a huge gripe with that sentence, and here's why: A 0.5 delta contract is synonymous with an ATM contract. The conclusion of their "research" was the trivial fact that an ATM contract is most premium-efficient.
+That claim bugs me to no end, and here's why: A 0.5 delta contract is synonymous with an ATM contract. The conclusion of their research was the trivial fact that an ATM contract is most premium-efficient.
 
 This is just one instance demonstrating the harm of options Greeks: They mostly serve to obfuscate, sometimes to real detriment.
 

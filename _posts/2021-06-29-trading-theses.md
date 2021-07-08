@@ -2,7 +2,7 @@
 title: "Opportunism, capital efficiency, and diversification: The principles of trading"
 ---
 
-Every trading decision should be backed by a thesis. In turn, my theses typically uphold one or more of the following principles:
+Every trading decision should be backed by a thesis. In turn, your thesis should uphold one or more of the following principles:
 
 1. Opportunism,
 2. Capital efficiency,

@@ -25,7 +25,7 @@ The defensive leg of a spread offers two unrelated benefits:
 1. speculation, and
 2. release of capital.
 
-You should never sell a spread while expecting to take a total loss. Equivalently, you should fully expect to take a total loss on the defensive leg of every spread. This means you should value (1) at essentially zero, and thus value the defensive leg of a spread by (2) alone. In other words, the defensive leg should release capital to you at a reasonable interest rate. (Regardless of the price, you should only buy the defensive leg if you have an immediate need for capital.)
+You should never sell a spread while expecting to take a total loss. Equivalently, you should fully expect to take a total loss on the defensive leg of every spread. This means you should value (1) at essentially zero, and thus value the defensive leg of a spread by (2) alone. In other words, the defensive leg should release capital to you at a reasonable interest rate. (Regardless of the price, you should only buy the defensive leg if you have ideas for how to use the released capital.)
 
 What is a reasonable interest rate? I personally indulge a bit. In principle, your broker's margin rate is the correct comparison, but I typically allow myself to pay up to a 10% annual rate. Some benchmarks:
 

@@ -221,7 +221,7 @@ button {
 }
 
 button.active {
-  color: #aaa;	
+  background-color: #aaa;	
 }
 
 button:hover:enabled {  

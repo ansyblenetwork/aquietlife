@@ -220,6 +220,9 @@ button {
   cursor: pointer;
 }
 
+button.active {
+  color: #aaa;	
+}
 
 button:hover:enabled {  
   background-color: white;  

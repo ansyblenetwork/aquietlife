@@ -2,6 +2,22 @@
   --fixWidth: 0px;
 }
 
+
+input[type=text], input[type=password] {  
+  box-sizing: border-box;
+  padding: 5px;
+  border-top: solid 0px;
+  border-left: solid 0px;
+  border-right: solid 0px;
+  border-bottom: solid 1px;
+}
+
+input[type=text]:focus, input[type=password]:focus {  
+  border-bottom: solid 2px;
+  padding-bottom: 4px;
+  outline: none;
+}
+
 table{
     border-collapse: collapse;
     border-spacing: 0;

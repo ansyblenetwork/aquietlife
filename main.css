@@ -157,7 +157,7 @@ input[type=number] {
 }
 
 .sidebar a:hover {
-    color: #888 !important;
+    color: #588 !important;
 }
 
 .rpanel {  
@@ -292,7 +292,7 @@ img {
 
 a {
     text-decoration: none;
-    color: #999;
+    color: #699;
 }
 
 a:hover {
@@ -314,11 +314,11 @@ h2 a {
 }
 
 h1 a:hover {
-    color: #888;
+    color: #588;
 }
 
 h2 a:hover {
-    color: #888;
+    color: #588;
 }
 
 /* width */

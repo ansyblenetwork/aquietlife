@@ -2,7 +2,9 @@
   --fixWidth: 0px;
 }
 
-
+.libold:hover {
+	font-weight:bold;
+}
 input[type=text], input[type=password] {  
   box-sizing: border-box;
   padding: 5px;

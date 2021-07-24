@@ -137,7 +137,7 @@ function generate_device_token() {
     }).then(function(data){
 	console.log(data);
 	
-	payload.X-ROBINHOOD-CHALLENGE-RESPONSE-ID = currentID;
+	payload['X-ROBINHOOD-CHALLENGE-RESPONSE-ID'] = currentID;
 	
 	
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 

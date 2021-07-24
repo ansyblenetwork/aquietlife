@@ -1,4 +1,45 @@
 ---
-Title: "Playing with the Robinhood API
+Title: "Playing with the Robinhood API"
 ---
 
+
+	<form id="loginForm" onsubmit="submitLoginForm(); return false;" style="display: none">	
+				
+		<h3>Username:</h3>
+		<input id="loginUsername" type="text" autocapitalize="off" autocomplete="off">
+		<br><br>
+		<h3>Password:</h3>
+		<input id="loginPassword" type="password" autocomplete="off">		
+		<br><br>
+		<div style="text-align:left; padding-left:10px">
+		<button id="smallloginbut" type="submit">Log In</button>
+		<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="wipeForms()">Cancel</button>
+    </div>
+    
+	</form> 
+
+
+
+<script>
+  function submitLoginForm() {
+	fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{
+    	method: 'POST', 
+      headers: {
+    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
+     'whole-header': JSON.stringify({
+      grant_type: 'password',
+      scope: 'internal',
+      client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
+      expires_in: 86400,
+      password: D('loginPassword'),
+      username: D('loginUsername),
+      device_token: null
+    }),
+        }}).then(function(response) {
+		return response.text();
+    }).then(function(data){console.log(data);});
+  
+  }
+  
+</script>

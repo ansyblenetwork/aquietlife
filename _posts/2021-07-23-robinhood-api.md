@@ -1,5 +1,5 @@
 ---
-Title: "Playing with the Robinhood API"
+title: "Playing with the Robinhood API"
 ---
 
 A Robinhood login via API.

@@ -8,10 +8,10 @@ A Robinhood login via API.
 <div>
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
 				
-		<h3>Username:</h3>
+		Username:
 		<input id="loginUsername" type="text" autocapitalize="off" autocomplete="off">
 		<br><br>
-		<h3>Password:</h3>
+		Password:
 		<input id="loginPassword" type="password" autocomplete="off">		
 		<br><br>
 		<div style="text-align:left; padding-left:10px">

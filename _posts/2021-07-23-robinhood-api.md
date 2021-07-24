@@ -146,7 +146,7 @@ function getData() {
     	method: 'GET', 
       headers: {
     'Target-URL': "https://api.robinhood.com/accounts/",
-     'json-data': JSON.stringify({headers:authData}),
+     'json-data': JSON.stringify({headers:authHeader}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){

@@ -2,7 +2,7 @@
 Title: "Playing with the Robinhood API"
 ---
 
-
+<div>
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;" style="display: none">	
 				
 		<h3>Username:</h3>
@@ -18,7 +18,7 @@ Title: "Playing with the Robinhood API"
     
 	</form> 
 
-
+</div>
 
 <script>
   function submitLoginForm() {

@@ -111,7 +111,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify({form:form}),
+     'json-data': JSON.stringify({form:form}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
@@ -129,7 +129,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': 'https://api.robinhood.com/challenge/' + currentID + '/respond/',
-     'whole-header': JSON.stringify(
+     'json-data': JSON.stringify(
 	{  form:{  'response': D('loginMFA').value }	}
 	),
         }}).then(function(response) {
@@ -143,7 +143,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify({form:form, header:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}),
+     'json-data': JSON.stringify({form:form, header:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
@@ -168,7 +168,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify(
+     'json-data': JSON.stringify(
 	{
         'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
         'expires_in': 86400,

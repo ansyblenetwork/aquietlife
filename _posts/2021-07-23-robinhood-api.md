@@ -157,6 +157,7 @@ function generate_device_token() {
       'password': D('loginPassword2').value,
       'username': D('loginUsername2').value,
         'scope': 'internal',
+        'challenge_type': "sms",
         'device_token': D('token').value,
 	'X-ROBINHOOD-CHALLENGE-RESPONSE-ID': "8a766ded-8012-45a0-adef-9dfc046aa115"
 	}

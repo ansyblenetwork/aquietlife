@@ -70,71 +70,37 @@ function generate_device_token() {
    return id;
 }
 
-	
-  function submitLoginForm() {
-	
+function submitLoginForm() {
 	let mytoken = generate_device_token();
-	
 	form = {
-        'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
-        'expires_in': 86400,
-        'grant_type': 'password',
-      'password': D('loginPassword').value,
-      'username': D('loginUsername').value,
-        'scope': 'internal',
-        'challenge_type': "sms",
-        'device_token': mytoken
+		'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
+		'expires_in': 86400,
+		'grant_type': 'password',
+		'password': D('loginPassword').value,
+		'username': D('loginUsername').value,
+		'scope': 'internal',
+		'challenge_type': "sms",
+		'device_token': mytoken
 	};
-	
-	fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{
-    	method: 'POST', 
-      headers: {
-    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'json-data': JSON.stringify({form:form}),
-        }}).then(function(response) {
-		return response.json();
-    }).then(function(data){
-	show('MFAForm');
-	currentID = data.challenge.id;
-	console.log(data);
-	
+
+	fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form}).then(function(data){
+		show('MFAForm');
+		if (data.challenge) currentID = data.challenge.id;
+		console.log(data);	
 	});
+}
   
-  }
-  
-  function submitMFAForm() {
-	fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{
-    	method: 'POST', 
-      headers: {
-    'Target-URL': 'https://api.robinhood.com/challenge/' + currentID + '/respond/',
-     'json-data': JSON.stringify(
-	{  form:{  'response': D('loginMFA').value }	}
-	),
-        }}).then(function(response) {
-		return response.json();
-    }).then(function(data){
-	console.log(data);
-	
-	
-	fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{
-    	method: 'POST', 
-      headers: {
-    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'json-data': JSON.stringify({form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}),
-        }}).then(function(response) {
-		return response.json();
-    }).then(function(data){
-	hide('MFAForm');
-	console.log(data);
-	authData = data;
-	authHeader = {'Authorization':data.token_type + " " + data.access_token};
+function submitMFAForm() {
+	fetchData('https://api.robinhood.com/challenge/' + currentID + '/respond/', 'POST', { form:{ 'response': D('loginMFA').value }}).then(function(data){
+		console.log(data);
+		fetch("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
+			hide('MFAForm');
+			console.log(data);
+			authData = data;
+			authHeader = {'Authorization':data.token_type + " " + data.access_token};
+		});
 	});
-	
-	});
-  }
+}
 
 function getData() {	
 	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data){
@@ -149,5 +115,5 @@ function fetchData(url, method, data) {
 	});
 }
 	
-	
+
 </script>

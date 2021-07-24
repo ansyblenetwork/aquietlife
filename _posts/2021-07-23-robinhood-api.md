@@ -35,7 +35,11 @@ function generate_device_token() {
     }
 
     let hexa = [];
-    for (let i = 0; i < 256; i++) {		
+    for (let i = 0; i < 256; i++) {	
+	let myhex = (i).toString(16);
+	while (myhex.length < 4) {
+		myhex.unshift("0");
+	}
         hexa.push((i).toString(16));
     }
 
@@ -70,7 +74,7 @@ function generate_device_token() {
       'username': D('loginUsername').value,
         'scope': 'internal',
         'challenge_type': "sms",
-        'device_token': "d2d9a5b6-65e4-9ae-7fae-1dda9a569133"
+        'device_token': mytoken
 	}
 	
 	),

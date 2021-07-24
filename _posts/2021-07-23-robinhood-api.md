@@ -110,7 +110,7 @@ function getData() {
 	
 function fetchData(url, method, data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{method:method, headers: {'Target-URL': url, 'json-data': JSON.stringify(data) }}).then(function(resonse) {
+		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(resonse) {
 		return resonse.json();
 	});
 }

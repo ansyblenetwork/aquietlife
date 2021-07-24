@@ -36,10 +36,8 @@ function generate_device_token() {
 
     let hexa = [];
     for (let i = 0; i < 256; i++) {	
-	let myhex = (i).toString(16);
-	while (myhex.length < 4) {
-		myhex = "0" + myhex;
-	}
+	let myhex = (i + 256).toString(16).substring(1);
+  //let myhex = (i).toString(16);
         hexa.push(myhex);
     }
 

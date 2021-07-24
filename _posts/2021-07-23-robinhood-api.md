@@ -46,7 +46,7 @@ var authHeader = {};
 if (typeof(Storage) !== "undefined") {
 	// localStorage.setItem("authString", data.token_type + " " + data.access_token);
 	authHeader = {'Authorization': localStorage.getItem("authString") };
-	if (localStorage.getItem("authString")) show('profileData');
+	if (localStorage.getItem("authString")) D('profileData').style.display = "initial";
 } 	
 	
 function generate_device_token() {

@@ -19,7 +19,7 @@ A Robinhood login via API.
 	</form> 
 	
 	<br><br>
-	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="margin-top:20px; display:none">	
+	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="display:none">	
 		MFA:<br>
 		<input id="loginMFA" type="password" autocomplete="off">		
 		<br><br>

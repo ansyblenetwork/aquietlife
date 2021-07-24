@@ -33,7 +33,7 @@ A Robinhood login via API.
     
 	</form> 
 	
-	
+	<br><br>
 	<button onclick="getData()">Get Data</button>
 
 </div>

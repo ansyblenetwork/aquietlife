@@ -143,7 +143,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'json-data': JSON.stringify({form:form, header:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}),
+     'json-data': JSON.stringify({form:form, header:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){

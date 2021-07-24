@@ -26,6 +26,31 @@ A Robinhood login via API.
 <script>
 	
 	
+function generate_device_token() {
+    let rands = [];
+    for (let i = 0; i < 16; i++) {
+        r = Math.random();
+        rand = 4294967296.0 * r;
+        rands.push((Math.round(rand) >> ((3 & i) << 3)) & 255);
+    }
+
+    let hexa = [];
+    for (let i = 0; i < 256; i++) {		
+        hexa.push((i).toString(16));
+    }
+
+    let id = "";
+    for (let i = 0; i < 16; i++) {
+        id += hexa[rands[i]];
+
+        if ((i == 3) || (i == 5) || (i == 7) || (i == 9))
+            id += "-";
+    }
+   return id;
+}
+
+	
+	
   function submitLoginForm() {
 	
 	console.log(D('loginUsername').value);
@@ -40,10 +65,20 @@ A Robinhood login via API.
       challenge_type: "email",
       client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
       expires_in: 86400,
-      password: D('loginPassword').value,
-      username: D('loginUsername').value,
-      device_token: null
-    }),
+      device_token: generate_device_token()
+    }
+	{
+        'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
+        'expires_in': 86400,
+        'grant_type': 'password',
+      'password': D('loginPassword').value,
+      'username': D('loginUsername').value,
+        'scope': 'internal',
+        'challenge_type': "sms",
+        'device_token': device_token
+	}
+	
+	),
         }}).then(function(response) {
 		return response.text();
     }).then(function(data){console.log(data);});

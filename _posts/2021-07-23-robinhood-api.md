@@ -34,27 +34,6 @@ A Robinhood login via API.
 	</form> 
 	
 	
-	<form id="loginForm2" onsubmit="submitLoginForm2(); return false;">	
-				
-		Username:<br>
-		<input id="loginUsername2" type="text" autocapitalize="off" autocomplete="off">
-		<br><br>
-		Password:<br>
-		<input id="loginPassword2" type="password" autocomplete="off">		
-		<br><br>
-		Token:<br>
-		<input id="token" type="password" autocomplete="off">		
-		<br><br>
-		Token:<br>
-		<input id="token" type="password" autocomplete="off">		
-		<br><br>
-		<div style="text-align:left; padding-left:10px">
-			<button id="smallloginbut" type="submit">Log In</button>
-			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('loginForm').reset()">Cancel</button>
-    		</div>
-    
-	</form> 
-	
 	<button onclick="getData()">Get Data</button>
 
 </div>

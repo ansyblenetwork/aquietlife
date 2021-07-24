@@ -30,9 +30,9 @@ A Robinhood login via API.
 	</form> 
 	
 	<br>
-	<div id="profileData">
-	<button onclick="getData()" style="display:none">Get Data</button>
-	<button onclick="getOptions()" style="display:none">Get Options</button>
+	<div id="profileData" style="display:none">
+	<button onclick="getData()">Get Data</button>
+	<button onclick="getOptions()">Get Options</button>
 	</div>
 
 </div>

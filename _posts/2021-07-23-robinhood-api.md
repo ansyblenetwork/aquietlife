@@ -43,6 +43,10 @@ var currentID;
 var form = {};
 var authData = {};
 var authHeader = {};
+if (typeof(Storage) !== "undefined") {
+	// localStorage.setItem("authString", data.token_type + " " + data.access_token);
+	authHeader = {'Authorization': localStorage.getItem("authString") };
+} 	
 	
 function generate_device_token() {
     let rands = [];
@@ -95,6 +99,11 @@ function submitMFAForm() {
 			show('profileData');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
+	
+			if (typeof(Storage) !== "undefined") {
+				localStorage.setItem("authString", data.token_type + " " + data.access_token);
+				// authHeader = {'Authorization': localStorage.getItem("authString") };
+			} 	
 		});
 	});
 }

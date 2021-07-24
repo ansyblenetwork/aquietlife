@@ -18,7 +18,7 @@ A Robinhood login via API.
     		</div>
 	</form> 
 	
-	<br><br>
+	<br>
 	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="display:none">	
 		MFA:<br>
 		<input id="loginMFA" type="password" autocomplete="off">		
@@ -29,8 +29,8 @@ A Robinhood login via API.
     		</div>
 	</form> 
 	
-	<br><br>
-	<button onclick="getData()">Get Data</button>
+	<br>
+	<button id="profileDataButton" onclick="getData()" style="display:none">Get Data</button>
 
 </div>
 
@@ -82,16 +82,14 @@ function submitLoginForm() {
 	fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form}).then(function(data){
 		show('MFAForm');
 		if (data.challenge) currentID = data.challenge.id;
-		console.log(data);	
 	});
 }
   
 function submitMFAForm() {
 	fetchData('https://api.robinhood.com/challenge/' + currentID + '/respond/', 'POST', { form:{ 'response': D('loginMFA').value }}).then(function(data){
-		console.log(data);
 		fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
 			hide('MFAForm');
-			console.log(data);
+			show('profileDataButton');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
 		});

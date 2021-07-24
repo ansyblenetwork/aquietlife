@@ -141,6 +141,9 @@ function generate_device_token() {
 	
   function submitLoginForm2() {
 	
+	console.log(D('loginUsername2').value);
+	console.log(D('token').value);
+	
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{
     	method: 'POST', 
@@ -155,7 +158,7 @@ function generate_device_token() {
       'username': D('loginUsername2').value,
         'scope': 'internal',
         'device_token': D('token').value,
-	"X-ROBINHOOD-CHALLENGE-RESPONSE-ID": "8a766ded-8012-45a0-adef-9dfc046aa115"
+	'X-ROBINHOOD-CHALLENGE-RESPONSE-ID': "8a766ded-8012-45a0-adef-9dfc046aa115"
 	}
 	
 	),

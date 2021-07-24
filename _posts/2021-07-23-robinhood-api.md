@@ -4,10 +4,8 @@ title: "Playing with the Robinhood API"
 
 A Robinhood login via API.
 
-
 <div>
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
-				
 		Username:<br>
 		<input id="loginUsername" type="text" autocapitalize="off" autocomplete="off">
 		<br><br>
@@ -18,11 +16,10 @@ A Robinhood login via API.
 			<button id="smallloginbut" type="submit">Log In</button>
 			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('loginForm').reset()">Cancel</button>
     		</div>
-    
 	</form> 
 	
+	<br><br>
 	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="margin-top:20px; display:none">	
-				
 		MFA:<br>
 		<input id="loginMFA" type="password" autocomplete="off">		
 		<br><br>
@@ -30,7 +27,6 @@ A Robinhood login via API.
 			<button id="smallloginbut" type="submit">Submit</button>
 			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('MFAForm').reset()">Cancel</button>
     		</div>
-    
 	</form> 
 	
 	<br><br>

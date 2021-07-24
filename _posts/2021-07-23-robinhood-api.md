@@ -36,7 +36,7 @@ A Robinhood login via API.
       client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
       expires_in: 86400,
       password: D('loginPassword'),
-      username: D('loginUsername),
+      username: D('loginUsername'),
       device_token: null
     }),
         }}).then(function(response) {

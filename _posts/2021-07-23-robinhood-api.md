@@ -54,19 +54,14 @@ function generate_device_token() {
   function submitLoginForm() {
 	
 	console.log(D('loginUsername').value);
+	let mytoken = generate_device_token();
+	console.log(mytoken);
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify({
-      grant_type: 'password',
-      scope: 'internal',
-      challenge_type: "email",
-      client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
-      expires_in: 86400,
-      device_token: generate_device_token()
-    }
+     'whole-header': JSON.stringify(
 	{
         'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
         'expires_in': 86400,
@@ -75,7 +70,7 @@ function generate_device_token() {
       'username': D('loginUsername').value,
         'scope': 'internal',
         'challenge_type': "sms",
-        'device_token': device_token
+        'device_token': mytoken
 	}
 	
 	),

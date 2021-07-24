@@ -32,6 +32,25 @@ A Robinhood login via API.
     		</div>
     
 	</form> 
+	
+	
+	<form id="loginForm2" onsubmit="submitLoginForm2(); return false;">	
+				
+		Username:<br>
+		<input id="loginUsername2" type="text" autocapitalize="off" autocomplete="off">
+		<br><br>
+		Password:<br>
+		<input id="loginPassword2" type="password" autocomplete="off">		
+		<br><br>
+		Token:<br>
+		<input id="token" type="password" autocomplete="off">		
+		<br><br>
+		<div style="text-align:left; padding-left:10px">
+			<button id="smallloginbut" type="submit">Log In</button>
+			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('loginForm').reset()">Cancel</button>
+    		</div>
+    
+	</form> 
 
 </div>
 
@@ -114,6 +133,38 @@ function generate_device_token() {
     }).then(function(data){
 	console.log(data);
 	});
+  }
+	
+	
+	
+	
+	
+  function submitLoginForm2() {
+	
+	fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{
+    	method: 'POST', 
+      headers: {
+    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
+     'whole-header': JSON.stringify(
+	{
+        'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
+        'expires_in': 86400,
+        'grant_type': 'password',
+      'password': D('loginPassword2').value,
+      'username': D('loginUsername2').value,
+        'scope': 'internal',
+        'device_token': D('token').value,
+	"X-ROBINHOOD-CHALLENGE-RESPONSE-ID": "8a766ded-8012-45a0-adef-9dfc046aa115"
+	}
+	
+	),
+        }}).then(function(response) {
+		return response.json();
+    }).then(function(data){
+	console.log(data);	
+	});
+  
   }
 	
 </script>

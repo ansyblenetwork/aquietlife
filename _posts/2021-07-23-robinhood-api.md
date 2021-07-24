@@ -132,7 +132,7 @@ function generate_device_token() {
 	hide('MFAForm');
 	console.log(data);
 	authData = data;
-	authHeader = {'Authorization':data.token_type + " " + data.acess_token};
+	authHeader = {'Authorization':data.token_type + " " + data.access_token};
 	});
 	
 	});

@@ -61,7 +61,7 @@ A Robinhood login via API.
 
 var mytoken;
 var currentID;
-var payload = {};
+var form = {};
 	
 function generate_device_token() {
     let rands = [];
@@ -95,7 +95,7 @@ function generate_device_token() {
 	mytoken = generate_device_token();
 	console.log(mytoken);
 	
-	payload = {
+	form = {
         'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
         'expires_in': 86400,
         'grant_type': 'password',
@@ -111,7 +111,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify(payload),
+     'whole-header': JSON.stringify({form:form}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
@@ -130,14 +130,12 @@ function generate_device_token() {
       headers: {
     'Target-URL': 'https://api.robinhood.com/challenge/' + currentID + '/respond/',
      'whole-header': JSON.stringify(
-	{    'response': D('loginMFA').value	}
+	{  form:{  'response': D('loginMFA').value }	}
 	),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
 	console.log(data);
-	
-	payload['X-ROBINHOOD-CHALLENGE-RESPONSE-ID'] = currentID;
 	
 	
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
@@ -145,7 +143,7 @@ function generate_device_token() {
     	method: 'POST', 
       headers: {
     'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify(payload),
+     'whole-header': JSON.stringify({form:form, header:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){

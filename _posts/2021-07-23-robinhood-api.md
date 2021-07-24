@@ -30,7 +30,10 @@ A Robinhood login via API.
 	</form> 
 	
 	<br>
-	<button id="profileDataButton" onclick="getData()" style="display:none">Get Data</button>
+	<div id="profileData">
+	<button onclick="getData()" style="display:none">Get Data</button>
+	<button onclick="getOptions()" style="display:none">Get Options</button>
+	</div>
 
 </div>
 
@@ -89,7 +92,7 @@ function submitMFAForm() {
 	fetchData('https://api.robinhood.com/challenge/' + currentID + '/respond/', 'POST', { form:{ 'response': D('loginMFA').value }}).then(function(data){
 		fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
 			hide('MFAForm');
-			show('profileDataButton');
+			show('profileData');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
 		});
@@ -101,6 +104,12 @@ function getData() {
 		console.log(data);
 	});
 }
+	
+function getOptions() {	
+	fetchData("https://api.robinhood.com/options/positions/", 'GET', {headers:authHeader}).then(function(data){
+		console.log(data);
+	});
+}	
 	
 function fetchData(url, method, data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 

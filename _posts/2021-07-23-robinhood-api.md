@@ -15,9 +15,9 @@ A Robinhood login via API.
 		<input id="loginPassword" type="password" autocomplete="off">		
 		<br><br>
 		<div style="text-align:left; padding-left:10px">
-		<button id="smallloginbut" type="submit">Log In</button>
-		<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="wipeForms()">Cancel</button>
-    </div>
+			<button id="smallloginbut" type="submit">Log In</button>
+			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="wipeForms()">Cancel</button>
+    		</div>
     
 	</form> 
 

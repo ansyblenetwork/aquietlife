@@ -24,7 +24,8 @@ A Robinhood login via API.
 </div>
 
 <script>
-	
+
+var mytoken;
 	
 function generate_device_token() {
     let rands = [];
@@ -52,11 +53,10 @@ function generate_device_token() {
 }
 
 	
-	
   function submitLoginForm() {
 	
 	console.log(D('loginUsername').value);
-	let mytoken = generate_device_token();
+	mytoken = generate_device_token();
 	console.log(mytoken);
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{

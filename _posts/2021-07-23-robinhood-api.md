@@ -70,7 +70,7 @@ function generate_device_token() {
       'username': D('loginUsername').value,
         'scope': 'internal',
         'challenge_type': "sms",
-        'device_token': mytoken
+        'device_token': "d2d9a5b6-65e4-9ae-7fae-1dda9a569133"
 	}
 	
 	),

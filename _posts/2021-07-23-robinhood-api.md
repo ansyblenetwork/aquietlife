@@ -107,7 +107,7 @@ function getData() {
 	
 	
 function getOptions() {	
-	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader, qs: { nonzero: true } }).then(function(data){
+	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data){
 		console.log(data);
 	});
 }	

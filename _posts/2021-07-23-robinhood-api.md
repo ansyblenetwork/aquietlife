@@ -39,7 +39,7 @@ function generate_device_token() {
 	let myhex = (i).toString(16);
 	while (myhex.length < 4) {
 		console.log(myhex);
-		myhex.unshift("0");
+		myhex = "0" + myhex;
 	}
         hexa.push((i).toString(16));
     }

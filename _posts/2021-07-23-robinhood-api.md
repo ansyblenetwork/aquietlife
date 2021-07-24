@@ -40,7 +40,7 @@ function generate_device_token() {
 	while (myhex.length < 4) {
 		myhex = "0" + myhex;
 	}
-        hexa.push((i).toString(16));
+        hexa.push(myhex);
     }
 
     let id = "";

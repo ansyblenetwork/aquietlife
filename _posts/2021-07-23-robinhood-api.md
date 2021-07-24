@@ -16,7 +16,19 @@ A Robinhood login via API.
 		<br><br>
 		<div style="text-align:left; padding-left:10px">
 			<button id="smallloginbut" type="submit">Log In</button>
-			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="wipeForms()">Cancel</button>
+			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('loginForm').reset()">Cancel</button>
+    		</div>
+    
+	</form> 
+	
+	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="display:none">	
+				
+		MFA:<br>
+		<input id="loginMFA" type="password" autocomplete="off">		
+		<br><br>
+		<div style="text-align:left; padding-left:10px">
+			<button id="smallloginbut" type="submit">Log In</button>
+			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('MFAForm').reset()">Cancel</button>
     		</div>
     
 	</form> 
@@ -26,6 +38,7 @@ A Robinhood login via API.
 <script>
 
 var mytoken;
+var currentID;
 	
 function generate_device_token() {
     let rands = [];
@@ -77,9 +90,30 @@ function generate_device_token() {
 	
 	),
         }}).then(function(response) {
-		return response.text();
-    }).then(function(data){console.log(data);});
+		return response.json();
+    }).then(function(data){
+	show('MFAForm');
+	currentID = data.challenge.id;
+	console.log(data);
+	
+	});
   
   }
   
+  function submitMFAForm() {
+	fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{
+    	method: 'POST', 
+      headers: {
+    'Target-URL': 'https://api.robinhood.com/challenge/' + currentID + '/respond/',
+     'whole-header': JSON.stringify(
+	{    'response': D('loginMFA').value	}
+	),
+        }}).then(function(response) {
+		return response.json();
+    }).then(function(data){
+	console.log(data);
+	});
+  }
+	
 </script>

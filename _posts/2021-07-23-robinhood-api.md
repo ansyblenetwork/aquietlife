@@ -8,10 +8,10 @@ A Robinhood login via API.
 <div>
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
 				
-		Username:
+		Username:<br>
 		<input id="loginUsername" type="text" autocapitalize="off" autocomplete="off">
 		<br><br>
-		Password:
+		Password:<br>
 		<input id="loginPassword" type="password" autocomplete="off">		
 		<br><br>
 		<div style="text-align:left; padding-left:10px">
@@ -24,6 +24,9 @@ A Robinhood login via API.
 </div>
 
 <script>
+	
+function D(string) { return document.getElementById(string);}
+	
   function submitLoginForm() {
 	
 	console.log(D('loginUsername'));

@@ -6,7 +6,7 @@ A Robinhood login via API.
 
 
 <div>
-	<form id="loginForm" onsubmit="submitLoginForm(); return false;" style="display: none">	
+	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
 				
 		<h3>Username:</h3>
 		<input id="loginUsername" type="text" autocapitalize="off" autocomplete="off">

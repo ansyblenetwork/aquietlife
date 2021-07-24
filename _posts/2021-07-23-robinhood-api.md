@@ -73,9 +73,7 @@ function generate_device_token() {
 	
   function submitLoginForm() {
 	
-	console.log(D('loginUsername').value);
 	let mytoken = generate_device_token();
-	console.log(mytoken);
 	
 	form = {
         'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
@@ -138,22 +136,18 @@ function generate_device_token() {
 	});
   }
 
-function getData() {
-	
-	
-	fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{
-    	method: 'GET', 
-      headers: {
-    'Target-URL': "https://api.robinhood.com/accounts/",
-     'json-data': JSON.stringify({headers:authHeader}),
-        }}).then(function(response) {
-		return response.json();
-    }).then(function(data){
-	console.log(data);
-	
+function getData() {	
+	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data){
+		console.log(data);
 	});
+}
 	
-	}
+function fetchData(url, method, data) {
+	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{method:method, headers: {'Target-URL': url, 'json-data': JSON.stringify(data) }}).then(function(resonse) {
+		return resonse.json();
+	});
+}
+	
 	
 </script>

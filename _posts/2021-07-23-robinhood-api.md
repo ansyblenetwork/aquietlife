@@ -43,6 +43,10 @@ var currentID;
 var form = {};
 var authData = {};
 var authHeader = {};
+	
+function D(str) {
+	return document.getElementById(str);
+}
 if (typeof(Storage) !== "undefined") {
 	// localStorage.setItem("authString", data.token_type + " " + data.access_token);
 	authHeader = {'Authorization': localStorage.getItem("authString") };

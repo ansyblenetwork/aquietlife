@@ -45,6 +45,9 @@ A Robinhood login via API.
 		Token:<br>
 		<input id="token" type="password" autocomplete="off">		
 		<br><br>
+		Token:<br>
+		<input id="token" type="password" autocomplete="off">		
+		<br><br>
 		<div style="text-align:left; padding-left:10px">
 			<button id="smallloginbut" type="submit">Log In</button>
 			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('loginForm').reset()">Cancel</button>
@@ -58,6 +61,7 @@ A Robinhood login via API.
 
 var mytoken;
 var currentID;
+var payload = {};
 	
 function generate_device_token() {
     let rands = [];
@@ -90,13 +94,8 @@ function generate_device_token() {
 	console.log(D('loginUsername').value);
 	mytoken = generate_device_token();
 	console.log(mytoken);
-	fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{
-    	method: 'POST', 
-      headers: {
-    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'whole-header': JSON.stringify(
-	{
+	
+	payload = {
         'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
         'expires_in': 86400,
         'grant_type': 'password',
@@ -105,9 +104,14 @@ function generate_device_token() {
         'scope': 'internal',
         'challenge_type': "sms",
         'device_token': mytoken
-	}
+	};
 	
-	),
+	fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{
+    	method: 'POST', 
+      headers: {
+    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
+     'whole-header': JSON.stringify(payload),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
@@ -132,6 +136,23 @@ function generate_device_token() {
 		return response.json();
     }).then(function(data){
 	console.log(data);
+	
+	payload.X-ROBINHOOD-CHALLENGE-RESPONSE-ID = currentID;
+	
+	
+	fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{
+    	method: 'POST', 
+      headers: {
+    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
+     'whole-header': JSON.stringify(payload),
+        }}).then(function(response) {
+		return response.json();
+    }).then(function(data){
+	hide('MFAForm');
+	console.log(data);
+	});
+	
 	});
   }
 	

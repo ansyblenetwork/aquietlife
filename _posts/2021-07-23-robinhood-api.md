@@ -37,6 +37,7 @@ A Robinhood login via API.
      'whole-header': JSON.stringify({
       grant_type: 'password',
       scope: 'internal',
+      challenge_type: "email",
       client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
       expires_in: 86400,
       password: D('loginPassword').value,

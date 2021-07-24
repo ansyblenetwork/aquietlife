@@ -25,11 +25,10 @@ A Robinhood login via API.
 
 <script>
 	
-function D(string) { return document.getElementById(string);}
 	
   function submitLoginForm() {
 	
-	console.log(D('loginUsername'));
+	console.log(D('loginUsername').value);
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{
     	method: 'POST', 
@@ -40,8 +39,8 @@ function D(string) { return document.getElementById(string);}
       scope: 'internal',
       client_id: 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
       expires_in: 86400,
-      password: D('loginPassword'),
-      username: D('loginUsername'),
+      password: D('loginPassword').value,
+      username: D('loginUsername').value,
       device_token: null
     }),
         }}).then(function(response) {

@@ -21,13 +21,13 @@ A Robinhood login via API.
     
 	</form> 
 	
-	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="display:none">	
+	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="margin-top:20px; display:none">	
 				
 		MFA:<br>
 		<input id="loginMFA" type="password" autocomplete="off">		
 		<br><br>
 		<div style="text-align:left; padding-left:10px">
-			<button id="smallloginbut" type="submit">Log In</button>
+			<button id="smallloginbut" type="submit">Submit</button>
 			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('MFAForm').reset()">Cancel</button>
     		</div>
     

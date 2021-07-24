@@ -54,14 +54,17 @@ A Robinhood login via API.
     		</div>
     
 	</form> 
+	
+	<button onclick="getData()">Get Data</button>
 
 </div>
 
-<script>
+<script>/////////////////////////////////////////////////////////
 
-var mytoken;
 var currentID;
 var form = {};
+var authData = {};
+var authHeader = {};
 	
 function generate_device_token() {
     let rands = [];
@@ -92,7 +95,7 @@ function generate_device_token() {
   function submitLoginForm() {
 	
 	console.log(D('loginUsername').value);
-	mytoken = generate_device_token();
+	let mytoken = generate_device_token();
 	console.log(mytoken);
 	
 	form = {
@@ -149,45 +152,29 @@ function generate_device_token() {
     }).then(function(data){
 	hide('MFAForm');
 	console.log(data);
+	authData = data;
+	authHeader = {'Authorization':data.token_type + " " + data.acess_token};
 	});
 	
 	});
   }
+
+function getData() {
 	
-	
-	
-	
-	
-  function submitLoginForm2() {
-	
-	console.log(D('loginUsername2').value);
-	console.log(D('token').value);
 	
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{
-    	method: 'POST', 
+    	method: 'GET', 
       headers: {
-    'Target-URL': "https://api.robinhood.com/oauth2/token/",    
-     'json-data': JSON.stringify(
-	{
-        'client_id': 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS',
-        'expires_in': 86400,
-        'grant_type': 'password',
-      'password': D('loginPassword2').value,
-      'username': D('loginUsername2').value,
-        'scope': 'internal',
-        'challenge_type': "sms",
-        'device_token': D('token').value,
-	'X-ROBINHOOD-CHALLENGE-RESPONSE-ID': "8a766ded-8012-45a0-adef-9dfc046aa115"
-	}
-	
-	),
+    'Target-URL': "https://api.robinhood.com/accounts/",
+     'json-data': JSON.stringify({headers:authData}),
         }}).then(function(response) {
 		return response.json();
     }).then(function(data){
-	console.log(data);	
+	console.log(data);
+	
 	});
-  
-  }
+	
+	}
 	
 </script>

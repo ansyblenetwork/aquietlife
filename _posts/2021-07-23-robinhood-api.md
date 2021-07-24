@@ -25,6 +25,8 @@ A Robinhood login via API.
 
 <script>
   function submitLoginForm() {
+	
+	console.log(D('loginUsername'));
 	fetch("https://sandboxansyble.herokuapp.com/cors/", 
 		{
     	method: 'POST', 

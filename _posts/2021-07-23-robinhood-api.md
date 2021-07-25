@@ -128,7 +128,7 @@ function getOptions() {
 		console.log(data);
 		accountOptions = data.results;
 		for (let i = 0; i < accountOptions.length; i++) {
-			fetchData(account[i].option, 'GET').then(function(optionData) {
+			fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 				accountOptionsData[i] = optionData;  
 			});
 		}

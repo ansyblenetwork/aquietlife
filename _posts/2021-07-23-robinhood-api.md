@@ -45,7 +45,6 @@ var authData = {};
 var authHeader = {};
 	
 var accountOptions = [];
-var accountOptionsData = [];
 var optionsBySymbol = {};
 	
 function D(str) {
@@ -133,11 +132,12 @@ function getOptions() {
 		optionsBySymbol = {};
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
-				optionsBySymbol[accountOptions[i].chain_symbol] = {shortPuts:[],shortCalls:[],longPuts:[],longCalls:[]};	
+				optionsBySymbol[accountOptions[i].chain_symbol] = {short:[], long:[]};	
 							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
-					accountOptionsData[i] = optionData;  
+					if (accountOptions[i].type == "short") optionsBySymbol[optionData.chain_symbol].short.push(optionData);
+					if (accountOptions[i].type == "long") optionsBySymbol[optionData.chain_symbol].long.push(optionData);
 				})
 			);
 			Promise.all(promises).then(function() {

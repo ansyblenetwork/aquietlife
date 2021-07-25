@@ -136,8 +136,11 @@ function getOptions() {
 							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
-					if (accountOptions[i].type == "short") optionsBySymbol[optionData.chain_symbol].short.push(optionData);
-					if (accountOptions[i].type == "long") optionsBySymbol[optionData.chain_symbol].long.push(optionData);
+					let quantity = parseInt(accountOptions[i].quantity);
+					for(let j = 0; j < quantity; j++) {
+						if (accountOptions[i].type == "short") optionsBySymbol[optionData.chain_symbol].short.push(optionData);
+						if (accountOptions[i].type == "long") optionsBySymbol[optionData.chain_symbol].long.push(optionData);
+					}
 				})
 			);
 			Promise.all(promises).then(function() {

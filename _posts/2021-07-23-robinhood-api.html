@@ -153,12 +153,41 @@ function getOptions() {
 					}
 				})
 			);
-			Promise.all(promises).then(function() {
-				// something here
-			});
 		}
+		Promise.all(promises).then(function() {
+			for (let symbol in optionsBySymbol) {
+				optionsBySymbol[symbol].shortPut.sort(function(a, b) {
+					return (a.expiration_date < b.expiration_date) ? -1 : ((a.expiration_date > b.expiration_date) ? 1 : 0);
+				});
+				optionsBySymbol[symbol].longPut.sort(function(a, b) {
+					return parseFloat(a.strike_price) - parseFloat(b.strike_price);
+				});
+				optionsBySymbol[symbol].shortCall.sort(function(a, b) {
+					return (a.expiration_date < b.expiration_date) ? -1 : ((a.expiration_date > b.expiration_date) ? 1 : 0);
+				});
+				optionsBySymbol[symbol].longCall.sort(function(a, b) {
+					return parseFloat(a.strike_price) - parseFloat(b.strike_price);
+				});
+			}
+		});
 	});
 }	
+	
+function getDateArray(options) {
+	let arr = [];
+	options.shortCall.forEach(function(op) {
+		if (!arr.includes(op.expiration_date)) arr.push op.expiration_date;
+	});
+	options.shortPut.forEach(function(op) {
+		if (!arr.includes(op.expiration_date)) arr.push op.expiration_date;
+	});
+	
+	arr.sort(function(a, b) {
+	    return (a < b) ? -1 : ((a > b) ? 1 : 0);
+	});
+	
+	return arr;
+}
 	
 function fetchData(url, method, data) {
 	if (data) {

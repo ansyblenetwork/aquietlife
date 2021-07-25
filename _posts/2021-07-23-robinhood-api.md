@@ -132,14 +132,24 @@ function getOptions() {
 		optionsBySymbol = {};
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
-				optionsBySymbol[accountOptions[i].chain_symbol] = {short:[], long:[]};	
+				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], longCall:[], longPut:[]};	
 							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 					let quantity = parseInt(accountOptions[i].quantity);
 					for(let j = 0; j < quantity; j++) {
-						if (accountOptions[i].type == "short") optionsBySymbol[optionData.chain_symbol].short.push(optionData);
-						if (accountOptions[i].type == "long") optionsBySymbol[optionData.chain_symbol].long.push(optionData);
+						if (accountOptions[i].type == "short") {
+							if (optionData.type == "call")
+							optionsBySymbol[optionData.chain_symbol].shortCall.push(optionData);
+							else 
+							optionsBySymbol[optionData.chain_symbol].shortPut.push(optionData);
+						}
+						if (accountOptions[i].type == "long") {
+							if (optionData.type == "call")
+							optionsBySymbol[optionData.chain_symbol].longCall.push(optionData);
+							else 
+							optionsBySymbol[optionData.chain_symbol].longPut.push(optionData);
+						}
 					}
 				})
 			);

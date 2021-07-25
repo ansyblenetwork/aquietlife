@@ -46,6 +46,7 @@ var authHeader = {};
 	
 var accountOptions = [];
 var accountOptionsData = [];
+var optionsBySymbol = {};
 	
 function D(str) {
 	return document.getElementById(str);
@@ -127,10 +128,19 @@ function getOptions() {
 	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data){
 		console.log(data);
 		accountOptions = data.results;
-		for (let i = 0; i < accountOptions.length; i++) {
+	
+		let promises = [];
+		optionsBySymbol = {};
+		for (let i = 0; i < accountOptions.length; i++) {			
+			optionsBySymbol[accountOptions[i].chain_symbol] = {shortPuts:[],shortCalls:[],longPuts:[],longCalls[]};	
+			promises.push(
 			fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 				accountOptionsData[i] = optionData;  
-			});
+			})
+			 );
+			Promise.all(promises).then(function() {
+			  // something here
+			  });
 		}
 	});
 }	

@@ -44,6 +44,9 @@ var form = {};
 var authData = {};
 var authHeader = {};
 	
+var accountOptions = [];
+var accountOptionsData = [];
+	
 function D(str) {
 	return document.getElementById(str);
 }
@@ -123,6 +126,12 @@ function getData() {
 function getOptions() {	
 	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data){
 		console.log(data);
+		accountOptions = data.results;
+		for (let i = 0; i < accountOptions.length; i++) {
+			fetchData(account[i].option, 'GET').then(function(optionData) {
+				accountOptionsData[i] = optionData;  
+			});
+		}
 	});
 }	
 	

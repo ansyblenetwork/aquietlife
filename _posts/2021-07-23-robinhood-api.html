@@ -46,6 +46,8 @@ var authHeader = {};
 	
 var accountOptions = [];
 var optionsBySymbol = {};
+var putCollateralPerDate = {};
+var callCollateralPerDate = {};
 	
 function D(str) {
 	return document.getElementById(str);
@@ -130,9 +132,13 @@ function getOptions() {
 	
 		let promises = [];
 		optionsBySymbol = {};
+		putCollateralPerDate = {};
+		callCollateralPerDate = {};
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], longCall:[], longPut:[]};	
+				putCollateralPerDate[accountOptions[i].chain_symbol] = {};
+				callCollateralPerDate[accountOptions[i].chain_symbol] = {};
 							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
@@ -156,6 +162,9 @@ function getOptions() {
 		}
 		Promise.all(promises).then(function() {
 			for (let symbol in optionsBySymbol) {
+				putCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
+				callCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
+				
 				optionsBySymbol[symbol].shortPut.sort(function(a, b) {
 					return (a.expiration_date < b.expiration_date) ? -1 : ((a.expiration_date > b.expiration_date) ? 1 : 0);
 				});
@@ -173,19 +182,14 @@ function getOptions() {
 	});
 }	
 	
-function getDateArray(options) {
-	let arr = [];
+function getDateSet(options) {
+	let arr = {};
 	options.shortCall.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push op.expiration_date;
+		if (!arr.includes(op.expiration_date)) arr[op.expiration_date] = 0;
 	});
 	options.shortPut.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push op.expiration_date;
+		if (!arr.includes(op.expiration_date)) arr[op.expiration_date] = 0;
 	});
-	
-	arr.sort(function(a, b) {
-	    return (a < b) ? -1 : ((a > b) ? 1 : 0);
-	});
-	
 	return arr;
 }
 	

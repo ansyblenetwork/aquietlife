@@ -132,7 +132,9 @@ function getOptions() {
 		let promises = [];
 		optionsBySymbol = {};
 		for (let i = 0; i < accountOptions.length; i++) {			
-			optionsBySymbol[accountOptions[i]["chain_symbol"]] = {shortPuts:[],shortCalls:[],longPuts:[],longCalls[]};	
+			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
+				optionsBySymbol[accountOptions[i].chain_symbol] = {shortPuts:[],shortCalls:[],longPuts:[],longCalls:[]};	
+							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 					accountOptionsData[i] = optionData;  

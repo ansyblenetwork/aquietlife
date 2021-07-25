@@ -136,10 +136,17 @@ function getOptions() {
 }	
 	
 function fetchData(url, method, data) {
+	if (data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(resonse) {
-		return resonse.json();
+		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(response) {
+		return response.json();
 	});
+	} else {
+	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{headers: {method: method, url: url }}).then(function(response) {
+		return response.json();
+	});						  
+	}
 }
 	
 

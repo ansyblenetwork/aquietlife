@@ -18,7 +18,7 @@ A Robinhood login via API.
     		</div>
 	</form> 
 	
-	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="margin-top:20px; display:none">	
+	<form id="MFAForm" onsubmit="submitMFAForm(); return false;" style="padding-top:20px; display:none">	
 		MFA:<br>
 		<input id="loginMFA" type="password" autocomplete="off">		
 		<br><br>
@@ -28,11 +28,11 @@ A Robinhood login via API.
     		</div>
 	</form> 
 	
-	<div id="profileData" style="display:none; margin-top:20px;">
+	<div id="profileData" style="display:none; padding-top:20px;">
 		<button onclick="getData()">Get Data</button>
 		<button onclick="getOptions()">Get Options</button>
-		<div id="cash" style="margin-top:20px">Cash available: </div>
-		<div style="margin-top:20px">Unpaired collateral:
+		<div id="cash" style="padding-top:20px">Cash available: </div>
+		<div style="padding-top:20px">Unpaired collateral:
 		<ul id="unpaired"></ul>
 		</div>
 	</div>

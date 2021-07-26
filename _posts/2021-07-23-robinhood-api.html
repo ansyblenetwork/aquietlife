@@ -213,7 +213,8 @@ function pair(data) {
 		let collateral = Infinity;
 		let bestJob = null;
 		for (let j = 0; j < data.shortCall.length; j++) {
-			if (defCall.expire >= data.shortCall[j].expire && callGain(defCall, data.shortCall[j]) > maxGain) {
+			if (defCall.expire >= data.shortCall[j].expire 
+			    && (callGain(defCall, data.shortCall[j]) > maxGain || (maxGain == Infinity && callCollateral(defCall, data.shortCall[j]) < collateral ))) {
 				maxGain = callGain(defCall, data.shortCall[j]);
 				collateral = callCollateral(defCall, data.shortCall[j]);
 				bestJob = data.shortCall[j];

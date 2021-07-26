@@ -216,6 +216,10 @@ function condor(data) {
 		if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 		else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		}
+		else {
+			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
+			else putExpireTypes[contract.expire][contract.strike] += contract.strike;
+		}
 	});
 	
 	

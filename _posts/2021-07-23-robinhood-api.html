@@ -214,6 +214,24 @@ function condor(data) {
 		else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 	});
 	
+	
+	
+	let totalPuts = 0;
+	let totalCalls = 0;
+	for (let expiration in putExpireTypes) {
+		for (let strike in putExpireTypes[expiration]) {
+			totalPuts += putExpireTypes[expiration][strike];
+		}
+		
+		for (let callStrike in callExpireTypes[expiration]) {
+			totalCalls += callExpireTypes[expiration][callStrike];
+		}
+	}
+	
+	console.log("total puts before: " + totalPuts);
+	console.log("total calls before: " + totalCalls);
+	
+	
 	let totalSaved = 0;
 	for (let expiration in putExpireTypes) {
 		for (let strike in putExpireTypes[expiration]) {
@@ -236,8 +254,8 @@ function condor(data) {
 	}
 	console.log("Total saved: " + totalSaved);
 	
-	let totalPuts = 0;
-	let totalCalls = 0;
+	totalPuts = 0;
+	totalCalls = 0;
 	for (let expiration in putExpireTypes) {
 		for (let strike in putExpireTypes[expiration]) {
 			totalPuts += putExpireTypes[expiration][strike];

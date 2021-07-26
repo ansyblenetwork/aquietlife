@@ -212,7 +212,7 @@ function pair() {
 			let maxGain;
 			let bestJob = null;
 			for (let j = 0; j < data.shortCall.length; j++) {
-				if (defCall.expire >= data.shortCall[j].expire && ((!maxGain) || callGain(defCall, data.shortCall[j]) > maxGain)) {
+				if (defCall.expire >= data.shortCall[j].expire && (!maxGain || callGain(defCall, data.shortCall[j]) > maxGain)) {
 					maxGain = callGain(defCall, data.shortCall[j]);
 					bestJob = data.shortCall[j];
 				}

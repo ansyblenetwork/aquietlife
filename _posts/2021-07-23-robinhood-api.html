@@ -317,6 +317,7 @@ function pair(data) {
 				collateral = callCollateral(defCall, data.shortCall[j]);
 				bestJob = data.shortCall[j];
 				if (callGain(defCall, data.shortCall[j]) == Infinity) break;
+				if (bestJob.friend) break;
 			}
 		}
 		if (bestJob) {
@@ -348,6 +349,7 @@ function pair(data) {
 			if (defPut.expire >= data.shortPut[j].expire && putGain(defPut, data.shortPut[j]) > maxGain) {
 				maxGain = putGain(defPut, data.shortPut[j]);
 				bestJob = data.shortPut[j];
+				if (bestJob.friend) break;
 			}
 		}
 		if (bestJob) {

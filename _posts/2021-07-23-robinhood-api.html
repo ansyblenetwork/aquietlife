@@ -33,7 +33,7 @@ A Robinhood login via API.
 		<button onclick="getData()">Get Data</button>
 		<button onclick="getOptions()">Get Options</button>
 		<div id="cash" style="padding-top:20px">Cash available: </div>
-		<div style="padding-top:20px">Unpaired collateral:
+		<div style="padding-top:20px">Free collateral:
 		<ul id="unpaired"></ul>
 		</div>
 	</div>
@@ -335,8 +335,10 @@ function condor(data, symbol) {
 		}
 		
 		if (totalPuts > 0) {
-			let li = make('li');
-			li.textContent = symbol + " free call collateral: $" + totalPuts + " at " + expiration;
+			let li = make('li');			
+			addCol("Call", "100px", li);
+			addCol(expiration, "150px", li);
+			addCol(totalPuts, "100px", li);
 			D('unpaired').appendChild(li);
 		}
 		
@@ -347,11 +349,23 @@ function condor(data, symbol) {
 		
 		if (totalCalls > 0) {
 			let li = make('li');
-			li.textContent = symbol + " free put collateral: $" + totalCalls + " at " + expiration;
+			addCol("Put", "100px", li);
+			addCol(expiration, "150px", li);
+			addCol(totalCalls, "100px", li);
 			D('unpaired').appendChild(li);
 		}
 	}
 }
+	
+function addCol(text, width, li) {								       
+	let col = make('span');
+	col.style.width = width;
+	col.style.display = "inline-block";
+	col.style.textAlign = "center";
+	col.textContent = text;
+	li.appendChild(col);  
+	return col;
+}		
 	
 
 </script>

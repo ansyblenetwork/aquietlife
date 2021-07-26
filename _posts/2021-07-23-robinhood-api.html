@@ -217,8 +217,11 @@ function pair() {
 				let orphan = bestJob.friend;
 				bestJob.friend = defPut;
 				defPut.friend = bestJob;
+				
+				if (!bestJob.release) bestJob.release = 0;
 				bestJob.release += maxGain;
 				defPut.release = bestJob.release;
+				
 				if (orphan) findPutJob(orphan);
 			}	
 			

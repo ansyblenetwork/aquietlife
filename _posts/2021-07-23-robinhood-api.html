@@ -234,18 +234,22 @@ function condor(data) {
 			}
 		}
 	}
+	console.log("Total saved: " + totalSaved);
 	
+	let totalPuts = 0;
+	let totalCalls = 0;
 	for (let expiration in putExpireTypes) {
 		for (let strike in putExpireTypes[expiration]) {
-			totalSaved += putExpireTypes[expiration][strike];
+			totalPuts += putExpireTypes[expiration][strike];
 		}
 		
 		for (let callStrike in callExpireTypes[expiration]) {
-			totalSaved == callExpireTypes[expiration][callStrike];
+			totalCalls += callExpireTypes[expiration][callStrike];
 		}
 	}
 	
-	console.log("collateral: " + totalSaved);
+	console.log("total puts: " + totalPuts);
+	console.log("total calls: " + totalCalls);
 }
 	
 	

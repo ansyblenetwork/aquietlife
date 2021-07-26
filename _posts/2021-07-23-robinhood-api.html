@@ -308,15 +308,15 @@ function pair(data) {
 
 	function findCallJob(defCall) {	
 		let maxGain = 0;
-		let collateral = -1;
+		let collateral = Infinity;
 		let bestJob = null;
 		for (let j = 0; j < data.shortCall.length; j++) {
 			if (defCall.expire >= data.shortCall[j].expire 
-			    && (callGain(defCall, data.shortCall[j]) == -1 || callGain(defCall, data.shortCall[j]) > maxGain)) {
+			    && (callGain(defCall, data.shortCall[j]) > maxGain)) {
 				maxGain = callGain(defCall, data.shortCall[j]);
 				collateral = callCollateral(defCall, data.shortCall[j]);
 				bestJob = data.shortCall[j];
-				if (callGain(defCall, data.shortCall[j]) == -1) break;
+				if (callGain(defCall, data.shortCall[j]) == Infinity) break;
 			}
 		}
 		if (bestJob) {
@@ -336,7 +336,7 @@ function pair(data) {
 		}
 
 		function callGain(defCall, shortCall) {
-			if (!shortCall.friend) return -1;
+			if (!shortCall.friend) return Infinity;
 			return shortCall.collateral - callCollateral(defCall, shortCall);
 		}
 	}

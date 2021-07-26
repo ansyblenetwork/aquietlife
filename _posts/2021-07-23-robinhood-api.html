@@ -144,17 +144,14 @@ function getOptions() {
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 					let quantity = parseInt(accountOptions[i].quantity);
 					for(let j = 0; j < quantity; j++) {
+						let dat = {expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 						if (accountOptions[i].type == "short") {
-							if (optionData.type == "call")
-							optionsBySymbol[optionData.chain_symbol].shortCall.push(optionData);
-							else 
-							optionsBySymbol[optionData.chain_symbol].shortPut.push(optionData);
+							if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
+							else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
 						}
 						if (accountOptions[i].type == "long") {
-							if (optionData.type == "call")
-							optionsBySymbol[optionData.chain_symbol].longCall.push(optionData);
-							else 
-							optionsBySymbol[optionData.chain_symbol].longPut.push(optionData);
+							if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].longCall.push(dat);
+							else optionsBySymbol[optionData.chain_symbol].longPut.push(dat);
 						}
 					}
 				})
@@ -166,16 +163,32 @@ function getOptions() {
 				callCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
 				
 				optionsBySymbol[symbol].shortPut.sort(function(a, b) {
-					return (a.expiration_date < b.expiration_date) ? -1 : ((a.expiration_date > b.expiration_date) ? 1 : 0);
+					if (a.expire < b.expire) return 1;
+					else if (a.expire < b.expire) return -1;
+					else if (a.strike > b.strike) return 1;
+					else if (a.strike < b.strike) return -1;
+					else return 0;					
 				});
 				optionsBySymbol[symbol].longPut.sort(function(a, b) {
-					return parseFloat(a.strike_price) - parseFloat(b.strike_price);
+					if (a.expire > b.expire) return 1;
+					else if (a.expire < b.expire) return -1;
+					else if (a.strike > b.strike) return 1;
+					else if (a.strike < b.strike) return -1;
+					else return 0;					
 				});
 				optionsBySymbol[symbol].shortCall.sort(function(a, b) {
-					return (a.expiration_date < b.expiration_date) ? -1 : ((a.expiration_date > b.expiration_date) ? 1 : 0);
+					if (a.expire < b.expire) return 1;
+					else if (a.expire > b.expire) return -1;
+					else if (a.strike < b.strike) return 1;
+					else if (a.strike > b.strike) return -1;
+					else return 0;					
 				});
 				optionsBySymbol[symbol].longCall.sort(function(a, b) {
-					return parseFloat(a.strike_price) - parseFloat(b.strike_price);
+					if (a.expire > b.expire) return 1;
+					else if (a.expire < b.expire) return -1;
+					eles if (a.strike < b.strike) return 1;
+					else if (a.strike > b.strike) return -1;
+					else return 0;					
 				});
 			}
 		});

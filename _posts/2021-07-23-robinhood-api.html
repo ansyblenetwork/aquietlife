@@ -192,10 +192,74 @@ function getOptions() {
 				});
 				
 				pair(optionsBySymbol[symbol]);
+				console.log("Computing for " + symbol);
+				condor(optionsBySymbol[symbol]);
 			}
 		});
 	});
 }	
+	
+function condor(data) {
+	let callExpireTypes = {};
+	data.shortCall.forEach(function(contract) {
+		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
+		else if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
+		else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
+	});
+	
+	let putExpireTypes = {};
+	data.shortPut.forEach(function(contract) {
+		if (!putExpireTypes[contract.expire]) putExpireTypes[contract.expire] = {};
+		else if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
+		else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
+	});
+	
+	let totalSaved = 0;
+	for (let expiration in putExpireTypes) {
+		for (let strike in putExpireTypes[expiration]) {
+			for (let callStrike in callExpireTypes[expiration]) {
+				if (parseInt(callStrike) > parseInt(strike)) {
+					if (callExpireTypes[expiration][callStrike] <= putExpireTypes[expiration][strike]) {
+						putExpireTypes[expiration][strike] -= callExpireTypes[expiration][callStrike];						
+						totalSaved += callExpireTypes[expiration][callStrike];
+						callExpireTypes[expiration][callStrike] = 0;
+					}
+					else {
+						callExpireTypes[expiration][callStrike] -= putExpireTypes[expiration][strike];
+						totalSaved += putExpireTypes[expiration][strike];
+						putExpireTypes[expiration][strike] = 0;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	for (let expiration in putExpireTypes) {
+		for (let strike in putExpireTypes[expiration]) {
+			totalSaved += putExpireTypes[expiration][strike];
+		}
+		
+		for (let callStrike in callExpireTypes[expiration]) {
+			totalSaved == callExpireTypes[expiration][callStrike];
+		}
+	}
+	
+	console.log("collateral: " + totalSaved);
+}
+	
+	
+	
+function getDateSet(options) {
+	let arr = [];
+	options.shortCall.forEach(function(op) {
+		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
+	});
+	options.shortPut.forEach(function(op) {
+		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
+	});
+	return arr;
+}
 
 
 function pair(data) {
@@ -258,6 +322,7 @@ function pair(data) {
 
 			if (!bestJob.release) bestJob.release = 0;
 			bestJob.release += maxGain;
+			bestJob.collateral = bestJob.strike - bestJob.release;
 			defPut.release = bestJob.release;
 
 			if (orphan) findPutJob(orphan);
@@ -274,17 +339,6 @@ function pair(data) {
 }
 	
 	
-	
-function getDateSet(options) {
-	let arr = [];
-	options.shortCall.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
-	});
-	options.shortPut.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
-	});
-	return arr;
-}
 	
 function fetchData(url, method, data) {
 	if (data) {

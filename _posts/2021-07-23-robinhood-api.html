@@ -204,6 +204,40 @@ function pair() {
 			findPutJob(data.defPut[i]);
 		}
 		
+		for (let i = 0; i < data.defCall.length; i++) {
+			findCallJob(data.defCall[i]);
+		}
+		
+		
+		function findCallJob(defCall) {	
+			let maxGain = 0;
+			let bestJob = null;
+			for (let j = 0; j < data.shortCall.length; j++) {
+				if (defCall.expire >= data.shortCall[j].expire && callGain(defCall, data.shortCall[j]) > maxGain) {
+					maxGain = callGain(defCall, data.shortCall[j]);
+					bestJob = data.shortCall[j];
+				}
+			}
+			if (bestJob) {
+				let orphan = bestJob.friend;
+				bestJob.friend = defCall;
+				defCall.friend = bestJob;
+				
+				if (!bestJob.release) bestJob.release = 0;
+				bestJob.release += maxGain;
+				defCall.release = bestJob.release;
+				
+				if (orphan) findCallJob(orphan);
+			}	
+			
+			function callGain(defCall, shortCall) {
+				let release = 0;
+				if (defCall.strike > shortCall.strike) release = shortCall.strike - defCall.strike;
+				if (!shortCall.friend) return release;
+				return release - shortCall.release;
+			}
+		}
+		
 		function findPutJob(defPut) {	
 			let maxGain = 0;
 			let bestJob = null;

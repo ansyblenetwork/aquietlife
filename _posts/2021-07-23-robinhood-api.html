@@ -46,39 +46,44 @@ var authHeader = {};
 	
 var accountOptions = [];
 var optionsBySymbol = {};
-var putCollateralPerDate = {};
-var callCollateralPerDate = {};
 	
-function D(str) {
-	return document.getElementById(str);
-}
 if (typeof(Storage) !== "undefined") {
-	// localStorage.setItem("authString", data.token_type + " " + data.access_token);
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) D('profileData').style.display = "initial";
 } 	
 	
+function D(str) { return document.getElementById(str); }
+	
+function fetchData(url, method, data) {
+	if (data) {
+	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(response) {
+		return response.json();
+	});
+	} else {
+	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
+		{headers: {method: method, url: url }}).then(function(response) {
+		return response.json();
+	});						  
+	}
+}
+	
 function generate_device_token() {
     let rands = [];
     for (let i = 0; i < 16; i++) {
-        r = Math.random();
-        rand = 4294967296.0 * r;
-        rands.push((Math.round(rand) >> ((3 & i) << 3)) & 255);
+        rands.push((Math.round(4294967296.0 * Math.random()) >> ((3 & i) << 3)) & 255);
     }
 
     let hexa = [];
     for (let i = 0; i < 256; i++) {	
 	let myhex = (i + 256).toString(16).substring(1);
-  //let myhex = (i).toString(16);
         hexa.push(myhex);
     }
 
     let id = "";
     for (let i = 0; i < 16; i++) {
         id += hexa[rands[i]];
-
-        if ((i == 3) || (i == 5) || (i == 7) || (i == 9))
-            id += "-";
+        if ((i == 3) || (i == 5) || (i == 7) || (i == 9)) id += "-";
     }
    return id;
 }
@@ -110,10 +115,7 @@ function submitMFAForm() {
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
 	
-			if (typeof(Storage) !== "undefined") {
-				localStorage.setItem("authString", data.token_type + " " + data.access_token);
-				// authHeader = {'Authorization': localStorage.getItem("authString") };
-			} 	
+			if (typeof(Storage) !== "undefined") localStorage.setItem("authString", data.token_type + " " + data.access_token);
 		});
 	});
 }
@@ -122,23 +124,18 @@ function getData() {
 	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data){
 		console.log(data);
 	});
-}
-	
+}	
 	
 function getOptions() {	
-	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data){
+	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
 		console.log(data);
 		accountOptions = data.results;
 	
 		let promises = [];
 		optionsBySymbol = {};
-		putCollateralPerDate = {};
-		callCollateralPerDate = {};
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	
-				putCollateralPerDate[accountOptions[i].chain_symbol] = {};
-				callCollateralPerDate[accountOptions[i].chain_symbol] = {};
 							  
 			promises.push(
 				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
@@ -159,9 +156,6 @@ function getOptions() {
 		}
 		Promise.all(promises).then(function() {
 			for (let symbol in optionsBySymbol) {
-				putCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
-				callCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
-				
 				optionsBySymbol[symbol].shortPut.sort(function(b, a) { // not needed really
 					if (a.expire > b.expire) return 1;
 					else if (a.expire < b.expire) return -1;
@@ -176,6 +170,7 @@ function getOptions() {
 					else if (a.strike < b.strike) return -1;
 					else return 0;					
 				});
+				
 				let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall;
 				for (let i = 0; i < append; i++) {
 					 optionsBySymbol[symbol].defCall.push({expire:"never", strike:0});
@@ -204,99 +199,6 @@ function getOptions() {
 	});
 }	
 	
-function condor(data) {
-	let callExpireTypes = {};
-	data.shortCall.forEach(function(contract) {
-		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
-		if (contract.collateral) {
-		if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
-		else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		}
-	});
-	
-	let putExpireTypes = {};
-	data.shortPut.forEach(function(contract) {
-		if (!putExpireTypes[contract.expire]) putExpireTypes[contract.expire] = {};
-		if (contract.collateral) {
-		if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
-		else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		}
-		else {
-			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
-			else putExpireTypes[contract.expire][contract.strike] += contract.strike;
-		}
-	});
-	
-	
-	
-	let totalPuts = 0;
-	let totalCalls = 0;
-	for (let expiration in putExpireTypes) {
-		for (let strike in putExpireTypes[expiration]) {
-			totalPuts += putExpireTypes[expiration][strike];
-		}
-		
-		for (let callStrike in callExpireTypes[expiration]) {
-			totalCalls += callExpireTypes[expiration][callStrike];
-		}
-	}
-	
-	console.log("total puts before: " + totalPuts);
-	console.log("total calls before: " + totalCalls);
-	
-	
-	let totalSaved = 0;
-	for (let expiration in putExpireTypes) {
-		for (let strike in putExpireTypes[expiration]) {
-			for (let callStrike in callExpireTypes[expiration]) {
-				if (parseInt(callStrike) > parseInt(strike)) {
-					if (callExpireTypes[expiration][callStrike] <= putExpireTypes[expiration][strike]) {
-						putExpireTypes[expiration][strike] -= callExpireTypes[expiration][callStrike];						
-						totalSaved += callExpireTypes[expiration][callStrike];
-						callExpireTypes[expiration][callStrike] = 0;
-					}
-					else {
-						callExpireTypes[expiration][callStrike] -= putExpireTypes[expiration][strike];
-						totalSaved += putExpireTypes[expiration][strike];
-						putExpireTypes[expiration][strike] = 0;
-						break;
-					}
-				}
-			}
-		}
-	}
-	console.log("Total saved: " + totalSaved);
-	
-	totalPuts = 0;
-	totalCalls = 0;
-	for (let expiration in putExpireTypes) {
-		for (let strike in putExpireTypes[expiration]) {
-			totalPuts += putExpireTypes[expiration][strike];
-		}
-		
-		for (let callStrike in callExpireTypes[expiration]) {
-			totalCalls += callExpireTypes[expiration][callStrike];
-		}
-	}
-	
-	console.log("total puts: " + totalPuts);
-	console.log("total calls: " + totalCalls);
-}
-	
-	
-	
-function getDateSet(options) {
-	let arr = [];
-	options.shortCall.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
-	});
-	options.shortPut.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
-	});
-	return arr;
-}
-
-
 function pair(data) {
 	for (let i = 0; i < data.defPut.length; i++) {
 		findPutJob(data.defPut[i]);
@@ -311,8 +213,7 @@ function pair(data) {
 		let collateral = Infinity;
 		let bestJob = null;
 		for (let j = 0; j < data.shortCall.length; j++) {
-			if (defCall.expire >= data.shortCall[j].expire 
-			    && (callGain(defCall, data.shortCall[j]) > maxGain)) {
+			if (defCall.expire >= data.shortCall[j].expire && callGain(defCall, data.shortCall[j]) > maxGain) {
 				maxGain = callGain(defCall, data.shortCall[j]);
 				collateral = callCollateral(defCall, data.shortCall[j]);
 				bestJob = data.shortCall[j];
@@ -324,16 +225,15 @@ function pair(data) {
 			let orphan = bestJob.friend;
 			bestJob.friend = defCall;
 			defCall.friend = bestJob;
-
 			bestJob.collateral = collateral;
 			defCall.collateral = collateral;
-
+			
 			if (orphan) findCallJob(orphan);
 		}	
 
 		function callCollateral(defCall, shortCall) {	
 			if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
-			else return 0;
+			return 0;
 		}
 
 		function callGain(defCall, shortCall) {
@@ -356,7 +256,6 @@ function pair(data) {
 			let orphan = bestJob.friend;
 			bestJob.friend = defPut;
 			defPut.friend = bestJob;
-
 			if (!bestJob.release) bestJob.release = 0;
 			bestJob.release += maxGain;
 			bestJob.collateral = bestJob.strike - bestJob.release;
@@ -366,7 +265,7 @@ function pair(data) {
 		}	
 
 		function putGain(defPut, shortPut) {
-			let release = 0;
+			let release;
 			if (defPut.strike < shortPut.strike) release = defPut.strike;
 			else release = shortPut.strike;
 			if (!shortPut.friend) return release;
@@ -375,20 +274,66 @@ function pair(data) {
 	}
 }
 	
-	
-	
-function fetchData(url, method, data) {
-	if (data) {
-	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(response) {
-		return response.json();
+function condor(data) {
+	let callExpireTypes = {};
+	data.shortCall.forEach(function(contract) {
+		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
+		if (contract.collateral) {
+			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
+			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
+		}
 	});
-	} else {
-	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{headers: {method: method, url: url }}).then(function(response) {
-		return response.json();
-	});						  
+	
+	let putExpireTypes = {};
+	data.shortPut.forEach(function(contract) {
+		if (!putExpireTypes[contract.expire]) putExpireTypes[contract.expire] = {};
+		if (contract.collateral) {
+			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
+			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
+		}
+		else {
+			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
+			else putExpireTypes[contract.expire][contract.strike] += contract.strike;
+		}
+	});	
+	
+	let totalSaved = 0;
+	for (let expiration in putExpireTypes) {
+		for (let strike in putExpireTypes[expiration]) {
+			for (let callStrike in callExpireTypes[expiration]) {
+				if (parseInt(callStrike) > parseInt(strike)) {
+					if (callExpireTypes[expiration][callStrike] <= putExpireTypes[expiration][strike]) {
+						putExpireTypes[expiration][strike] -= callExpireTypes[expiration][callStrike];						
+						totalSaved += callExpireTypes[expiration][callStrike];
+						callExpireTypes[expiration][callStrike] = 0;
+					}
+					else {
+						callExpireTypes[expiration][callStrike] -= putExpireTypes[expiration][strike];
+						totalSaved += putExpireTypes[expiration][strike];
+						putExpireTypes[expiration][strike] = 0;
+						break;
+					}
+				}
+			}
+		}
 	}
+	
+	console.log("Total saved: " + totalSaved);
+	
+	let totalPuts = 0;
+	let totalCalls = 0;
+	for (let expiration in putExpireTypes) {
+		for (let strike in putExpireTypes[expiration]) {
+			totalPuts += putExpireTypes[expiration][strike];
+		}
+		
+		for (let callStrike in callExpireTypes[expiration]) {
+			totalCalls += callExpireTypes[expiration][callStrike];
+		}
+	}
+	
+	console.log("total puts: " + totalPuts);
+	console.log("total calls: " + totalCalls);
 }
 	
 

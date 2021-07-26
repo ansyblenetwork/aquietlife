@@ -335,7 +335,7 @@ function condor(data, symbol) {
 		
 		if (totalPuts > 0) {
 			let li = make('li');
-			li.textContent = symbol + " put collateral, " + expiration + ": $" + totalPuts;
+			li.textContent = symbol + " free call collateral: $" + totalPuts + " at " + expiration;
 			D('unpaired').appendChild(li);
 		}
 		
@@ -346,7 +346,7 @@ function condor(data, symbol) {
 		
 		if (totalCalls > 0) {
 			let li = make('li');
-			li.textContent = symbol + " call collateral, " + expiration + ": $" + totalCalls;
+			li.textContent = symbol + " free put collateral: $" + totalCalls + " at " + expiration;
 			D('unpaired').appendChild(li);
 		}
 	}

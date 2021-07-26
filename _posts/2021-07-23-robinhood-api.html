@@ -162,28 +162,28 @@ function getOptions() {
 				putCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
 				callCollateralPerDate[symbol] = getDateSet(optionsBySymbol[symbol]);
 				
-				optionsBySymbol[symbol].shortPut.sort(function(a, b) {
+				optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 					if (a.expire < b.expire) return 1;
 					else if (a.expire < b.expire) return -1;
 					else if (a.strike > b.strike) return 1;
 					else if (a.strike < b.strike) return -1;
 					else return 0;					
 				});
-				optionsBySymbol[symbol].longPut.sort(function(a, b) {
+				optionsBySymbol[symbol].longPut.sort(function(b, a) {
 					if (a.expire > b.expire) return 1;
 					else if (a.expire < b.expire) return -1;
 					else if (a.strike > b.strike) return 1;
 					else if (a.strike < b.strike) return -1;
 					else return 0;					
 				});
-				optionsBySymbol[symbol].shortCall.sort(function(a, b) {
+				optionsBySymbol[symbol].shortCall.sort(function(b, a) {
 					if (a.expire < b.expire) return 1;
 					else if (a.expire > b.expire) return -1;
 					else if (a.strike < b.strike) return 1;
 					else if (a.strike > b.strike) return -1;
 					else return 0;					
 				});
-				optionsBySymbol[symbol].longCall.sort(function(a, b) {
+				optionsBySymbol[symbol].longCall.sort(function(b, a) {
 					if (a.expire > b.expire) return 1;
 					else if (a.expire < b.expire) return -1;
 					else if (a.strike < b.strike) return 1;

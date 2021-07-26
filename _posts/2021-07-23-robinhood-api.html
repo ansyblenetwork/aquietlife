@@ -219,7 +219,7 @@ function pair() {
 				defPut.friend = bestJob;
 				bestJob.release += maxGain;
 				defPut.release = bestJob.release;
-				findPutJob(orphan);
+				if (orphan) findPutJob(orphan);
 			}	
 			
 			function putGain(defPut, shortPut) {

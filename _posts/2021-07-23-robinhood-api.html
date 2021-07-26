@@ -340,7 +340,7 @@ function condor(data, symbol) {
 			addCol(symbol, "100px", li);	
 			addCol("Call", "100px", li);
 			addCol(expiration, "150px", li);
-			addCol(totalPuts, "100px", li);
+			addCol("$" + totalPuts, "100px", li);
 			D('unpaired').appendChild(li);
 		}
 		
@@ -355,7 +355,7 @@ function condor(data, symbol) {
 			addCol(symbol, "100px", li);	
 			addCol("Put", "100px", li);
 			addCol(expiration, "150px", li);
-			addCol(totalCalls, "100px", li);
+			addCol("$" + totalCalls, "100px", li);
 			D('unpaired').appendChild(li);
 		}
 	}

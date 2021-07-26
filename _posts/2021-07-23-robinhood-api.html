@@ -300,8 +300,17 @@ function pair(data) {
 	for (let i = 0; i < data.defCall.length; i++) {
 		findCallJob(data.defCall[i]);
 	}
+	
+	let unpaired = 0;
+	for (let i = 0; i < data.shortCall.length; i++) {
+		if (!data.shortCall.collateral) unpaired++;
+	}
+	for (let i = 0; i < unpaired; i++) {
+		findCallJob();
+	}
 
 	function findCallJob(defCall) {	
+		if (!defCall) defCall = {expire:"never", strike:0};
 		let maxGain = 0;
 		let collateral = -1;
 		let bestJob = null;

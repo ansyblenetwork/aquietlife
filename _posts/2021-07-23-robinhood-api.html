@@ -203,14 +203,14 @@ function condor(data) {
 	let callExpireTypes = {};
 	data.shortCall.forEach(function(contract) {
 		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
-		else if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
+		if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 		else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
 	});
 	
 	let putExpireTypes = {};
 	data.shortPut.forEach(function(contract) {
 		if (!putExpireTypes[contract.expire]) putExpireTypes[contract.expire] = {};
-		else if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
+		if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 		else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 	});
 	

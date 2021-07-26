@@ -209,12 +209,16 @@ function pair() {
 		}
 		
 		function findCallJob(defCall) {	
-			let maxGain;
+			let maxGain = 0;
+			let collateral = -1;
 			let bestJob = null;
 			for (let j = 0; j < data.shortCall.length; j++) {
-				if (defCall.expire >= data.shortCall[j].expire && (!maxGain || callGain(defCall, data.shortCall[j]) > maxGain)) {
+				if (defCall.expire >= data.shortCall[j].expire 
+				    && (callGain(defCall, data.shortCall[j]) == -1 || callGain(defCall, data.shortCall[j]) > maxGain)) {
 					maxGain = callGain(defCall, data.shortCall[j]);
+					collateral = callCollateral(defCall, data.shortCall[j]);
 					bestJob = data.shortCall[j];
+					if (callGain(defCall, data.shortCall[j]) == -1) break;
 				}
 			}
 			if (bestJob) {
@@ -222,18 +226,20 @@ function pair() {
 				bestJob.friend = defCall;
 				defCall.friend = bestJob;
 				
-				if (!bestJob.release) bestJob.release = 0;
-				bestJob.release += maxGain;
-				defCall.release = bestJob.release;
+				bestJob.collateral = collateral;
+				defCall.collateral = collateral;
 				
 				if (orphan) findCallJob(orphan);
 			}	
 			
+			function callCollateral(defCall, shortCall) {	
+				if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
+				else return 0;
+			}
+			
 			function callGain(defCall, shortCall) {
-				let release = 0;
-				if (defCall.strike > shortCall.strike) release = shortCall.strike - defCall.strike;
-				if (!shortCall.friend) return release;
-				return release - shortCall.release;
+				if (!shortCall.friend) return -1;
+				return shortCall.collateral - callCollateral(defCall, shortCall);
 			}
 		}
 		

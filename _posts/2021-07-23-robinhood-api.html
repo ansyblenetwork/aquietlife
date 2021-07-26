@@ -196,12 +196,12 @@ function getOptions() {
 }	
 	
 function getDateSet(options) {
-	let arr = {};
+	let arr = [];
 	options.shortCall.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr[op.expiration_date] = 0;
+		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
 	});
 	options.shortPut.forEach(function(op) {
-		if (!arr.includes(op.expiration_date)) arr[op.expiration_date] = 0;
+		if (!arr.includes(op.expiration_date)) arr.push(op.expiration_date);
 	});
 	return arr;
 }

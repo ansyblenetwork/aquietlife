@@ -339,6 +339,7 @@ function getOptions() {
 						});
 						if (bestPut) {						
 							let li = make('li');	
+							li.title = bestPut.rate;
 							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
@@ -352,10 +353,20 @@ function getOptions() {
 							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
 							col.style.backgroundColor = "#ddf";
-							D('release').appendChild(li);	
+							
+							let toAdd = true;
+							for (let j = 0; j < D('release').children.length; j++) {
+								if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+									D('release').insertBefore(li, D('release').children[j]);
+									toAdd = false;
+									break;
+								}
+							}
+							if (toAdd) D('release').appendChild(li);
 						}
 						if (bestCall) {					
 							let li = make('li');	
+							li.title = bestCall.rate;
 							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
@@ -369,10 +380,20 @@ function getOptions() {
 							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
 							col.style.backgroundColor = "#ddf";
-							D('release').appendChild(li);	
+							
+							let toAdd = true;
+							for (let j = 0; j < D('release').children.length; j++) {
+								if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+									D('release').insertBefore(li, D('release').children[j]);
+									toAdd = false;
+									break;
+								}
+							}
+							if (toAdd) D('release').appendChild(li);
 						}
 						if (bestCondor.release) {										
 							let li = make('li');
+							li.title = bestCondor.rate;
 							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
@@ -391,6 +412,16 @@ function getOptions() {
 							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
 							col.style.backgroundColor = "#ddf";
+							
+							let toAdd = true;
+							for (let j = 0; j < D('condorRelease').children.length; j++) {
+								if (parseFloat(li.title) < parseFloat(D('condorRelease').children[j].title)) {
+									D('condorRelease').insertBefore(li, D('condorRelease').children[j]);
+									toAdd = false;
+									break;
+								}
+							}
+							if (toAdd) D('condorRelease').appendChild(li);
 							D('condorRelease').appendChild(li);	
 						}
 					}

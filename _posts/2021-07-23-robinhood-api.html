@@ -313,7 +313,7 @@ function getOptions() {
 								addCol("Put", "75px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
-								addCol("$" + contract.premium, "100px", li);
+								addCol("$" + contract.premium.toFixed(2), "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
 								addCol(contract.rate.toFixed(2), "100px", li);
 								D('release').appendChild(li);								
@@ -334,7 +334,7 @@ function getOptions() {
 								addCol("Call", "75px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
-								addCol("$" + contract.premium, "100px", li);
+								addCol("$" + contract.premium.toFixed(2), "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
 								addCol(contract.rate.toFixed(2), "100px", li);
 								D('release').appendChild(li);								
@@ -367,7 +367,7 @@ function getOptions() {
 							addCol(bestCondor.put.expire, "125px", li);
 							addCol("$" + bestCondor.put.strike/100, "75px", li);
 							
-							addCol(bestCondor.prem, "75px", li);
+							addCol(bestCondor.prem.toFixed(2), "75px", li);
 							addCol("$" + bestCondor.release, "75px", li);
 							addCol(Math.round(bestCondor.rate) + "%", "75px", li);
 							D('condorRelease').appendChild(li);	

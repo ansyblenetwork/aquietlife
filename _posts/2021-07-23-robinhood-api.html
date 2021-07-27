@@ -288,6 +288,7 @@ function getOptions() {
 								addCol("Put", "100px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
+								addCol("$" + contract.closeRelease, "100px", li);
 								D('release').appendChild(li);								
 							}
 						}
@@ -305,6 +306,7 @@ function getOptions() {
 								addCol("Call", "100px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
+								addCol("$" + contract.closeRelease, "100px", li);
 								D('release').appendChild(li);								
 							}
 						}

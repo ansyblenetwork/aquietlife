@@ -307,8 +307,7 @@ function getOptions() {
 							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-
-							if (contract.rate < bestPut.rate) bestPut = contract;
+							if (!bestPut || contract.rate < bestPut.rate) bestPut = contract;
 						}
 						});
 
@@ -319,7 +318,7 @@ function getOptions() {
 							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if (contract.rate < bestCall.rate) bestCall = contract;
+							if (!bestCall || contract.rate < bestCall.rate) bestCall = contract;
 							
 							contract.condorPair.forEach(function(pair) {
 								let contract2 = pair.condorPair;

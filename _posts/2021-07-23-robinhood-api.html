@@ -35,6 +35,7 @@ A Robinhood login via API.
 		<div id="cash" style="padding-top:20px">Cash available: </div>
 		<div style="padding-top:20px">Free collateral:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="unpaired"></ul>
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>
 	</div>
 
@@ -47,7 +48,6 @@ var form = {};
 var authData = {};
 var authHeader = {};
 	
-var accountOptions = [];
 var optionsBySymbol = {};
 	
 if (typeof(Storage) !== "undefined") {
@@ -133,7 +133,7 @@ function getData() {
 function getOptions() {	
 	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
 		console.log(data);
-		accountOptions = data.results;
+		let accountOptions = data.results;
 	
 		let promises = [];
 		optionsBySymbol = {};
@@ -160,7 +160,9 @@ function getOptions() {
 			);
 		}
 		Promise.all(promises).then(function() {
+			let queryString = "";
 			for (let symbol in optionsBySymbol) {
+				queryString += symbol + ",";
 				optionsBySymbol[symbol].shortPut.sort(function(b, a) { // not needed really
 					if (a.expire > b.expire) return 1;
 					else if (a.expire < b.expire) return -1;
@@ -200,6 +202,45 @@ function getOptions() {
 				console.log("Computing for " + symbol);
 				condor(optionsBySymbol[symbol], symbol);
 			}
+			
+			
+			
+			fetch("https://ansyble.herokuapp.com/cors/", 
+				{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
+				return response.json();
+			}).then(function(data) {
+				if (data.quoteResponse.result.length > 0) {
+					for (let i = 0; i < data.quoteResponse.result.length; i++) {
+						let myPuts = optionsBySymbol[data.quoteResponse.result[i]].shortPut;
+						let myCalls = optionsBySymbol[data.quoteResponse.result[i]].shortCalls;
+						
+						myPuts.forEach(function(contract) {
+							if (contract.strike > data.quoteResponse.result[i].regularMarketPrice) {
+								let li = make('li');	
+								li.style.textAlign = "center";	
+								addCol(data.quoteResponse.result[i], "100px", li);	
+								addCol("Put", "100px", li);
+								addCol(contract.expire, "150px", li);
+								addCol("$" + contract.strike, "100px", li);
+								D('itm').appendChild(li);
+							}
+						});
+						
+						myCalls.forEach(function(contract) {
+							if (contract.strike < data.quoteResponse.result[i].regularMarketPrice) {
+								let li = make('li');	
+								li.style.textAlign = "center";	
+								addCol(data.quoteResponse.result[i], "100px", li);	
+								addCol("Call", "100px", li);
+								addCol(contract.expire, "150px", li);
+								addCol("$" + contract.strike, "100px", li);
+								D('itm').appendChild(li);
+							}
+						});
+					}
+				}
+			});
+			
 		});
 	});
 }	

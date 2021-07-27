@@ -238,7 +238,7 @@ function getOptions() {
 							console.log(friend);
 						}
 						
-						me.saleRelease = totalCollateral - condor(symbol);
+						me.closeRelease = totalCollateral - condor(symbol);
 						
 						if (symbol == "BILI") {
 							console.log(totalCollateral);
@@ -247,7 +247,7 @@ function getOptions() {
 
 						me.strike = myStrike;
 						findPutPair(symbol, null, me);
-					} else me.saleRelease = myStrike;
+					} else me.closeRelease = myStrike;
 				}
 				
 				for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
@@ -260,7 +260,7 @@ function getOptions() {
 					me.strike = Infinity;
 					
 					findCallPair(symbol, friend);
-					me.saleRelease = totalCollateral - condor(symbol);
+					me.closeRelease = totalCollateral - condor(symbol);
 					
 					me.strike = myStrike;
 					findCallPair(symbol, null, me);
@@ -377,7 +377,7 @@ function clearOption(option) {
 	delete option.friend;
 	delete option.release;
 	delete option.collateral;
-	delete option.saleRelease;
+	delete option.closeRelease;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	

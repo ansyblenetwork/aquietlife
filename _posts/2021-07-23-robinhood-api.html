@@ -273,22 +273,22 @@ function findCallJob(symbol, defCall) {
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let collateral = Infinity;
-	let bestJob = null;
+	let candidate = null;
 	for (let j = 0; j < data.shortCall.length; j++) {
 		if (defCall.expire >= data.shortCall[j].expire 
 		    && (callGain(defCall, data.shortCall[j]) > maxGain || (maxGain == Infinity && callCollateral(defCall, data.shortCall[j]) < collateral ))) {
 			maxGain = callGain(defCall, data.shortCall[j]);
 			collateral = callCollateral(defCall, data.shortCall[j]);
-			bestJob = data.shortCall[j];
+			candidate = data.shortCall[j];
 			if (callGain(defCall, data.shortCall[j]) == Infinity) break;
-			if (bestJob.friend) break;
+			if (candidate.friend) break;
 		}
 	}
-	if (bestJob) {
-		let orphan = bestJob.friend;
-		bestJob.friend = defCall;
-		defCall.friend = bestJob;
-		bestJob.collateral = collateral;
+	if (candidate) {
+		let orphan = candidate.friend;
+		candidate.friend = defCall;
+		defCall.friend = candidate;
+		candidate.collateral = collateral;
 		defCall.collateral = collateral;
 
 		if (orphan) findCallJob(symbol, orphan);
@@ -308,25 +308,32 @@ function findCallJob(symbol, defCall) {
 function findPutJob(symbol, defPut) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
-	let bestJob = null;
+	let candidate = null;
 	for (let j = 0; j < data.shortPut.length; j++) {
-		if (defPut.expire >= data.shortPut[j].expire && putGain(defPut, data.shortPut[j]) > maxGain) {
-			maxGain = putGain(defPut, data.shortPut[j]);
-			bestJob = data.shortPut[j];
-			if (bestJob.friend) break;
-		}
+		if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
 	}
-	if (bestJob) {
-		let orphan = bestJob.friend;
-		bestJob.friend = defPut;
-		defPut.friend = bestJob;
-		if (!bestJob.release) bestJob.release = 0;
-		bestJob.release += maxGain;
-		bestJob.collateral = bestJob.strike - bestJob.release;
-		defPut.release = bestJob.release;
+	
+	if (candidate) {
+		let orphan = candidate.friend;
+		candidate.friend = defPut;
+		defPut.friend = candidate;
+		if (!candidate.release) candidate.release = 0;
+		candidate.release += maxGain;
+		defPut.release = candidate.release;
+		
+		candidate.collateral = candidate.strike - candidate.release;
 
 		if (orphan) findPutJob(symbol, orphan);
 	}	
+	
+	function evaluate(defPut, shortPut, subject) {
+		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > maxGain) {
+			maxGain = putGain(defPut, shortPut);
+			candidate = subject;
+			if (candidate.friend) return true;
+		}
+		return false;
+	}
 
 	function putGain(defPut, shortPut) {
 		let release;

@@ -337,25 +337,25 @@ function getOptions() {
 						if (bestPut) {						
 							let li = make('li');	
 							li.style.textAlign = "center";	
-							addCol(symbol, "100px", li);	
+							addCol(symbol, "75px", li);	
 							addCol("Put", "75px", li);
-							addCol(bestPut.expire, "150px", li);
-							addCol("$" + bestPut.strike/100, "100px", li);
-							addCol(bestPut.premium.toFixed(2), "100px", li);
-							addCol("$" + bestPut.closeRelease, "100px", li);
-							addCol(Math.round(bestPut.rate), "100px", li);
+							addCol(bestPut.expire, "125px", li);
+							addCol("$" + bestPut.strike/100, "75px", li);
+							addCol(bestPut.premium.toFixed(2), "75px", li);
+							addCol("$" + bestPut.closeRelease, "75px", li);
+							addCol(Math.round(bestPut.rate), "75px", li);
 							D('release').appendChild(li);	
 						}
 						if (bestCall) {					
 							let li = make('li');	
 							li.style.textAlign = "center";	
-							addCol(symbol, "100px", li);	
+							addCol(symbol, "75px", li);	
 							addCol("Call", "75px", li);
-							addCol(bestCall.expire, "150px", li);
-							addCol("$" + bestCall.strike/100, "100px", li);
-							addCol(bestCall.premium.toFixed(2), "100px", li);
-							addCol("$" + bestCall.closeRelease, "100px", li);
-							addCol(Math.round(bestCall.rate), "100px", li);
+							addCol(bestCall.expire, "125px", li);
+							addCol("$" + bestCall.strike/100, "75px", li);
+							addCol(bestCall.premium.toFixed(2), "75px", li);
+							addCol("$" + bestCall.closeRelease, "75px", li);
+							addCol(Math.round(bestCall.rate), "75px", li);
 							D('release').appendChild(li);	
 						}
 						if (bestCondor.release) {										

@@ -343,7 +343,7 @@ function getOptions() {
 							addCol("$" + bestPut.strike/100, "100px", li);
 							addCol(bestPut.premium.toFixed(2), "100px", li);
 							addCol("$" + bestPut.closeRelease, "100px", li);
-							addCol(bestPut.rate.toFixed(2), "100px", li);
+							addCol(Math.round(bestPut.rate), "100px", li);
 							D('release').appendChild(li);	
 						}
 						if (bestCall) {					
@@ -355,7 +355,7 @@ function getOptions() {
 							addCol("$" + bestCall.strike/100, "100px", li);
 							addCol(bestCall.premium.toFixed(2), "100px", li);
 							addCol("$" + bestCall.closeRelease, "100px", li);
-							addCol(bestCall.rate.toFixed(2), "100px", li);
+							addCol(Math.round(bestCall.rate), "100px", li);
 							D('release').appendChild(li);	
 						}
 						if (bestCondor.release) {										

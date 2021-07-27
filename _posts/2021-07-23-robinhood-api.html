@@ -356,17 +356,17 @@ function getOptions() {
 						if (bestCondor.release) {										
 							let li = make('li');
 							li.style.textAlign = "center";	
-							addCol(symbol, "100px", li);	
+							addCol(symbol, "75px", li);	
 							addCol("Call", "75px", li);
-							addCol(bestCondor.call.expire, "150px", li);
-							addCol("$" + bestCondor.call.strike/100, "100px", li);
+							addCol(bestCondor.call.expire, "125px", li);
+							addCol("$" + bestCondor.call.strike/100, "75px", li);
 							
 							addCol("Put", "75px", li);
-							addCol(bestCondor.put.expire, "150px", li);
-							addCol("$" + bestCondor.put.strike/100, "100px", li);
+							addCol(bestCondor.put.expire, "125px", li);
+							addCol("$" + bestCondor.put.strike/100, "75px", li);
 							
-							addCol("$" + bestCondor.release, "100px", li);
-							addCol(bestCondor.rate.toFixed(2), "100px", li);
+							addCol("$" + bestCondor.release, "75px", li);
+							addCol(bestCondor.rate.toFixed(2), "75px", li);
 							D('condorRelease').appendChild(li);	
 						}
 					}

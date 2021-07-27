@@ -150,7 +150,7 @@ function getData() {
 	fetchData("https://api.robinhood.com/portfolios/", 'GET', {headers:authHeader}).then(function(data) {
 		let growth = data.results[0].equity - data.results[0].equity_previous_close;
 		
-		if (growth > 0) D("cash").style.color = "#3b7";
+		if (growth > 0) D("cash").style.color = "#1a8";
 		else if (growth < 0) {
 			D("cash").style.color = "#F00";
 			growth = -growth;

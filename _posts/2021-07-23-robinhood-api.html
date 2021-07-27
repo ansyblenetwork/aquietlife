@@ -260,8 +260,8 @@ function getOptions() {
 }	
 	
 function pair(symbol) {
-	for (let i = 0; i < optionsBySymbol[symbol].defPut.length; i++) {
-		findPutPair(symbol, optionsBySymbol[symbol].defPut[i]);
+	for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
+		findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
 	}
 
 	for (let i = 0; i < optionsBySymbol[symbol].defCall.length; i++) {

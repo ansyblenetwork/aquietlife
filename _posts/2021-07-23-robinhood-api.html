@@ -261,7 +261,7 @@ function getOptions() {
 	
 function pair(symbol) {
 	for (let i = 0; i < optionsBySymbol[symbol].defPut.length; i++) {
-		findPutJob(symbol, optionsBySymbol[symbol].defPut[i]);
+		findPutPair(symbol, optionsBySymbol[symbol].defPut[i]);
 	}
 
 	for (let i = 0; i < optionsBySymbol[symbol].defCall.length; i++) {
@@ -305,12 +305,15 @@ function findCallJob(symbol, defCall) {
 	}
 }
 
-function findPutJob(symbol, defPut) {	
+function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let candidate = null;
-	for (let j = 0; j < data.shortPut.length; j++) {
-		if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
+	if (defPut) {
+		for (let j = 0; j < data.shortPut.length; j++) {
+			if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
+		}
+		if (candidate) candidate.collateral = candidate.strike - candidate.release;
 	}
 	
 	if (candidate) {
@@ -320,10 +323,8 @@ function findPutJob(symbol, defPut) {
 		if (!candidate.release) candidate.release = 0;
 		candidate.release += maxGain;
 		defPut.release = candidate.release;
-		
-		candidate.collateral = candidate.strike - candidate.release;
 
-		if (orphan) findPutJob(symbol, orphan);
+		if (orphan) findPutPair(symbol, orphan);
 	}	
 	
 	function evaluate(defPut, shortPut, subject) {

@@ -297,6 +297,7 @@ function getOptions() {
 					let myPuts = optionsBySymbol[symbol].shortPut;
 					let myCalls = optionsBySymbol[symbol].shortCall;
 
+					D('condorRelease').textConteent = "";	
 					for (let contractDate in data.putExpDateMap) {
 						let expiration = contractDate.substring(0, 10);
 
@@ -352,8 +353,7 @@ function getOptions() {
 							
 						}
 						});
-						if (bestCondor.release) {
-							D('condorRelease').textConteent = "";												
+						if (bestCondor.release) {											
 							let li = make('li');
 							li.style.textAlign = "center";	
 							addCol(symbol, "100px", li);	

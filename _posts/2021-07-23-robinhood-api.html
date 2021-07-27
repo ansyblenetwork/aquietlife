@@ -9,7 +9,7 @@ A Robinhood login via API.
 		<div style="text-align:center; padding-bottom:20px">
 		<button onclick="getData(); getOptions()">Options Collateral</button>
 		</div>		
-		<div id="cash" style="font-weight:bold; padding-top:20px">Cash available: </div>		
+		<div id="cash" style="font-weight:bold; padding-top:20px">Total value:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: </div>		
 		<div style="padding-top:20px">Incomplete condors:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="unpaired"></ul>
 		</div>		
@@ -148,7 +148,7 @@ function getData() {
 		console.log(data);
 	});
 	fetchData("https://api.robinhood.com/portfolios/", 'GET', {headers:authHeader}).then(function(data) {
-		D('cash').textContent = "Total Value: $" + parseFloat(data.results[0].equity).toFixed(2) + "\xa0\xa0\xa0 Cash available: $" + parseFloat(data.results[0].withdrawable_amount).toFixed(2);
+		D('cash').textContent = "Total Value: $" + parseFloat(data.results[0].equity).toFixed(2) + "\xa0\xa0\xa0\xa0\xa0 Cash available: $" + parseFloat(data.results[0].withdrawable_amount).toFixed(2);
 		console.log("Portfolios");
 		console.log(data);
 	});

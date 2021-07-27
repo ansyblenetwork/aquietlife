@@ -200,7 +200,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	let queryString = "";
 	D('unpaired').textContent = "";
-	D('itm').textContent = "";
+	D('release').textContent = "";	
+	D('condorRelease').textContent = "";
 	for (let symbol in taskBySymbol) {
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {
@@ -301,10 +302,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				delete me.collateral;
 				findCallPair(symbol, null, me);
 			}
-
-
-			D('release').textContent = "";	
-			D('condorRelease').textContent = "";
+			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
 			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
@@ -447,6 +445,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	Promise.all(promises).then(function() {
+		D('itm').textContent = "";
 		fetch("https://ansyble.herokuapp.com/cors/", 
 			{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
 			return response.json();

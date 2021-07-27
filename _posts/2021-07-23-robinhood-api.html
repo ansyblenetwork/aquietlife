@@ -216,7 +216,7 @@ function getOptions() {
 					let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCalls;
 
 					myPuts.forEach(function(contract) {
-						if (contract.strike > data.quoteResponse.result[i].regularMarketPrice) {
+						if (contract.strike > 0.98*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i], "100px", li);	
@@ -228,7 +228,7 @@ function getOptions() {
 					});
 
 					myCalls.forEach(function(contract) {
-						if (contract.strike < data.quoteResponse.result[i].regularMarketPrice) {
+						if (contract.strike < 1.02*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i], "100px", li);	

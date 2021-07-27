@@ -259,7 +259,7 @@ function getOptions() {
 					
 					me.condorPair = [];
 					for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
-						let mypair = optionsBySymbol[symbol].shortPut[i];
+						let mypair = optionsBySymbol[symbol].shortPut[j];
 						let myPairStrike = mypair.strike;
 						let pairFriend = mypair.friend;
 						if (pairFriend) {

@@ -227,8 +227,8 @@ function getOptions() {
 						console.log(friend);
 					}
 					if (friend) {
-						friend.friend = null;
-						me.friend = null;
+						clearOption(friend);
+						clearOption(me);
 						me.strike = 0;
 
 						findPutPair(symbol, friend);
@@ -255,8 +255,8 @@ function getOptions() {
 					let myStrike = me.strike;
 					let friend = me.friend;
 					
-					friend.friend = null;
-					me.friend = null;
+					clearOption(friend);
+					clearOption(me);
 					me.strike = Infinity;
 					
 					findCallPair(symbol, friend);
@@ -349,10 +349,7 @@ function findCallPair(symbol, defCall, shortCall) {
 	
 	if (candidate) {
 		let orphan = candidate.friend;
-		if (orphan) {
-			orphan.friend = null;
-			orphan.collateral = null;
-		}
+		if (orphan) clearOption(orphan);
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;
@@ -375,7 +372,14 @@ function findCallPair(symbol, defCall, shortCall) {
 		return subject.collateral - callCollateral(defCall, shortCall);
 	}
 }
-
+	
+function clearOption(option) {
+	delete option.friend;
+	delete option.release;
+	delete option.collateral;
+	delete option.saleRelease;
+}
+	
 function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
@@ -393,13 +397,11 @@ function findPutPair(symbol, defPut, shortPut) {
 		}
 	}
 	
+	
+
 	if (candidate) {
 		let orphan = candidate.friend;
-		if (orphan) {
-			orphan.friend = null;
-			orphan.release = 0;
-			orphan.collateral = null;
-		}
+		if (orphan) clearOption(orphan);
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;

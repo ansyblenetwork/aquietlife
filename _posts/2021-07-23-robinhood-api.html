@@ -162,10 +162,6 @@ function getOptions() {
 	
 		let promises = [];
 		optionsBySymbol = {};
-		D('unpaired').textContent = "";
-		D('itm').textContent = "";
-		D('release').textContent = "";
-		D('condorRelease').textContent = "";	
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	
@@ -229,6 +225,7 @@ function getOptions() {
 					else return 0;					
 				});
 				
+				D('unpaired').textContent = "";
 				pair(symbol);
 				let totalCollateral = condor(symbol, true);
 				
@@ -290,6 +287,8 @@ function getOptions() {
 				}
 				
 				
+				D('release').textContent = "";	
+				D('condorRelease').textContent = "";
 				let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
 				fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 					+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
@@ -422,7 +421,6 @@ function getOptions() {
 								}
 							}
 							if (toAdd) D('condorRelease').appendChild(li);
-							D('condorRelease').appendChild(li);	
 						}
 					}
 
@@ -430,8 +428,7 @@ function getOptions() {
 				});
 			}
 			
-			
-			
+			D('itm').textContent = "";
 			fetch("https://ansyble.herokuapp.com/cors/", 
 				{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
 				return response.json();

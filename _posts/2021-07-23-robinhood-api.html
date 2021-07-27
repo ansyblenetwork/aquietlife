@@ -281,7 +281,7 @@ function getOptions() {
 							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if (contract.rate < 0.10) {								
+							if (contract.rate < 0.20) {								
 								let li = make('li');	
 								li.style.textAlign = "center";	
 								addCol(symbol, "100px", li);	
@@ -289,6 +289,7 @@ function getOptions() {
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
+								addCol("$" + contract.rate, "100px", li);
 								D('release').appendChild(li);								
 							}
 						}
@@ -299,7 +300,7 @@ function getOptions() {
 							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if (contract.rate < 0.10) {								
+							if (contract.rate < 0.20) {								
 								let li = make('li');	
 								li.style.textAlign = "center";	
 								addCol(symbol, "100px", li);	
@@ -307,6 +308,7 @@ function getOptions() {
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
+								addCol("$" + contract.rate, "100px", li);
 								D('release').appendChild(li);								
 							}
 						}

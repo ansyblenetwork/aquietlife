@@ -274,17 +274,15 @@ function getOptions() {
 							let expiration = contractDate.substring(0, 10);
 							
 							myPuts.forEach(function(contract) {
-								if (contract.expire == expiration) {
-									console.log((contract.strike/100).toFixed(1).toString());
-									contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-								}
+							if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+								contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							}
 							});
 								       
 							myCalls.forEach(function(contract) {
-								if (contract.expire == expiration) {
-									console.log((contract.strike/100).toFixed(1).toString());
-									contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-								}
+							if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+								contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							}
 							});
 						}
 								       

@@ -61,6 +61,16 @@ if (typeof(Storage) !== "undefined") {
 	
 function D(str) { return document.getElementById(str); }
 	
+function addCol(text, width, li) {								       
+	let col = make('span');
+	col.style.width = width;
+	col.style.display = "inline-block";
+	col.style.textAlign = "center";
+	col.textContent = text;
+	li.appendChild(col);  
+	return col;
+}		
+	
 function fetchData(url, method, data) {
 	if (data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
@@ -206,7 +216,7 @@ function getOptions() {
 				});
 				
 				pair(symbol);
-				let totalCollateral = condor(symbol);
+				let totalCollateral = condor(symbol, true);
 				
 				for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 					let me = optionsBySymbol[symbol].shortPut[i];
@@ -409,7 +419,7 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 }
 	
-function condor(symbol) {
+function condor(symbol, build) {
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	data.shortCall.forEach(function(contract) {
@@ -462,7 +472,7 @@ function condor(symbol) {
 			expirePuts += putExpireTypes[expiration][strike];
 		}
 		
-		if (expirePuts > 0) {
+		if (build && expirePuts > 0) {
 			let li = make('li');
 			li.style.textAlign = "center";					
 			addCol(symbol, "100px", li);	
@@ -478,7 +488,7 @@ function condor(symbol) {
 			expireCalls += callExpireTypes[expiration][callStrike];
 		}
 		
-		if (expireCalls > 0) {
+		if (build && expireCalls > 0) {
 			let li = make('li');	
 			li.style.textAlign = "center";	
 			addCol(symbol, "100px", li);	
@@ -491,16 +501,6 @@ function condor(symbol) {
 	}
 	return totalSaved + totalPuts + totalCalls;
 }
-	
-function addCol(text, width, li) {								       
-	let col = make('span');
-	col.style.width = width;
-	col.style.display = "inline-block";
-	col.style.textAlign = "center";
-	col.textContent = text;
-	li.appendChild(col);  
-	return col;
-}		
 	
 
 </script>

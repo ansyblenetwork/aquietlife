@@ -297,7 +297,7 @@ function getOptions() {
 					let myPuts = optionsBySymbol[symbol].shortPut;
 					let myCalls = optionsBySymbol[symbol].shortCall;
 
-					D('condorRelease').textConteent = "";	
+					D('condorRelease').textContent = "";	
 					for (let contractDate in data.putExpDateMap) {
 						let expiration = contractDate.substring(0, 10);
 
@@ -310,7 +310,7 @@ function getOptions() {
 								let li = make('li');	
 								li.style.textAlign = "center";	
 								addCol(symbol, "100px", li);	
-								addCol("Put", "100px", li);
+								addCol("Put", "75px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
@@ -330,7 +330,7 @@ function getOptions() {
 								let li = make('li');	
 								li.style.textAlign = "center";	
 								addCol(symbol, "100px", li);	
-								addCol("Call", "100px", li);
+								addCol("Call", "75px", li);
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
@@ -357,11 +357,11 @@ function getOptions() {
 							let li = make('li');
 							li.style.textAlign = "center";	
 							addCol(symbol, "100px", li);	
-							addCol("Call", "100px", li);
+							addCol("Call", "75px", li);
 							addCol(bestCondor.call.expire, "150px", li);
 							addCol("$" + bestCondor.call.strike/100, "100px", li);
 							
-							addCol("Put", "100px", li);
+							addCol("Put", "75px", li);
 							addCol(bestCondor.put.expire, "150px", li);
 							addCol("$" + bestCondor.put.strike/100, "100px", li);
 							

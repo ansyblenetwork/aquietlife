@@ -210,12 +210,34 @@ function getOptions() {
 				
 				for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 					let me = optionsBySymbol[symbol].shortPut[i];
+					let myStrike = me.strike;
 					let friend = me.friend;
-				//	friend.friend = null;
-				//	me.friend = null;
-				//	me.saleRelease = totalCollateral - condor(optionsBySymbol[symbol], symbol);
-				//	me.friend = friend;
-				//	friend.
+					
+					friend.friend = null;
+					me.friend = null;
+					me.strike = 0;
+					
+					findPutPair(symbol, friend);
+					me.saleRelease = totalCollateral - condor(symbol);
+					
+					me.strike = myStrike;
+					findPutPair(symbol, null, me);
+				}
+				
+				for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
+					let me = optionsBySymbol[symbol].shortCall[i];
+					let myStrike = me.strike;
+					let friend = me.friend;
+					
+					friend.friend = null;
+					me.friend = null;
+					me.strike = Infinity;
+					
+					findCallPair(symbol, friend);
+					me.saleRelease = totalCollateral - condor(symbol);
+					
+					me.strike = myStrike;
+					findCallPair(symbol, null, me);
 				}
 			}
 			

@@ -151,10 +151,7 @@ function getData() {
 		let growth = data.results[0].equity - data.results[0].equity_previous_close;
 		
 		if (growth > 0) D("cash").style.color = "#1a8";
-		else if (growth < 0) {
-			D("cash").style.color = "#F00";
-			growth = -growth;
-		}
+		else if (growth < 0) D("cash").style.color = "#F00";
 		
 		D('cash').textContent = "Total Value: $" + parseFloat(data.results[0].equity).toFixed(2) + " ($" 
 			+ parseFloat(growth).toFixed(2) +")\xa0\xa0\xa0\xa0\xa0 Cash available: $" 

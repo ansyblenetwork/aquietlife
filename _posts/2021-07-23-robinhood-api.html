@@ -29,8 +29,8 @@ A Robinhood login via API.
 	</form> 
 	<br>
 	
-	<div id="profileData" style="text-align:center; display:none; padding:20px;">
-		<div style="text-align:center">
+	<div id="profileData" style="text-align:center; display:none; padding-top:20px;">
+		<div style="text-align:center; padding-bototm:20px">
 		<button onclick="getData(); getOptions()">Options Collateral</button>
 		</div>		
 		<div id="cash" style="padding-top:20px">Cash available: </div>		
@@ -343,11 +343,11 @@ function getOptions() {
 							addCol(bestPut.expire, "125px", li);
 							addCol("$" + bestPut.strike/100, "75px", li);
 							let col = addCol(bestPut.premium.toFixed(2), "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol("$" + bestPut.closeRelease, "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							D('release').appendChild(li);	
 						}
 						if (bestCall) {					
@@ -360,11 +360,11 @@ function getOptions() {
 							addCol(bestCall.expire, "125px", li);
 							addCol("$" + bestCall.strike/100, "75px", li);
 							let col = addCol(bestCall.premium.toFixed(2), "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol("$" + bestCall.closeRelease, "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							D('release').appendChild(li);	
 						}
 						if (bestCondor.release) {										
@@ -382,11 +382,11 @@ function getOptions() {
 							addCol("$" + bestCondor.put.strike/100, "75px", li);
 							
 							let col = addCol(bestCondor.prem.toFixed(2), "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol("$" + bestCondor.release, "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
-							col.style.backgroundColor = "ddf";
+							col.style.backgroundColor = "#ddf";
 							D('condorRelease').appendChild(li);	
 						}
 					}
@@ -408,6 +408,8 @@ function getOptions() {
 					myPuts.forEach(function(contract) {
 						if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
+							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
 							addCol("Put", "100px", li);
@@ -420,6 +422,8 @@ function getOptions() {
 					myCalls.forEach(function(contract) {
 						if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
+							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
 							addCol("Call", "100px", li);
@@ -618,6 +622,8 @@ function condor(symbol, build) {
 		
 		if (build && expirePuts > 0) {
 			let li = make('li');
+			li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+			li.onmouseleave = function() { this.style.fontWeight = ""; }
 			li.style.textAlign = "center";					
 			addCol(symbol, "100px", li);	
 			addCol("Call", "100px", li);
@@ -634,6 +640,8 @@ function condor(symbol, build) {
 		
 		if (build && expireCalls > 0) {
 			let li = make('li');	
+			li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+			li.onmouseleave = function() { this.style.fontWeight = ""; }
 			li.style.textAlign = "center";	
 			addCol(symbol, "100px", li);	
 			addCol("Put", "100px", li);

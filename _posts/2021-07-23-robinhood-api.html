@@ -263,7 +263,7 @@ function getOptions() {
 				}
 				
 				
-				let d = new Date(Date.now() + 1000*60*60*24*12).toISOString();	
+				let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
 				fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 					+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 					return response.json();
@@ -289,7 +289,7 @@ function getOptions() {
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
-								addCol("$" + contract.rate, "100px", li);
+								addCol(contract.rate.toFixed(2), "100px", li);
 								D('release').appendChild(li);								
 							}
 						}
@@ -308,7 +308,7 @@ function getOptions() {
 								addCol(contract.expire, "150px", li);
 								addCol("$" + contract.strike/100, "100px", li);
 								addCol("$" + contract.closeRelease, "100px", li);
-								addCol("$" + contract.rate, "100px", li);
+								addCol(contract.rate.toFixed(2), "100px", li);
 								D('release').appendChild(li);								
 							}
 						}

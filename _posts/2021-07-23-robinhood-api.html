@@ -162,6 +162,7 @@ function getOptions() {
 		D('unpaired').textContent = "";
 		D('itm').textContent = "";
 		D('release').textContent = "";
+		D('condorRelease').textContent = "";	
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	
@@ -297,7 +298,6 @@ function getOptions() {
 					let myPuts = optionsBySymbol[symbol].shortPut;
 					let myCalls = optionsBySymbol[symbol].shortCall;
 
-					D('condorRelease').textContent = "";	
 					for (let contractDate in data.putExpDateMap) {
 						let expiration = contractDate.substring(0, 10);
 

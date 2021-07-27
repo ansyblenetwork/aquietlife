@@ -222,14 +222,28 @@ function getOptions() {
 					let me = optionsBySymbol[symbol].shortPut[i];
 					let myStrike = me.strike;
 					let friend = me.friend;
-					
+					if (symbol == "BILI") {
+						console.log(me);
+						console.log(friend);
+					}
 					if (friend) {
 						friend.friend = null;
 						me.friend = null;
 						me.strike = 0;
 
 						findPutPair(symbol, friend);
+						
+						if (symbol == "BILI") {
+							console.log(me);
+							console.log(friend);
+						}
+						
 						me.saleRelease = totalCollateral - condor(symbol);
+						
+						if (symbol == "BILI") {
+							console.log(totalCollateral);
+							console.log(condor(symbol));
+						}
 
 						me.strike = myStrike;
 						findPutPair(symbol, null, me);

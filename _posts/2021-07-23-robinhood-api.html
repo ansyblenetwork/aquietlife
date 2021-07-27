@@ -309,22 +309,34 @@ function findPutPair(symbol, defPut, shortPut) {
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let candidate = null;
+	let seeker = defPut;
+	if (!seeker) seeker = shortPut;
 	if (defPut) {
 		for (let j = 0; j < data.shortPut.length; j++) {
 			if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
 		}
-		if (candidate) candidate.collateral = candidate.strike - candidate.release;
+	}
+	if (shortPut) {
+		for (let j = 0; j < data.defPut.length; j++) {
+			if (evaluate(data.defPut[j], shortPut, data.defPut[j])) break;
+		}
 	}
 	
 	if (candidate) {
 		let orphan = candidate.friend;
-		candidate.friend = defPut;
-		defPut.friend = candidate;
+		candidate.friend = seeker;
+		seeker.friend = candidate;
 		if (!candidate.release) candidate.release = 0;
 		candidate.release += maxGain;
-		defPut.release = candidate.release;
-
-		if (orphan) findPutPair(symbol, orphan);
+		seeker.release = candidate.release;
+		
+		candidate.collateral = candidate.strike - candidate.release;
+		seeker.collateral = seeker.strike - seeker.release;
+		
+		if (orphan) {
+			if (defPut) findPutPair(symbol, orphan);
+			else if (shortPut) findPutPair(symbol, null, orphan);
+		}
 	}	
 	
 	function evaluate(defPut, shortPut, subject) {

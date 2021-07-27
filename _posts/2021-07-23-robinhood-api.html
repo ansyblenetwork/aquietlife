@@ -185,6 +185,7 @@ function getOptions() {
 		}
 		Promise.all(promises).then(function() {
 			let queryString = "";
+			D('unpaired').textContent = "";
 			for (let symbol in optionsBySymbol) {
 				queryString += symbol + ",";
 				optionsBySymbol[symbol].shortPut.sort(function(b, a) {
@@ -225,7 +226,6 @@ function getOptions() {
 					else return 0;					
 				});
 				
-				D('unpaired').textContent = "";
 				pair(symbol);
 				let totalCollateral = condor(symbol, true);
 				

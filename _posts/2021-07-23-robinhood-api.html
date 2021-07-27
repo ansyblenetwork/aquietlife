@@ -166,319 +166,327 @@ function getData() {
 }	
 	
 function getOptions() {	
-	fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
-		console.log(data);
-		let accountOptions = data.results;
-	
-		let promises = [];
-		optionsBySymbol = {};
-		for (let i = 0; i < accountOptions.length; i++) {			
-			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
-				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	
-							  
-			promises.push(
-				fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
-					let quantity = parseInt(accountOptions[i].quantity);
-					for(let j = 0; j < quantity; j++) {
-						let dat = {expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
-						if (accountOptions[i].type == "short") {
-							if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
-							else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
-						}
-						if (accountOptions[i].type == "long") {
-							if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].defCall.push(dat);
-							else optionsBySymbol[optionData.chain_symbol].defPut.push(dat);
-						}
-					}
-				})
-			);
+fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
+	console.log(data);
+	let accountOptions = data.results;
+
+	let promises = [];
+	optionsBySymbol = {};
+	taskBySymbol = {};
+	for (let i = 0; i < accountOptions.length; i++) {			
+		if (!optionsBySymbol[accountOptions[i].chain_symbol]) {
+			optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
+			taskBySymbol[accountOptions[i].chain_symbol] = [];
 		}
-		Promise.all(promises).then(function() {
-			let queryString = "";
-			D('unpaired').textContent = "";
-			for (let symbol in optionsBySymbol) {
-				queryString += symbol + ",";
-				optionsBySymbol[symbol].shortPut.sort(function(b, a) {
-					if (a.expire > b.expire) return 1;
-					else if (a.expire < b.expire) return -1;
-					else if (a.strike > b.strike) return 1;
-					else if (a.strike < b.strike) return -1;
-					else return 0;					
-				});
-				optionsBySymbol[symbol].defPut.sort(function(b, a) { 
-					// not really needed: the job applicants can come in any order, and find the best job
-					// for them. If there is a better job applicant before them, they won't get this job. If the applicant
-					// comes later, they will get displaced at that time.
-					if (a.expire < b.expire) return 1;
-					else if (a.expire > b.expire) return -1;
-					else if (a.strike > b.strike) return 1;
-					else if (a.strike < b.strike) return -1;
-					else return 0;					
-				});
-				
-				let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall;
-				for (let i = 0; i < append; i++) {
-					 optionsBySymbol[symbol].defCall.push({expire:"never", strike:0});
+		
+		let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
+			let quantity = parseInt(accountOptions[i].quantity);
+			for(let j = 0; j < quantity; j++) {
+				let dat = {expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+				if (accountOptions[i].type == "short") {
+					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
+					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
 				}
-				
-				optionsBySymbol[symbol].shortCall.sort(function(b, a) { // needed due to the break in the loop!
-					if (a.expire > b.expire) return 1;
-					else if (a.expire < b.expire) return -1;
-					else if (a.strike < b.strike) return 1;
-					else if (a.strike > b.strike) return -1;
-					else return 0;					
-				});
-				optionsBySymbol[symbol].defCall.sort(function(b, a) {
-					if (a.expire < b.expire) return 1;
-					else if (a.expire > b.expire) return -1;
-					else if (a.strike < b.strike) return 1;
-					else if (a.strike > b.strike) return -1;
-					else return 0;					
-				});
-				
-				pair(symbol);
-				let totalCollateral = condor(symbol, true);
-				
-				if (symbol == "BABA") console.log("Starting to look for collateral");
-				for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
-					let me = optionsBySymbol[symbol].shortPut[i];
-					let myStrike = me.strike;
-					let friend = me.friend;
-					if (friend) {
-						clearOption(friend);
-						clearOption(me);
-						me.strike = 0;
-
-						if (symbol == "BABA") console.log("My strike: " + myStrike);
-						findPutPair(symbol, friend);
-						me.closeRelease = totalCollateral - condor(symbol);
-						if (symbol == "BABA") console.log("My released collat: " + me.closeRelease);
-						
-
-						me.strike = myStrike;
-						findPutPair(symbol, null, me);
-					} else me.closeRelease = myStrike;
+				if (accountOptions[i].type == "long") {
+					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].defCall.push(dat);
+					else optionsBySymbol[optionData.chain_symbol].defPut.push(dat);
 				}
-				
-				for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
-					let me = optionsBySymbol[symbol].shortCall[i];
-					let myExpire = me.expire;
-					let friend = me.friend;
-					
+			}
+		});
+		promises.push(task);
+		taskBySymbol[accountOptions[i].chain_symbol].push(task);
+	}
+	
+	
+	let queryString = "";
+	D('unpaired').textContent = "";
+	D('itm').textContent = "";
+	for (let symbol in taskBySymbol) {
+		queryString += symbol + ",";
+		Promise.all(taskBySymbol[symbol]).then(function() {
+			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
+				if (a.expire > b.expire) return 1;
+				else if (a.expire < b.expire) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
+				else return 0;					
+			});
+			optionsBySymbol[symbol].defPut.sort(function(b, a) { 
+				// not really needed: the job applicants can come in any order, and find the best job
+				// for them. If there is a better job applicant before them, they won't get this job. If the applicant
+				// comes later, they will get displaced at that time.
+				if (a.expire < b.expire) return 1;
+				else if (a.expire > b.expire) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
+				else return 0;					
+			});
+
+			let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall;
+			for (let i = 0; i < append; i++) {
+				 optionsBySymbol[symbol].defCall.push({expire:"never", strike:0});
+			}
+
+			optionsBySymbol[symbol].shortCall.sort(function(b, a) { // needed due to the break in the loop!
+				if (a.expire > b.expire) return 1;
+				else if (a.expire < b.expire) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
+				else return 0;					
+			});
+			optionsBySymbol[symbol].defCall.sort(function(b, a) {
+				if (a.expire < b.expire) return 1;
+				else if (a.expire > b.expire) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
+				else return 0;					
+			});
+
+			pair(symbol);
+			let totalCollateral = condor(symbol, true);
+
+			if (symbol == "BABA") console.log("Starting to look for collateral");
+			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
+				let me = optionsBySymbol[symbol].shortPut[i];
+				let myStrike = me.strike;
+				let friend = me.friend;
+				if (friend) {
 					clearOption(friend);
 					clearOption(me);
-					me.expire = "never";
-					me.collateral = 0;
-										
-					findCallPair(symbol, friend);			
+					me.strike = 0;
+
+					if (symbol == "BABA") console.log("My strike: " + myStrike);
+					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
-					
-					me.condorPair = [];
-					for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
-						let mypair = optionsBySymbol[symbol].shortPut[j];
-						let myPairStrike = mypair.strike;
-						let pairFriend = mypair.friend;
-						if (pairFriend) {
-							clearOption(pairFriend);
-							clearOption(mypair);
-							mypair.strike = 0;
+					if (symbol == "BABA") console.log("My released collat: " + me.closeRelease);
 
-							findPutPair(symbol, pairFriend);
-							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
-							mypair.strike = myPairStrike;
-							findPutPair(symbol, null, mypair);
-						}
-					}
-					
-					me.expire = myExpire;
-					delete me.collateral;
-					findCallPair(symbol, null, me);
-				}
-				
-				
-				D('release').textContent = "";	
-				D('condorRelease').textContent = "";
-				let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
-				fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
-					+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
-					return response.json();
-				}).then(function(data) {
-				console.log(data);
-				if (data.status == "SUCCESS") {	
-					let myPuts = optionsBySymbol[symbol].shortPut;
-					let myCalls = optionsBySymbol[symbol].shortCall;
-
-					for (let contractDate in data.putExpDateMap) {
-						let expiration = contractDate.substring(0, 10);
-
-						let bestPut = null;
-						myPuts.forEach(function(contract) {
-						if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
-							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
-						}
-						});
-
-						let bestCondor = {call:null, put:null, rate:Infinity};
-						let bestCall = null;
-						myCalls.forEach(function(contract) {
-						if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
-							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
-							
-							contract.condorPair.forEach(function(pair) {
-								let contract2 = pair.condorPair;
-							if (contract2.expire == expiration && data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()]) {
-								contract2.premium = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].ask;
-								let minExp = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
-								if (expirationM < minExp) minExp = expirationM
-								let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
-								if (condorRate < bestCondor.rate) {
-									bestCondor = {call:contract, put:contract2, prem:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
-								}
-							}
-							});
-							
-						}
-						});
-						if (bestPut) {						
-							let li = make('li');	
-							li.title = bestPut.rate;
-							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-							li.onmouseleave = function() { this.style.fontWeight = ""; }
-							li.style.textAlign = "center";	
-							addCol(symbol, "75px", li);	
-							addCol("Put", "75px", li);
-							addCol(bestPut.expire, "125px", li);
-							addCol("$" + bestPut.strike/100, "75px", li);
-							let col = addCol(bestPut.premium.toFixed(2), "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol("$" + bestPut.closeRelease, "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
-							col.style.backgroundColor = "#ddf";
-							
-							let toAdd = true;
-							for (let j = 0; j < D('release').children.length; j++) {
-								if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-									D('release').insertBefore(li, D('release').children[j]);
-									toAdd = false;
-									break;
-								}
-							}
-							if (toAdd) D('release').appendChild(li);
-						}
-						if (bestCall) {					
-							let li = make('li');	
-							li.title = bestCall.rate;
-							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-							li.onmouseleave = function() { this.style.fontWeight = ""; }
-							li.style.textAlign = "center";	
-							addCol(symbol, "75px", li);	
-							addCol("Call", "75px", li);
-							addCol(bestCall.expire, "125px", li);
-							addCol("$" + bestCall.strike/100, "75px", li);
-							let col = addCol(bestCall.premium.toFixed(2), "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol("$" + bestCall.closeRelease, "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
-							col.style.backgroundColor = "#ddf";
-							
-							let toAdd = true;
-							for (let j = 0; j < D('release').children.length; j++) {
-								if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-									D('release').insertBefore(li, D('release').children[j]);
-									toAdd = false;
-									break;
-								}
-							}
-							if (toAdd) D('release').appendChild(li);
-						}
-						if (bestCondor.release) {										
-							let li = make('li');
-							li.title = bestCondor.rate;
-							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-							li.onmouseleave = function() { this.style.fontWeight = ""; }
-							li.style.textAlign = "center";	
-							addCol(symbol, "75px", li);	
-							addCol("Call", "75px", li);
-							addCol(bestCondor.call.expire, "125px", li);
-							addCol("$" + bestCondor.call.strike/100, "75px", li);
-							
-							addCol("Put", "75px", li);
-							addCol(bestCondor.put.expire, "125px", li);
-							addCol("$" + bestCondor.put.strike/100, "75px", li);
-							
-							let col = addCol(bestCondor.prem.toFixed(2), "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol("$" + bestCondor.release, "75px", li);
-							col.style.backgroundColor = "#ddf";
-							col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
-							col.style.backgroundColor = "#ddf";
-							
-							let toAdd = true;
-							for (let j = 0; j < D('condorRelease').children.length; j++) {
-								if (parseFloat(li.title) < parseFloat(D('condorRelease').children[j].title)) {
-									D('condorRelease').insertBefore(li, D('condorRelease').children[j]);
-									toAdd = false;
-									break;
-								}
-							}
-							if (toAdd) D('condorRelease').appendChild(li);
-						}
-					}
-
-				} 			       	       
-				});
+					me.strike = myStrike;
+					findPutPair(symbol, null, me);
+				} else me.closeRelease = myStrike;
 			}
-			
-			D('itm').textContent = "";
-			fetch("https://ansyble.herokuapp.com/cors/", 
-				{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
+
+			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
+				let me = optionsBySymbol[symbol].shortCall[i];
+				let myExpire = me.expire;
+				let friend = me.friend;
+
+				clearOption(friend);
+				clearOption(me);
+				me.expire = "never";
+				me.collateral = 0;
+
+				findCallPair(symbol, friend);			
+				me.closeRelease = totalCollateral - condor(symbol);
+
+				me.condorPair = [];
+				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
+					let mypair = optionsBySymbol[symbol].shortPut[j];
+					let myPairStrike = mypair.strike;
+					let pairFriend = mypair.friend;
+					if (pairFriend) {
+						clearOption(pairFriend);
+						clearOption(mypair);
+						mypair.strike = 0;
+
+						findPutPair(symbol, pairFriend);
+						me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
+
+						mypair.strike = myPairStrike;
+						findPutPair(symbol, null, mypair);
+					}
+				}
+
+				me.expire = myExpire;
+				delete me.collateral;
+				findCallPair(symbol, null, me);
+			}
+
+
+			D('release').textContent = "";	
+			D('condorRelease').textContent = "";
+			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
+			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
 			}).then(function(data) {
-				for (let i = 0; i < data.quoteResponse.result.length; i++) {
-					let myPuts = optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut;
-					let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall;
+			console.log(data);
+			if (data.status == "SUCCESS") {	
+				let myPuts = optionsBySymbol[symbol].shortPut;
+				let myCalls = optionsBySymbol[symbol].shortCall;
 
+				for (let contractDate in data.putExpDateMap) {
+					let expiration = contractDate.substring(0, 10);
+
+					let bestPut = null;
 					myPuts.forEach(function(contract) {
-						if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
-							let li = make('li');	
-							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-							li.onmouseleave = function() { this.style.fontWeight = ""; }
-							li.style.textAlign = "center";	
-							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
-							addCol("Put", "100px", li);
-							addCol(contract.expire, "150px", li);
-							addCol("$" + contract.strike/100, "100px", li);
-							D('itm').appendChild(li);
-						}
+					if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+						contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+						let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
+						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+						if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
+					}
 					});
 
+					let bestCondor = {call:null, put:null, rate:Infinity};
+					let bestCall = null;
 					myCalls.forEach(function(contract) {
-						if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
-							let li = make('li');	
-							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-							li.onmouseleave = function() { this.style.fontWeight = ""; }
-							li.style.textAlign = "center";	
-							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
-							addCol("Call", "100px", li);
-							addCol(contract.expire, "150px", li);
-							addCol("$" + contract.strike/100, "100px", li);
-							D('itm').appendChild(li);
+					if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+						contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+						let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
+						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+						if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
+
+						contract.condorPair.forEach(function(pair) {
+							let contract2 = pair.condorPair;
+						if (contract2.expire == expiration && data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()]) {
+							contract2.premium = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].ask;
+							let minExp = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
+							if (expirationM < minExp) minExp = expirationM
+							let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
+							if (condorRate < bestCondor.rate) {
+								bestCondor = {call:contract, put:contract2, prem:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
+							}
 						}
+						});
+
+					}
 					});
+					if (bestPut) {						
+						let li = make('li');	
+						li.title = bestPut.rate;
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(symbol, "75px", li);	
+						addCol("Put", "75px", li);
+						addCol(bestPut.expire, "125px", li);
+						addCol("$" + bestPut.strike/100, "75px", li);
+						let col = addCol(bestPut.premium.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + bestPut.closeRelease, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+
+						let toAdd = true;
+						for (let j = 0; j < D('release').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+								D('release').insertBefore(li, D('release').children[j]);
+								toAdd = false;
+								break;
+							}
+						}
+						if (toAdd) D('release').appendChild(li);
+					}
+					if (bestCall) {					
+						let li = make('li');	
+						li.title = bestCall.rate;
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(symbol, "75px", li);	
+						addCol("Call", "75px", li);
+						addCol(bestCall.expire, "125px", li);
+						addCol("$" + bestCall.strike/100, "75px", li);
+						let col = addCol(bestCall.premium.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + bestCall.closeRelease, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+
+						let toAdd = true;
+						for (let j = 0; j < D('release').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+								D('release').insertBefore(li, D('release').children[j]);
+								toAdd = false;
+								break;
+							}
+						}
+						if (toAdd) D('release').appendChild(li);
+					}
+					if (bestCondor.release) {										
+						let li = make('li');
+						li.title = bestCondor.rate;
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(symbol, "75px", li);	
+						addCol("Call", "75px", li);
+						addCol(bestCondor.call.expire, "125px", li);
+						addCol("$" + bestCondor.call.strike/100, "75px", li);
+
+						addCol("Put", "75px", li);
+						addCol(bestCondor.put.expire, "125px", li);
+						addCol("$" + bestCondor.put.strike/100, "75px", li);
+
+						let col = addCol(bestCondor.prem.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + bestCondor.release, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+
+						let toAdd = true;
+						for (let j = 0; j < D('condorRelease').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('condorRelease').children[j].title)) {
+								D('condorRelease').insertBefore(li, D('condorRelease').children[j]);
+								toAdd = false;
+								break;
+							}
+						}
+						if (toAdd) D('condorRelease').appendChild(li);
+					}
 				}
+
+			} 			       	       
 			});
 			
 		});
+	}
+	
+	Promise.all(promises).then(function() {
+		fetch("https://ansyble.herokuapp.com/cors/", 
+			{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
+			return response.json();
+		}).then(function(data) {
+			for (let i = 0; i < data.quoteResponse.result.length; i++) {
+				let myPuts = optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut;
+				let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall;
+
+				myPuts.forEach(function(contract) {
+					if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
+						let li = make('li');	
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol("Put", "100px", li);
+						addCol(contract.expire, "150px", li);
+						addCol("$" + contract.strike/100, "100px", li);
+						D('itm').appendChild(li);
+					}
+				});
+
+				myCalls.forEach(function(contract) {
+					if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
+						let li = make('li');	
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol("Call", "100px", li);
+						addCol(contract.expire, "150px", li);
+						addCol("$" + contract.strike/100, "100px", li);
+						D('itm').appendChild(li);
+					}
+				});
+			}
+		});
+
 	});
+});
 }	
 	
 function pair(symbol) {

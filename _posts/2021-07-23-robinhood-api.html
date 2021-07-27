@@ -340,20 +340,20 @@ function findPutPair(symbol, defPut, shortPut) {
 	}	
 	
 	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > maxGain) {
-			maxGain = putGain(defPut, shortPut);
+		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut, subject) > maxGain) {
+			maxGain = putGain(defPut, shortPut, subject);
 			candidate = subject;
 			if (candidate.friend) return true;
 		}
 		return false;
 	}
 
-	function putGain(defPut, shortPut) {
+	function putGain(defPut, shortPut, subject) {
 		let release;
 		if (defPut.strike < shortPut.strike) release = defPut.strike;
 		else release = shortPut.strike;
-		if (!shortPut.friend) return release;
-		return release - shortPut.release;
+		if (!subject.friend) return release;
+		return release - subject.release;
 	}
 }
 	

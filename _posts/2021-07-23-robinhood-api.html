@@ -446,7 +446,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	Promise.all(promises).then(function() {
-		D('optionButton').disabled = true;
+		D('optionButton').disabled = false;
 		fetch("https://ansyble.herokuapp.com/cors/", 
 			{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
 			return response.json();

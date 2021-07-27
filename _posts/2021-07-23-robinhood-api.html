@@ -244,14 +244,15 @@ function getOptions() {
 					clearOption(friend);
 					clearOption(me);
 					me.strike = Infinity;
-					
-					findCallPair(symbol, friend);
+										
+					if (symbol == "MVIS") console.log(me.friend);
+					findCallPair(symbol, friend);					
+					if (symbol == "MVIS") console.log(me.friend);
 					me.closeRelease = totalCollateral - condor(symbol);
-					
 					me.strike = myStrike;
-					if (symbol == "MVIS") console.log(me);
+					if (symbol == "MVIS") console.log(me.friend);
 					findCallPair(symbol, null, me);
-					if (symbol == "MVIS") console.log(me);
+					if (symbol == "MVIS") console.log(me.friend);
 				}
 			}
 			

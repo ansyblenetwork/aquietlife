@@ -238,18 +238,20 @@ function getOptions() {
 				
 				for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 					let me = optionsBySymbol[symbol].shortCall[i];
-					let myStrike = me.strike;
+					let myExpire = me.expire;
 					let friend = me.friend;
 					
 					clearOption(friend);
 					clearOption(me);
-					me.strike = Infinity;
+					me.strike = "never";
+					me.collateral = 0;
 										
 					if (symbol == "MVIS") console.log(me.friend);
 					findCallPair(symbol, friend);					
 					if (symbol == "MVIS") console.log(me.friend);
 					me.closeRelease = totalCollateral - condor(symbol);
-					me.strike = myStrike;
+					me.expire = myExpire;
+					delete me.collateral;
 					if (symbol == "MVIS") console.log(me.friend);
 					findCallPair(symbol, null, me);
 					if (symbol == "MVIS") console.log(me.friend);

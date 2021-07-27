@@ -44,6 +44,10 @@ A Robinhood login via API.
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="release"></ul>
 		</div>
 		
+		<div style="padding-top:20px">Cheapest condor:
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
+		</div>
+		
 	</div>
 
 </div>
@@ -268,7 +272,7 @@ function getOptions() {
 							mypair.strike = 0;
 
 							findPutPair(symbol, pairFriend);
-							me.condorPair.push({condorFriend:mypair, condorCollateral:totalCollateral - condor(symbol)});
+							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
 							mypair.strike = myPairStrike;
 							findPutPair(symbol, null, mypair);
@@ -315,6 +319,7 @@ function getOptions() {
 						}
 						});
 
+						let bestCondor = {call:null, put:null, rate:Infinity};
 						myCalls.forEach(function(contract) {
 						if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
 							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
@@ -331,8 +336,39 @@ function getOptions() {
 								addCol(contract.rate.toFixed(2), "100px", li);
 								D('release').appendChild(li);								
 							}
+							
+							contract.condorPair.forEach(function(pair) {
+								let contract2 = pair.condorPair;
+							if (contract2.expire == expiration && data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()]) {
+								contract2.premium = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].ask;
+								let minExp = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
+								if (expirationM < minExp) minExp = expirationM
+								let condorRate = 100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease)*(1000*60*60*66 + minExp-Date.now()));
+								if (condorRate < bestCondor.rate) {
+									bestCondor = {call:contract, put:contract2, rate:condorRate, release:pair.condorRelease};
+								}
+							}
+							});
+							
 						}
 						});
+						if (bestCondor.release) {
+							D('condorRelease').textConteent = "";												
+							let li = make('li');
+							li.style.textAlign = "center";	
+							addCol(symbol, "100px", li);	
+							addCol("Call", "100px", li);
+							addCol(bestCondor.call.expire, "150px", li);
+							addCol("$" + bestCondor.call.strike/100, "100px", li);
+							
+							addCol("Put", "100px", li);
+							addCol(bestCondor.put.expire, "150px", li);
+							addCol("$" + bestCondor.put.strike/100, "100px", li);
+							
+							addCol("$" + bestContor.release, "100px", li);
+							addCol(bestCondor.rate.toFixed(2), "100px", li);
+							D('condorRelease').appendChild(li);	
+						}
 					}
 
 				} 			       	       

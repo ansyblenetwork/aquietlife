@@ -338,7 +338,7 @@ function findPutJob(symbol, defPut) {
 }
 	
 function condor(symbol) {
-	let data = optionsBySymbol[symbol],
+	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	data.shortCall.forEach(function(contract) {
 		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};

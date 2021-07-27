@@ -157,6 +157,7 @@ function getOptions() {
 		optionsBySymbol = {};
 		D('unpaired').textContent = "";
 		D('itm').textContent = "";
+		D('release').textContent = "";
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	

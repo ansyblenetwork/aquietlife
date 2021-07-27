@@ -323,6 +323,9 @@ function findCallPair(symbol, defCall, shortCall) {
 	
 	if (candidate) {
 		let orphan = candidate.friend;
+		orphan.friend = null;
+		orphan.collateral = null;
+		
 		candidate.friend = seeker;
 		seeker.friend = candidate;
 		candidate.collateral = collateral;
@@ -364,6 +367,10 @@ function findPutPair(symbol, defPut, shortPut) {
 	
 	if (candidate) {
 		let orphan = candidate.friend;
+		orphan.friend = null;
+		orphan.release = 0;
+		orphan.collateral = null;
+		
 		candidate.friend = seeker;
 		seeker.friend = candidate;
 		if (!candidate.release) candidate.release = 0;

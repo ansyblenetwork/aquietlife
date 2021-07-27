@@ -209,35 +209,34 @@ function getOptions() {
 				{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
 				return response.json();
 			}).then(function(data) {
-				if (data.quoteResponse.result.length > 0) {
-					for (let i = 0; i < data.quoteResponse.result.length; i++) {
-						let myPuts = optionsBySymbol[data.quoteResponse.result[i]].shortPut;
-						let myCalls = optionsBySymbol[data.quoteResponse.result[i]].shortCalls;
-						
-						myPuts.forEach(function(contract) {
-							if (contract.strike > data.quoteResponse.result[i].regularMarketPrice) {
-								let li = make('li');	
-								li.style.textAlign = "center";	
-								addCol(data.quoteResponse.result[i], "100px", li);	
-								addCol("Put", "100px", li);
-								addCol(contract.expire, "150px", li);
-								addCol("$" + contract.strike, "100px", li);
-								D('itm').appendChild(li);
-							}
-						});
-						
-						myCalls.forEach(function(contract) {
-							if (contract.strike < data.quoteResponse.result[i].regularMarketPrice) {
-								let li = make('li');	
-								li.style.textAlign = "center";	
-								addCol(data.quoteResponse.result[i], "100px", li);	
-								addCol("Call", "100px", li);
-								addCol(contract.expire, "150px", li);
-								addCol("$" + contract.strike, "100px", li);
-								D('itm').appendChild(li);
-							}
-						});
-					}
+				console.log("trying to find itm contracts");
+				for (let i = 0; i < data.quoteResponse.result.length; i++) {
+					let myPuts = optionsBySymbol[data.quoteResponse.result[i]].shortPut;
+					let myCalls = optionsBySymbol[data.quoteResponse.result[i]].shortCalls;
+
+					myPuts.forEach(function(contract) {
+						if (contract.strike > data.quoteResponse.result[i].regularMarketPrice) {
+							let li = make('li');	
+							li.style.textAlign = "center";	
+							addCol(data.quoteResponse.result[i], "100px", li);	
+							addCol("Put", "100px", li);
+							addCol(contract.expire, "150px", li);
+							addCol("$" + contract.strike, "100px", li);
+							D('itm').appendChild(li);
+						}
+					});
+
+					myCalls.forEach(function(contract) {
+						if (contract.strike < data.quoteResponse.result[i].regularMarketPrice) {
+							let li = make('li');	
+							li.style.textAlign = "center";	
+							addCol(data.quoteResponse.result[i], "100px", li);	
+							addCol("Call", "100px", li);
+							addCol(contract.expire, "150px", li);
+							addCol("$" + contract.strike, "100px", li);
+							D('itm').appendChild(li);
+						}
+					});
 				}
 			});
 			

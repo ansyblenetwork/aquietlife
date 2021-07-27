@@ -264,34 +264,52 @@ function pair(symbol) {
 		findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
 	}
 
-	for (let i = 0; i < optionsBySymbol[symbol].defCall.length; i++) {
-		findCallJob(symbol, optionsBySymbol[symbol].defCall[i]);
+	for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
+		findCallPair(symbol, null, optionsBySymbol[symbol].shortCall[i]);
 	}
 }
 	
-function findCallJob(symbol, defCall) {	
+function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let collateral = Infinity;
 	let candidate = null;
-	for (let j = 0; j < data.shortCall.length; j++) {
-		if (defCall.expire >= data.shortCall[j].expire 
-		    && (callGain(defCall, data.shortCall[j]) > maxGain || (maxGain == Infinity && callCollateral(defCall, data.shortCall[j]) < collateral ))) {
-			maxGain = callGain(defCall, data.shortCall[j]);
-			collateral = callCollateral(defCall, data.shortCall[j]);
-			candidate = data.shortCall[j];
-			if (callGain(defCall, data.shortCall[j]) == Infinity) break;
-			if (candidate.friend) break;
+	let seeker = defCall;
+	if (!seeker) seeker = shortCall;
+	if (defCall) {
+		for (let j = 0; j < data.shortCall.length; j++) {
+			if (evaluate(defCall, data.shortCall[j], data.shortCall[j])) break;
 		}
 	}
+	if (shortCall) {
+		for (let j = 0; j < data.defCall.length; j++) {
+			if (evaluate(data.defCall[j], shortCall, data.defCall[j])) break;
+		}
+	}
+	
+	function evaluate(defCall, shortCall, subject) {
+		if (defCall.expire >= shortCall.expire 
+		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+			maxGain = callGain(defCall, shortCall, subject);
+			collateral = callCollateral(defCall, shortCall);
+			candidate = subject;
+			if (callGain(defCall, shortCall, subject) == Infinity) return true;
+			if (candidate.friend) return true;
+		}
+		return false;
+	}
+	
 	if (candidate) {
 		let orphan = candidate.friend;
-		candidate.friend = defCall;
-		defCall.friend = candidate;
+		candidate.friend = seeker;
+		seeker.friend = candidate;
 		candidate.collateral = collateral;
-		defCall.collateral = collateral;
+		seeker.collateral = collateral;
 
-		if (orphan) findCallJob(symbol, orphan);
+		if (orphan) {
+			if (defCall) findCallPair(symbol, orphan);
+			else if (shortCall) findCallPair(symbol, null, orphan);
+		}
 	}	
 
 	function callCollateral(defCall, shortCall) {	
@@ -299,9 +317,9 @@ function findCallJob(symbol, defCall) {
 		return 0;
 	}
 
-	function callGain(defCall, shortCall) {
-		if (!shortCall.friend) return Infinity;
-		return shortCall.collateral - callCollateral(defCall, shortCall);
+	function callGain(defCall, shortCall, subject) {
+		if (!subject.friend) return Infinity;
+		return subject.collateral - callCollateral(defCall, shortCall);
 	}
 }
 
@@ -349,9 +367,8 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 
 	function putGain(defPut, shortPut, subject) {
-		let release;
+		let release = shortPut.strike;
 		if (defPut.strike < shortPut.strike) release = defPut.strike;
-		else release = shortPut.strike;
 		if (!subject.friend) return release;
 		return release - subject.release;
 	}

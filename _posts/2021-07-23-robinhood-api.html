@@ -259,9 +259,7 @@ function getOptions() {
 					me.expire = "never";
 					me.collateral = 0;
 										
-					if (symbol == "MVIS") console.log(me.friend);
-					findCallPair(symbol, friend);					
-					if (symbol == "MVIS") console.log(me.friend);
+					findCallPair(symbol, friend);			
 					me.closeRelease = totalCollateral - condor(symbol);
 					
 					me.condorPair = [];
@@ -284,9 +282,7 @@ function getOptions() {
 					
 					me.expire = myExpire;
 					delete me.collateral;
-					if (symbol == "MVIS") console.log(me.friend);
 					findCallPair(symbol, null, me);
-					if (symbol == "MVIS") console.log(me.friend);
 				}
 				
 				

@@ -211,6 +211,7 @@ function getOptions() {
 			}).then(function(data) {
 				console.log("trying to find itm contracts");
 				for (let i = 0; i < data.quoteResponse.result.length; i++) {
+					console.log(data.quoteResponse);
 					let myPuts = optionsBySymbol[data.quoteResponse.result[i]].shortPut;
 					let myCalls = optionsBySymbol[data.quoteResponse.result[i]].shortCalls;
 

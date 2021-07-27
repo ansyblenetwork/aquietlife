@@ -247,7 +247,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			pair(symbol);
 			let totalCollateral = condor(symbol, true);
 
-			if (symbol == "BABA") console.log("Starting to look for collateral");
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
 				let myStrike = me.strike;
@@ -257,11 +256,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					clearOption(me);
 					me.strike = 0;
 
-					if (symbol == "BABA") console.log("My strike: " + myStrike);
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
-					if (symbol == "BABA") console.log("My released collat: " + me.closeRelease);
-
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);

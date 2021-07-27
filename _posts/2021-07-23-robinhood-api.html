@@ -256,6 +256,25 @@ function getOptions() {
 					findCallPair(symbol, friend);					
 					if (symbol == "MVIS") console.log(me.friend);
 					me.closeRelease = totalCollateral - condor(symbol);
+					
+					me.condorPair = [];
+					for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
+						let mypair = optionsBySymbol[symbol].shortPut[i];
+						let myPairStrike = mypair.strike;
+						let pairFriend = mypair.friend;
+						if (pairFriend) {
+							clearOption(pairFriend);
+							clearOption(mypair);
+							mypair.strike = 0;
+
+							findPutPair(symbol, pairFriend);
+							me.condorPair.push({condorFriend:mypair, condorCollateral:totalCollateral - condor(symbol)});
+
+							mypair.strike = myPairStrike;
+							findPutPair(symbol, null, mypair);
+						} else mypair.closeRelease = myStrike;
+					}
+					
 					me.expire = myExpire;
 					delete me.collateral;
 					if (symbol == "MVIS") console.log(me.friend);

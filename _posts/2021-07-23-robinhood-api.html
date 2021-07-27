@@ -301,44 +301,25 @@ function getOptions() {
 					for (let contractDate in data.putExpDateMap) {
 						let expiration = contractDate.substring(0, 10);
 
+						let bestPut = null;
 						myPuts.forEach(function(contract) {
 						if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
 							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if (contract.rate < 1) {								
-								let li = make('li');	
-								li.style.textAlign = "center";	
-								addCol(symbol, "100px", li);	
-								addCol("Put", "75px", li);
-								addCol(contract.expire, "150px", li);
-								addCol("$" + contract.strike/100, "100px", li);
-								addCol("$" + contract.premium.toFixed(2), "100px", li);
-								addCol("$" + contract.closeRelease, "100px", li);
-								addCol(contract.rate.toFixed(2), "100px", li);
-								D('release').appendChild(li);								
-							}
+
+							if (contract.rate < bestPut.rate) bestPut = contract;
 						}
 						});
 
 						let bestCondor = {call:null, put:null, rate:Infinity};
+						let bestCall = null;
 						myCalls.forEach(function(contract) {
 						if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
 							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-							if (contract.rate < 1) {								
-								let li = make('li');	
-								li.style.textAlign = "center";	
-								addCol(symbol, "100px", li);	
-								addCol("Call", "75px", li);
-								addCol(contract.expire, "150px", li);
-								addCol("$" + contract.strike/100, "100px", li);
-								addCol("$" + contract.premium.toFixed(2), "100px", li);
-								addCol("$" + contract.closeRelease, "100px", li);
-								addCol(contract.rate.toFixed(2), "100px", li);
-								D('release').appendChild(li);								
-							}
+							if (contract.rate < bestCall.rate) bestCall = contract;
 							
 							contract.condorPair.forEach(function(pair) {
 								let contract2 = pair.condorPair;
@@ -355,6 +336,30 @@ function getOptions() {
 							
 						}
 						});
+						if (bestPut) {						
+							let li = make('li');	
+							li.style.textAlign = "center";	
+							addCol(symbol, "100px", li);	
+							addCol("Put", "75px", li);
+							addCol(bestPut.expire, "150px", li);
+							addCol("$" + bestPut.strike/100, "100px", li);
+							addCol("$" + bestPut.premium.toFixed(2), "100px", li);
+							addCol("$" + bestPut.closeRelease, "100px", li);
+							addCol(bestPut.rate.toFixed(2), "100px", li);
+							D('release').appendChild(li);	
+						}
+						if (bestCall) {					
+							let li = make('li');	
+							li.style.textAlign = "center";	
+							addCol(symbol, "100px", li);	
+							addCol("Call", "75px", li);
+							addCol(bestCall.expire, "150px", li);
+							addCol("$" + bestCall.strike/100, "100px", li);
+							addCol("$" + bestCall.premium.toFixed(2), "100px", li);
+							addCol("$" + bestCall.closeRelease, "100px", li);
+							addCol(bestCall.rate.toFixed(2), "100px", li);
+							D('release').appendChild(li);	
+						}
 						if (bestCondor.release) {										
 							let li = make('li');
 							li.style.textAlign = "center";	

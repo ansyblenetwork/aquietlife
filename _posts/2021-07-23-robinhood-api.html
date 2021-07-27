@@ -341,30 +341,42 @@ function getOptions() {
 						});
 						if (bestPut) {						
 							let li = make('li');	
+							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
 							addCol(symbol, "75px", li);	
 							addCol("Put", "75px", li);
 							addCol(bestPut.expire, "125px", li);
 							addCol("$" + bestPut.strike/100, "75px", li);
-							addCol(bestPut.premium.toFixed(2), "75px", li);
-							addCol("$" + bestPut.closeRelease, "75px", li);
-							addCol(Math.round(bestPut.rate) + "%", "75px", li);
+							let col = addCol(bestPut.premium.toFixed(2), "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol("$" + bestPut.closeRelease, "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
+							col.style.backgroundColor = "ddf";
 							D('release').appendChild(li);	
 						}
 						if (bestCall) {					
 							let li = make('li');	
+							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
 							addCol(symbol, "75px", li);	
 							addCol("Call", "75px", li);
 							addCol(bestCall.expire, "125px", li);
 							addCol("$" + bestCall.strike/100, "75px", li);
-							addCol(bestCall.premium.toFixed(2), "75px", li);
-							addCol("$" + bestCall.closeRelease, "75px", li);
-							addCol(Math.round(bestCall.rate) + "%", "75px", li);
+							let col = addCol(bestCall.premium.toFixed(2), "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol("$" + bestCall.closeRelease, "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
+							col.style.backgroundColor = "ddf";
 							D('release').appendChild(li);	
 						}
 						if (bestCondor.release) {										
 							let li = make('li');
+							li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+							li.onmouseleave = function() { this.style.fontWeight = ""; }
 							li.style.textAlign = "center";	
 							addCol(symbol, "75px", li);	
 							addCol("Call", "75px", li);
@@ -375,9 +387,12 @@ function getOptions() {
 							addCol(bestCondor.put.expire, "125px", li);
 							addCol("$" + bestCondor.put.strike/100, "75px", li);
 							
-							addCol(bestCondor.prem.toFixed(2), "75px", li);
-							addCol("$" + bestCondor.release, "75px", li);
-							addCol(Math.round(bestCondor.rate) + "%", "75px", li);
+							let col = addCol(bestCondor.prem.toFixed(2), "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol("$" + bestCondor.release, "75px", li);
+							col.style.backgroundColor = "ddf";
+							col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
+							col.style.backgroundColor = "ddf";
 							D('condorRelease').appendChild(li);	
 						}
 					}

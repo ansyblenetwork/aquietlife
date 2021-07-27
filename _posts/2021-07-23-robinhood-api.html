@@ -625,6 +625,7 @@ function condor(symbol, build) {
 		
 		if (build && expirePuts > 0) {
 			let li = make('li');
+			li.title = expirePuts;
 			li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 			li.onmouseleave = function() { this.style.fontWeight = ""; }
 			li.style.textAlign = "center";					
@@ -632,7 +633,15 @@ function condor(symbol, build) {
 			addCol("Call", "100px", li);
 			addCol(expiration, "150px", li);
 			addCol("$" + expirePuts, "100px", li);
-			D('unpaired').appendChild(li);
+			let toAdd = true;
+			for (let j = 0; j < D('unpaired').children.length; j++) {
+				if (parseFloat(li.title) < parseFloat(D('unpaired').children[j].title)) {
+					D('unpaired').insertBefore(li, D('unpaired').children[j]);
+					toAdd = false;
+					break;
+				}
+			}
+			if (toAdd) D('unpaired').appendChild(li);
 		}
 		totalPuts += expirePuts;
 		

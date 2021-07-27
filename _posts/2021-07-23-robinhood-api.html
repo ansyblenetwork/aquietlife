@@ -53,6 +53,7 @@ var authData = {};
 var authHeader = {};
 	
 var optionsBySymbol = {};
+var TDAData = {};
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
@@ -152,6 +153,7 @@ function getOptions() {
 		let promises = [];
 		optionsBySymbol = {};
 		D('unpaired').textContent = "";
+		D('itm').textContent = "";
 		for (let i = 0; i < accountOptions.length; i++) {			
 			if (!optionsBySymbol[accountOptions[i].chain_symbol]) 
 				optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};	
@@ -256,6 +258,34 @@ function getOptions() {
 					findCallPair(symbol, null, me);
 					if (symbol == "MVIS") console.log(me.friend);
 				}
+				
+				
+				let d = new Date(Date.now() + 1000*60*60*24*12).toISOString();	
+				fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+					+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
+					return response.json();
+				}).then(function(data) {
+					console.log(data);
+					if (data.status == "SUCCESS") {	
+						let myPuts = optionsBySymbol[symbol].shortPut;
+						let myCalls = optionsBySymbol[symbol].shortCall;
+						
+						for (let contractDate in data.putExpDateMap) {
+							let expiration = contractDate.subString(0, 10);
+							
+							myPuts.forEach(function(contract) {
+								if (contract.expire == expiration)
+									contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							}
+								       
+							myCalls.forEach(function(contract) {
+								if (contract.expire == expiration)
+									contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							}
+						}
+								       
+					} 			       	       
+				});
 			}
 			
 			

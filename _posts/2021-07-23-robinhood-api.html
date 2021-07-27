@@ -60,7 +60,7 @@ var TDAData = {};
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
-	if (localStorage.getItem("authString")) D('profileData').style.display = "initial";
+	if (localStorage.getItem("authString")) D('profileData').style.display = "block";
 } 	
 	
 function D(str) { return document.getElementById(str); }

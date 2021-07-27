@@ -271,7 +271,7 @@ function getOptions() {
 						let myCalls = optionsBySymbol[symbol].shortCall;
 						
 						for (let contractDate in data.putExpDateMap) {
-							let expiration = contractDate.subString(0, 10);
+							let expiration = contractDate.substring(0, 10);
 							
 							myPuts.forEach(function(contract) {
 								if (contract.expire == expiration)

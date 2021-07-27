@@ -40,6 +40,9 @@ A Robinhood login via API.
 		<div style="padding-top:20px">Near or in the money:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>
+		<div style="padding-top:20px">Cheap collateral (excludes condors):
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="release"></ul>
+		</div>
 		
 	</div>
 
@@ -278,6 +281,15 @@ function getOptions() {
 							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+							if (contract.rate < 0.10) {								
+								let li = make('li');	
+								li.style.textAlign = "center";	
+								addCol(symbol, "100px", li);	
+								addCol("Put", "100px", li);
+								addCol(contract.expire, "150px", li);
+								addCol("$" + contract.strike/100, "100px", li);
+								D('release').appendChild(li);								
+							}
 						}
 						});
 
@@ -286,6 +298,15 @@ function getOptions() {
 							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+							if (contract.rate < 0.10) {								
+								let li = make('li');	
+								li.style.textAlign = "center";	
+								addCol(symbol, "100px", li);	
+								addCol("Call", "100px", li);
+								addCol(contract.expire, "150px", li);
+								addCol("$" + contract.strike/100, "100px", li);
+								D('release').appendChild(li);								
+							}
 						}
 						});
 					}

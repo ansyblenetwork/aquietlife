@@ -369,7 +369,7 @@ function getOptions() {
 							
 							addCol(bestCondor.prem, "75px", li);
 							addCol("$" + bestCondor.release, "75px", li);
-							addCol(bestCondor.rate.toFixed(2) + "%", "75px", li);
+							addCol(Math.round(bestCondor.rate) + "%", "75px", li);
 							D('condorRelease').appendChild(li);	
 						}
 					}

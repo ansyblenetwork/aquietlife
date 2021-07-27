@@ -8,7 +8,7 @@ A Robinhood login via API.
 	<div id="profileData" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
 		<div style="text-align:center; padding-bottom:20px">
 		<button onclick="getData();">Account Value Only</button>
-		<button onclick="getData(); getOptions()">Options Collateral</button>
+		<button id="optionButton" onclick="getData(); getOptions()">Options Collateral</button>
 		</div>		
 		<div id="cash" style="font-weight:bold; padding-top:20px">Total value:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: </div>		
 		<div style="padding-top:20px">Incomplete condors:
@@ -57,7 +57,6 @@ var authData = {};
 var authHeader = {};
 	
 var optionsBySymbol = {};
-var TDAData = {};
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
@@ -166,6 +165,7 @@ function getData() {
 }	
 	
 function getOptions() {	
+D('optionButton').disabled = true;
 fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
 	console.log(data);
 	let accountOptions = data.results;
@@ -202,6 +202,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	D('unpaired').textContent = "";
 	D('release').textContent = "";	
 	D('condorRelease').textContent = "";
+	D('itm').textContent = "";
 	for (let symbol in taskBySymbol) {
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {
@@ -445,7 +446,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	Promise.all(promises).then(function() {
-		D('itm').textContent = "";
+		D('optionButton').disabled = true;
 		fetch("https://ansyble.herokuapp.com/cors/", 
 			{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
 			return response.json();

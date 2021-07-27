@@ -213,15 +213,17 @@ function getOptions() {
 					let myStrike = me.strike;
 					let friend = me.friend;
 					
-					friend.friend = null;
-					me.friend = null;
-					me.strike = 0;
-					
-					findPutPair(symbol, friend);
-					me.saleRelease = totalCollateral - condor(symbol);
-					
-					me.strike = myStrike;
-					findPutPair(symbol, null, me);
+					if (friend) {
+						friend.friend = null;
+						me.friend = null;
+						me.strike = 0;
+
+						findPutPair(symbol, friend);
+						me.saleRelease = totalCollateral - condor(symbol);
+
+						me.strike = myStrike;
+						findPutPair(symbol, null, me);
+					} else me.saleRelease = myStrike;
 				}
 				
 				for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {

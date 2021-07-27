@@ -265,28 +265,32 @@ function getOptions() {
 					+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 					return response.json();
 				}).then(function(data) {
-					console.log(data);
-					if (data.status == "SUCCESS") {	
-						let myPuts = optionsBySymbol[symbol].shortPut;
-						let myCalls = optionsBySymbol[symbol].shortCall;
-						
-						for (let contractDate in data.putExpDateMap) {
-							let expiration = contractDate.substring(0, 10);
-							
-							myPuts.forEach(function(contract) {
-							if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-								contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-							}
-							});
-								       
-							myCalls.forEach(function(contract) {
-							if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-								contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-							}
-							});
+				console.log(data);
+				if (data.status == "SUCCESS") {	
+					let myPuts = optionsBySymbol[symbol].shortPut;
+					let myCalls = optionsBySymbol[symbol].shortCall;
+
+					for (let contractDate in data.putExpDateMap) {
+						let expiration = contractDate.substring(0, 10);
+
+						myPuts.forEach(function(contract) {
+						if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+							contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
+							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
 						}
-								       
-					} 			       	       
+						});
+
+						myCalls.forEach(function(contract) {
+						if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
+							contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
+							let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
+							contract.rate = 100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+						}
+						});
+					}
+
+				} 			       	       
 				});
 			}
 			

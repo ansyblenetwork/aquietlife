@@ -216,25 +216,25 @@ function getOptions() {
 					let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall;
 
 					myPuts.forEach(function(contract) {
-						if (contract.strike > 0.98*data.quoteResponse.result[i].regularMarketPrice) {
+						if (contract.strike > 100*0.98*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
 							addCol("Put", "100px", li);
 							addCol(contract.expire, "150px", li);
-							addCol("$" + contract.strike, "100px", li);
+							addCol("$" + contract.strike/100, "100px", li);
 							D('itm').appendChild(li);
 						}
 					});
 
 					myCalls.forEach(function(contract) {
-						if (contract.strike < 1.02*data.quoteResponse.result[i].regularMarketPrice) {
+						if (contract.strike < 100*1.02*data.quoteResponse.result[i].regularMarketPrice) {
 							let li = make('li');	
 							li.style.textAlign = "center";	
 							addCol(data.quoteResponse.result[i].symbol, "100px", li);	
 							addCol("Call", "100px", li);
 							addCol(contract.expire, "150px", li);
-							addCol("$" + contract.strike, "100px", li);
+							addCol("$" + contract.strike/100, "100px", li);
 							D('itm').appendChild(li);
 						}
 					});

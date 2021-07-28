@@ -307,7 +307,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				clearOption(friend);
 				clearOption(me);
 				me.expire = "never";
-				me.collateral = 0;
 
 				findCallPair(symbol, friend);			
 				me.closeRelease = totalCollateral - condor(symbol);
@@ -636,6 +635,7 @@ function noCondorCalls(symbol) {
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
 		if (contract.collateral) totalCalls += contract.collateral;
+		else console.log("CALL CONTRACT LACKS COLLATERAL");
 	});	
 	return totalCalls;
 }

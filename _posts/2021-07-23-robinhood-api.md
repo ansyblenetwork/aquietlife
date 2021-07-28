@@ -220,7 +220,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		
 		let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 			let quantity = parseInt(accountOptions[i].quantity);
-			for(let j = 0; j < quantity; j++) {
+			for (let j = 0; j < quantity; j++) {
 				let dat = {expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 				if (accountOptions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
@@ -373,8 +373,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
 						let prem = 0;
-						if (data.putExpDateMap[dateMap(contract.expire)])
-							prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
+						if (data.putExpDateMap[dateMap(contract.expire)]) {
+							if (!(data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
+							else prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
+						}
 						let col = addCol(prem.toFixed(2), "100px", li);
 						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
@@ -392,8 +394,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
 						let prem = 0;
-						if (data.callExpDateMap[dateMap(contract.expire)])
+						if (data.callExpDateMap[dateMap(contract.expire)]) {
+							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
 							prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
+						}
 						let col = addCol(prem.toFixed(2), "100px", li);
 						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
@@ -403,11 +407,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let bestPut = null;
 				let ncPut = null;
 				myPuts.forEach(function(contract) {
-				if (data.putExpDateMap[dateMap(contract.expire)]) {
-					if (!data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {
-					console.log(symbol);
-					console.log(contract);
-					}
+				if (data.putExpDateMap[dateMap(contract.expire)] && data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {
 					contract.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].ask;
 					let expirationM = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].expirationDate;
 					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
@@ -422,7 +422,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let bestCall = null;
 				let ncCall = null;
 				myCalls.forEach(function(contract) {
-				if (data.callExpDateMap[dateMap(contract.expire)]) {
+				if (data.callExpDateMap[dateMap(contract.expire)] && data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {
 					contract.premium = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].ask;
 					let expirationM = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].expirationDate;
 					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));

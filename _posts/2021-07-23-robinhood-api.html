@@ -452,11 +452,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							],
 							'type': 'limit',
 							'trigger': 'immediate',
-							'price': 2.00,
+							'price': 0.05,
 							'quantity': 1,
 							'override_day_trade_checks': false,
 							'override_dtbp_checks': false,
-							'ref_id': generate_device_token(),
+							'ref_id': generate_device_token()
 						    }
 							console.log(form);
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { form:form }).then(function(data) {

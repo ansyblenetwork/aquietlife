@@ -635,7 +635,7 @@ function noCondorCalls(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
-		if (contract.collateral) totalCalls += contract.collateral;
+		if (contract.collateral !== undefined) totalCalls += contract.collateral;
 		else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol + " " + contract.expire);
 	});	
 	return totalCalls;

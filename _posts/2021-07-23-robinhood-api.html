@@ -72,8 +72,10 @@ var currentID;
 var form = {};
 var authData = {};
 var authHeader = {};
+var accountURL = "";
 	
 var optionsBySymbol = {};
+var currentInstrument = "";
 	
 
 	
@@ -195,47 +197,6 @@ function submitMFAForm() {
 		});
 	});
 }
-
-	
-function sellOrder() {
-//	payload = {
-//		'account': load_account_profile(info='url'),
-//		'direction': creditOrDebit,
-//		'time_in_force': timeInForce,
-//		'legs': [
-//		    {'position_effect': positionEffect, 'side': 'sell',
-//			'ratio_quantity': 1, 'option': option_instruments_url(optionID)},
-//		],
-//		'type': 'limit',
-//		'trigger': 'immediate',
-//		'price': price,
-//		'quantity': quantity,
-//		'override_day_trade_checks': False,
-//		'override_dtbp_checks': False,
-//		'ref_id': str(uuid4()),
-//	}
-	
-    payload = {
-   //     'account': load_account_profile(info='url'),
-        'direction': 'credit',
-        'time_in_force': 'gfd',
-        'legs': [
-  //          {'position_effect': 'open', 'side': 'sell',
-  //              'ratio_quantity': 1, 'option': option_instruments_url(optionID)},
-        ],
-        'type': 'limit',
-        'trigger': 'immediate',
-        'price': 2.00,
-        'quantity': 1,
-        'override_day_trade_checks': False,
-        'override_dtbp_checks': False,
-        'ref_id': generate_device_token(),
-    }
-	
-	fetchData('https://api.robinhood.com/options/orders/', 'POST', { form:form }).then(function(data) {
-		console.log(data);
-	});
-}
 	
 function getData() {	
 	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data) {
@@ -251,6 +212,9 @@ function getData() {
 		D('accountValue').textContent = "$" + parseFloat(data.results[0].equity).toFixed(2) + " ($" 
 			+ parseFloat(growth).toFixed(2) +")";
 		D('cash').textContent = "$" + parseFloat(data.results[0].withdrawable_amount).toFixed(2);
+		
+		accountURL = data.results[0].url;
+		
 		console.log("Portfolios");
 		console.log(data);
 	});
@@ -274,7 +238,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 			let quantity = parseInt(accountOptions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
-				let dat = {expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+				let dat = {url:optionData.option, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 				if (accountOptions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -432,6 +396,53 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						}
 						let col = addCol(prem.toFixed(2), "100px", li);
 						if (prem > 0) col.style.backgroundColor = "#ddf";
+						
+						
+						
+						
+	
+						li.onclick = function() {
+							//	payload = {
+							//		'account': load_account_profile(info='url'),
+							//		'direction': creditOrDebit,
+							//		'time_in_force': timeInForce,
+							//		'legs': [
+							//		    {'position_effect': positionEffect, 'side': 'sell',
+							//			'ratio_quantity': 1, 'option': option_instruments_url(optionID)},
+							//		],
+							//		'type': 'limit',
+							//		'trigger': 'immediate',
+							//		'price': price,
+							//		'quantity': quantity,
+							//		'override_day_trade_checks': False,
+							//		'override_dtbp_checks': False,
+							//		'ref_id': str(uuid4()),
+							//	}
+
+							    let form = {
+								'account': accountURL,
+								'direction': 'credit',
+								'time_in_force': 'gfd',
+								'legs': [
+								    {'position_effect': 'open', 'side': 'sell',
+									'ratio_quantity': 1, 'option': contract.url,
+								],
+								'type': 'limit',
+								'trigger': 'immediate',
+								'price': 2.00,
+								'quantity': 1,
+								'override_day_trade_checks': False,
+								'override_dtbp_checks': False,
+								'ref_id': generate_device_token(),
+							    }
+
+								fetchData('https://api.robinhood.com/options/orders/', 'POST', { form:form }).then(function(data) {
+									console.log(data);
+								});
+							}
+						
+						
+						
 						D('singles').appendChild(li);
 					}
 				});

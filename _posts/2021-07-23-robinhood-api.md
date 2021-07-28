@@ -753,6 +753,13 @@ function condor(symbol, build) {
 		}
 		totalCalls += expireCalls;
 	}
+		if (build && symbol == "AMD") {
+					console.log("AMD status in condors: ");
+					console.log(totalSaved);
+					console.log(totalPuts);
+					console.log(totalCalls);
+					}
+					
 	return totalSaved + totalPuts + totalCalls;
 }
 	

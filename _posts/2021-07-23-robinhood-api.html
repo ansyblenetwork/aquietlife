@@ -75,6 +75,7 @@ if (typeof(Storage) !== "undefined") {
 function D(str) { return document.getElementById(str); }
 	
 function wipeRAM() {
+	clearDOM(D('cash'));
 	currentID = "";
 	form = {};
 	authData = {};
@@ -88,8 +89,7 @@ function clearDOM(myNode) {
 	}
 }
 	
-function wipeDOM() {
-	clearDOM(D('cash'));	
+function wipeDOM() {	
 	clearDOM(D('unpaired'));
 	clearDOM(D('release'));
 	clearDOM(D('condorRelease'));

@@ -14,7 +14,10 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<button id="optionButton" onclick="getData(); getOptions();">Options Collateral</button>
 		<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>		
-		<div style="font-weight:bold; padding-top:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>		
+		<div style="font-weight:bold; padding-top:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
+		<div style="padding-top:20px">Near or in the money:
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
+		</div>			
 		<div style="padding-top:20px">Incomplete spreads:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
 		</div>		
@@ -27,11 +30,8 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<div style="padding-top:20px">Condor buybacks:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
 		</div>				
-		<div style="padding-top:20px">Incomplete condor buybacks:
+		<div style="padding-top:20px; padding-bottom:20px;">Incomplete condor buybacks:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
-		</div>		
-		<div style="padding-top:20px; padding-bottom:20px;">Near or in the money:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>		
 	</div>
 	

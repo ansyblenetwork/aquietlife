@@ -382,7 +382,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							if (expirationM < minExp) minExp = expirationM
 							let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
 							if (condorRate < bestCondor.rate) {
-								bestCondor = {call:contract, put:contract2, prem:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
+								bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
 							}
 						}
 						});
@@ -400,115 +400,62 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol("$" + obj.strike/100, "75px", li);
 					}
 					
-					if (ncPut) {						
-						let li = make('li');	
-						li.title = ncPut.ncRate;
-						addColStock(li, symbol, "Put", ncPut);
-						let col = addCol(ncPut.premium.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + ncPut.ncRelease, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(ncPut.ncRate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-
+					function addOrdered(li, element) {
 						let toAdd = true;
-						for (let j = 0; j < D('ncRelease').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('ncRelease').children[j].title)) {
-								D('ncRelease').insertBefore(li, D('ncRelease').children[j]);
+						for (let j = 0; j < element.children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
+								element.insertBefore(li, element.children[j]);
 								toAdd = false;
 								break;
 							}
 						}
-						if (toAdd) D('ncRelease').appendChild(li);
+						if (toAdd) element.appendChild(li);
+					}
+					
+					function addColCost(li, elt, rate, collateral) {
+						li.title = rate;
+						let col = addCol(elt.premium.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + collateral, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+					}
+					
+					if (ncPut) {						
+						let li = make('li');	
+						addColStock(li, symbol, "Put", ncPut);
+						addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
+						function addOrdered(li, D('ncRelease'));
 					}
 					if (bestPut) {						
 						let li = make('li');	
-						li.title = bestPut.rate;
 						addColStock(li, symbol, "Put", bestPut);
-						let col = addCol(bestPut.premium.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + bestPut.closeRelease, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(bestPut.rate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-
-						let toAdd = true;
-						for (let j = 0; j < D('release').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-								D('release').insertBefore(li, D('release').children[j]);
-								toAdd = false;
-								break;
-							}
-						}
-						if (toAdd) D('release').appendChild(li);
+						addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
+						function addOrdered(li, D('release'));
 					}
 					if (ncCall) {					
-						let li = make('li');	
-						li.title = ncCall.ncRate;
+						let li = make('li');
 						addColStock(li, symbol, "Call", ncCall);
-						let col = addCol(ncCall.premium.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + ncCall.ncRelease, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(ncCall.ncRate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-
-						let toAdd = true;
-						for (let j = 0; j < D('ncRelease').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('ncRelease').children[j].title)) {
-								D('ncRelease').insertBefore(li, D('ncRelease').children[j]);
-								toAdd = false;
-								break;
-							}
-						}
-						if (toAdd) D('ncRelease').appendChild(li);
+						addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
+						function addOrdered(li, D('ncRelease'));
 					}
 					if (bestCall) {					
 						let li = make('li');	
-						li.title = bestCall.rate;
 						addColStock(li, symbol, "Call", bestCall);
-						let col = addCol(bestCall.premium.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + bestCall.closeRelease, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(bestCall.rate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-
-						let toAdd = true;
-						for (let j = 0; j < D('release').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-								D('release').insertBefore(li, D('release').children[j]);
-								toAdd = false;
-								break;
-							}
-						}
-						if (toAdd) D('release').appendChild(li);
+						addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
+						function addOrdered(li, D('release'));
 					}
 					if (bestCondor.release) {
 						let li = make('li');
-						li.title = bestCondor.rate;
 						addColStock(li, symbol, "Call", bestCondor.call);
 
 						addCol("Put", "75px", li);
 						addCol(bestCondor.put.expire, "125px", li);
 						addCol("$" + bestCondor.put.strike/100, "75px", li);
 
-						let col = addCol(bestCondor.prem.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + bestCondor.release, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(bestCondor.rate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-
-						let toAdd = true;
-						for (let j = 0; j < D('condorRelease').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('condorRelease').children[j].title)) {
-								D('condorRelease').insertBefore(li, D('condorRelease').children[j]);
-								toAdd = false;
-								break;
-							}
-						}
-						if (toAdd) D('condorRelease').appendChild(li);
+						addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					
+						function addOrdered(li, D('condorRelease'));
 					}
 				}
 			} 			       	       

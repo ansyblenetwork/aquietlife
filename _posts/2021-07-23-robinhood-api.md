@@ -30,7 +30,7 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<div style="padding-top:20px">Condor buybacks:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
 		</div>				
-		<div style="padding-top:20px; padding-bottom:20px;">Incomplete condor buybacks:
+		<div style="padding-top:20px; padding-bottom:20px;">Partial condor buybacks:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
 		</div>		
 	</div>

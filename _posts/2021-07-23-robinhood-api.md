@@ -337,10 +337,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
-			fetchData("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
-					+ symbol + "&range=OTM&toDate=" + d, 'GET').then(function(data) {
+			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
+				return response.json();
+			}).then(function(data) {
 			console.log(data);
-			if (data.status == "SUCCESS") {	
+			if (data.status == "SUCCESS") {
 				let myPuts = optionsBySymbol[symbol].shortPut;
 				let myCalls = optionsBySymbol[symbol].shortCall;
 
@@ -466,42 +468,39 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	Promise.all(promises).then(function() {
 		D('optionButton').disabled = false;
-		fetch("https://ansyble.herokuapp.com/cors/", 
-			{cache:'no-cache', headers: {'Target-URL': 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString }}).then(function(response) {
-			return response.json();
-		}).then(function(data) {
-			for (let i = 0; i < data.quoteResponse.result.length; i++) {
-				let myPuts = optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut;
-				let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall;
+		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
+		for (let i = 0; i < data.quoteResponse.result.length; i++) {
+			let myPuts = optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut;
+			let myCalls = optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall;
 
-				myPuts.forEach(function(contract) {
-					if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
-						let li = make('li');	
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
-						addCol("Put", "100px", li);
-						addCol(contract.expire, "150px", li);
-						addCol("$" + contract.strike/100, "100px", li);
-						D('itm').appendChild(li);
-					}
-				});
+			myPuts.forEach(function(contract) {
+				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
+					let li = make('li');	
+					li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+					li.onmouseleave = function() { this.style.fontWeight = ""; }
+					li.style.textAlign = "center";	
+					addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+					addCol("Put", "100px", li);
+					addCol(contract.expire, "150px", li);
+					addCol("$" + contract.strike/100, "100px", li);
+					D('itm').appendChild(li);
+				}
+			});
 
-				myCalls.forEach(function(contract) {
-					if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
-						let li = make('li');	
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
-						addCol("Call", "100px", li);
-						addCol(contract.expire, "150px", li);
-						addCol("$" + contract.strike/100, "100px", li);
-						D('itm').appendChild(li);
-					}
-				});
-			}
+			myCalls.forEach(function(contract) {
+				if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
+					let li = make('li');	
+					li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+					li.onmouseleave = function() { this.style.fontWeight = ""; }
+					li.style.textAlign = "center";	
+					addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+					addCol("Call", "100px", li);
+					addCol(contract.expire, "150px", li);
+					addCol("$" + contract.strike/100, "100px", li);
+					D('itm').appendChild(li);
+				}
+			});
+		}
 		});
 	});
 });

@@ -11,7 +11,7 @@ The core idea is that governments and corporations, in aggregate, produce more t
 
 Is there reason to believe this to be true? I think yes: This is a rough corollary of the axiom that humanity is not coming to an end, and that the earth has not run dry. For if people (in aggregate) consumed more than they produced, then humanity's inventory of goods would quickly deplete and that would be that. And since there is no reason to believe that humans consume exactly as much as they produce, we arrive at the claim.
 
-The claim has empirical support. The usual observation is that the SP500 index appreciates at about a rate of 7% per year in the US, after inflation.
+The claim has empirical support. The typical observation is that the SP500 index appreciates at about a rate of 7% per year in the US, after inflation.
 
 ### The case for investing in riskier assets
 
@@ -33,13 +33,13 @@ Is there reason to believe this to be true? Not that I know of.
 
 But the claim has some empirical support. For instance, within the equities market itself, active investing has a mixed record. By the risk-aversion principle, a basket of small caps should appreciate faster than a basket of blue chips. 
 
-However, historically, such an advantage has not been clear, if not [outright absent](https://www.longtermtrends.net/large-cap-vs-small-cap/). Competing psychological forces are evidently at play. These are roughly the same forces which contribute to bubble formation, and which allow lotteries to function.
+However, historically, such an advantage has not been clear, if not [outright absent](https://www.longtermtrends.net/large-cap-vs-small-cap/). Competing psychological forces are evidently at play. My speculation is that these are roughly the same forces which contribute to bubble formation, and which allow lotteries to function.
 
 ### The case for shorting options contracts
 
 The case for shorting options contracts is the union of the case for riskier assets, and the case against riskier assets.
 
-Typical options buyers are "rational" and help the discovery of options prices which align with typical risk-aversion principles. Such options buyers see options as risk reduction products (eg. as part of a protective put strategy, or more generally to expose themselves to risky investments while limiting downside). Options sellers adopt a fair amount of risk to provide these contracts, so in principle should be compensated above fair expected value, and in fact above the opportunity cost of a typical passive equity portfolio.
+Typical options buyers are "rational" and help the discovery of options prices which align with typical risk-aversion principles. Such options buyers see options as risk reduction products (eg. as part of a protective put strategy, or more generally to expose themselves to risky investments while limiting downside). Options sellers adopt a fair amount of risk to provide these contracts, so in principle should be compensated above fair expected value, and in fact, above the opportunity cost of a typical passive equity portfolio.
 
 Why doesn't the case against investing in risky assets apply here? The argument there would suggest that a risk-philic sub-population would relish shorting options contracts, driving prices below fair value, and making the short strategy suboptimal.
 
@@ -47,7 +47,7 @@ The claim is that this doesn't happen. In fact, instead of working _against_ typ
 
 Is there reason to believe this to be true? Yes, with the following explanation: It takes large amounts of capital for both rational parties discussed so far to enact their strategies. For instance, a protective put strategy requires owning the stock, which requires capital, while shorting a put contract requires collateral capital as well. The irrational risk-philic sub-population doesn't have access to such large amounts of capital. (More precisely, such strategies are regulated so that margin is not arbitrarily available.) The one trading strategy available to everyone is to be long options contracts. The lack of a barrier to entry drives up their prices beyond fair value.
 
-To summarize, I have hinted at five strategies:
+To summarize, I have referenced five strategies:
 
 1. passive investing, 
 2. active trading,

@@ -76,7 +76,7 @@ function D(str) { return document.getElementById(str); }
 	
 function wipeRAM() {
 	D('cash').textContent = "";
-	D('accountValue').textContent = "";
+	D('accountValue').textContent = "\xa0\xa0\xa0\xa0\xa0";
 	currentID = "";
 	form = {};
 	authData = {};

@@ -346,13 +346,22 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			}).then(function(data) {
 			console.log(data);
 			if (data.status == "SUCCESS") {
+				let dateMapData = {};
+				for (let contractDate in data.putExpDateMap) {
+					let expiration = contractDate.substring(0, 10);
+					dateMapData[expiration] = contractDate;
+				}					
+				function dateMap(expiration) { return dateMapData[expiration]; }
+				function strikeMap(strike) { return (strike/100).toFixed(1).toString();	}
+					
+					
+					
 				let myPuts = optionsBySymbol[symbol].shortPut;
 				let myCalls = optionsBySymbol[symbol].shortCall;
 					
 				let myPutBuys = optionsBySymbol[symbol].defPut;
 				let myCallBuys = optionsBySymbol[symbol].defCall;
 					
-				
 				myPutBuys.forEach(function(contract) {
 					if (!contract.friend) {
 						let li = make('li');	
@@ -363,6 +372,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol("Put", "100px", li);
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
+						let prem = 0;
+						if (data.putExpDateMap[dateMap(contract.expire)])
+							prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)].bid;
+						addCol(prem.toFixed(2), "100px", li);
 						D('singles').appendChild(li);
 					}
 				});
@@ -377,6 +390,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol("Call", "100px", li);
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
+						let prem = 0;
+						if (data.callExpDateMap[dateMap(contract.expire)])
+							prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)].bid;
+						addCol(prem.toFixed(2), "100px", li);
 						D('singles').appendChild(li);
 					}
 				});

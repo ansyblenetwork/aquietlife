@@ -117,12 +117,12 @@ function addCol(text, width, li) {
 function fetchData(url, method, data) {
 	if (data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(response) {
+		{cache:'no-cache', headers: {method: method, url: url, 'json-data': JSON.stringify(data) }}).then(function(response) {
 		return response.json();
 	});
 	} else {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
-		{headers: {method: method, url: url }}).then(function(response) {
+		{cache:'no-cache', headers: {method: method, url: url }}).then(function(response) {
 		return response.json();
 	});						  
 	}
@@ -337,10 +337,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
-			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
-				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
-				return response.json();
-			}).then(function(data) {
+			fetchData("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+					+ symbol + "&range=OTM&toDate=" + d, 'GET').then(function(data) {
 			console.log(data);
 			if (data.status == "SUCCESS") {	
 				let myPuts = optionsBySymbol[symbol].shortPut;
@@ -391,16 +389,21 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					}
 					});
-					if (ncPut) {						
-						let li = make('li');	
-						li.title = ncPut.ncRate;
+					
+					function addColStock(li, symbol, type, obj) {
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	
 						addCol(symbol, "75px", li);	
-						addCol("Put", "75px", li);
-						addCol(ncPut.expire, "125px", li);
-						addCol("$" + ncPut.strike/100, "75px", li);
+						addCol(type, "75px", li);
+						addCol(obj.expire, "125px", li);
+						addCol("$" + obj.strike/100, "75px", li);
+					}
+					
+					if (ncPut) {						
+						let li = make('li');	
+						li.title = ncPut.ncRate;
+						addColStock(li, symbol, "Put", ncPut);
 						let col = addCol(ncPut.premium.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#ddf";
 						col = addCol("$" + ncPut.ncRelease, "75px", li);
@@ -421,13 +424,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					if (bestPut) {						
 						let li = make('li');	
 						li.title = bestPut.rate;
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(symbol, "75px", li);	
-						addCol("Put", "75px", li);
-						addCol(bestPut.expire, "125px", li);
-						addCol("$" + bestPut.strike/100, "75px", li);
+						addColStock(li, symbol, "Put", bestPut);
 						let col = addCol(bestPut.premium.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#ddf";
 						col = addCol("$" + bestPut.closeRelease, "75px", li);
@@ -448,13 +445,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					if (ncCall) {					
 						let li = make('li');	
 						li.title = ncCall.ncRate;
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(symbol, "75px", li);	
-						addCol("Call", "75px", li);
-						addCol(ncCall.expire, "125px", li);
-						addCol("$" + ncCall.strike/100, "75px", li);
+						addColStock(li, symbol, "Call", ncCall);
 						let col = addCol(ncCall.premium.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#ddf";
 						col = addCol("$" + ncCall.ncRelease, "75px", li);
@@ -475,13 +466,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					if (bestCall) {					
 						let li = make('li');	
 						li.title = bestCall.rate;
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(symbol, "75px", li);	
-						addCol("Call", "75px", li);
-						addCol(bestCall.expire, "125px", li);
-						addCol("$" + bestCall.strike/100, "75px", li);
+						addColStock(li, symbol, "Call", bestCall);
 						let col = addCol(bestCall.premium.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#ddf";
 						col = addCol("$" + bestCall.closeRelease, "75px", li);
@@ -499,16 +484,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						}
 						if (toAdd) D('release').appendChild(li);
 					}
-					if (bestCondor.release) {										
+					if (bestCondor.release) {
 						let li = make('li');
 						li.title = bestCondor.rate;
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(symbol, "75px", li);	
-						addCol("Call", "75px", li);
-						addCol(bestCondor.call.expire, "125px", li);
-						addCol("$" + bestCondor.call.strike/100, "75px", li);
+						addColStock(li, symbol, "Call", bestCondor.call);
 
 						addCol("Put", "75px", li);
 						addCol(bestCondor.put.expire, "125px", li);
@@ -532,7 +511,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (toAdd) D('condorRelease').appendChild(li);
 					}
 				}
-
 			} 			       	       
 			});
 			
@@ -578,7 +556,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				});
 			}
 		});
-
 	});
 });
 }	
@@ -671,8 +648,6 @@ function findPutPair(symbol, defPut, shortPut) {
 			if (evaluate(data.defPut[j], shortPut, data.defPut[j])) break;
 		}
 	}
-	
-	
 
 	if (candidate) {
 		let orphan = candidate.friend;

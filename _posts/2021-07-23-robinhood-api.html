@@ -19,6 +19,9 @@ A Robinhood login via API.
 		</div>		
 		<div style="padding-top:20px">Condor buybacks:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
+		</div>				
+		<div style="padding-top:20px">Condor buybacks:
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
 		</div>		
 		<div style="padding-top:20px; padding-bottom:20px;">Near or in the money:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
@@ -243,6 +246,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			pair(symbol);
 			let totalCollateral = condor(symbol, true);
+			let totalPutCollateral = noCondorPuts(symbol);
+			let totalCallCollateral = noCondorCalls(symbol);
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
@@ -255,6 +260,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
+					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);
@@ -273,6 +279,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 				findCallPair(symbol, friend);			
 				me.closeRelease = totalCollateral - condor(symbol);
+				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
@@ -311,23 +318,31 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let expiration = contractDate.substring(0, 10);
 
 					let bestPut = null;
+					let ncPut = null;
 					myPuts.forEach(function(contract) {
 					if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
 						contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 						let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
 						if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
+						
+						contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+						if ((!ncPut && contract.ncRelease > 0) || (ncPut && contract.ncRate < ncPut.ncRate)) ncPut = contract;
 					}
 					});
 
 					let bestCondor = {call:null, put:null, rate:Infinity};
 					let bestCall = null;
+					let ncCall = null;
 					myCalls.forEach(function(contract) {
 					if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
 						contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
 						let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
 						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
 						if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
+						
+						contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+						if ((!ncCall && contract.ncRelease > 0) || (ncCall && contract.ncRate < ncCall.ncRate)) ncCall = contract;
 
 						contract.condorPair.forEach(function(pair) {
 							let contract2 = pair.condorPair;
@@ -344,6 +359,33 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					}
 					});
+					if (ncPut) {						
+						let li = make('li');	
+						li.title = ncPut.rate;
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(symbol, "75px", li);	
+						addCol("Put", "75px", li);
+						addCol(ncPut.expire, "125px", li);
+						addCol("$" + ncPut.strike/100, "75px", li);
+						let col = addCol(ncPut.premium.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + ncPut.closeRelease, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(ncPut.rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+
+						let toAdd = true;
+						for (let j = 0; j < D('release').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+								D('release').insertBefore(li, D('release').children[j]);
+								toAdd = false;
+								break;
+							}
+						}
+						if (toAdd) D('ncRelease').appendChild(li);
+					}
 					if (bestPut) {						
 						let li = make('li');	
 						li.title = bestPut.rate;
@@ -370,6 +412,33 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							}
 						}
 						if (toAdd) D('release').appendChild(li);
+					}
+					if (ncCall) {					
+						let li = make('li');	
+						li.title = ncCall.rate;
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(symbol, "75px", li);	
+						addCol("Call", "75px", li);
+						addCol(ncCall.expire, "125px", li);
+						addCol("$" + ncCall.strike/100, "75px", li);
+						let col = addCol(ncCall.premium.toFixed(2), "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol("$" + ncCall.closeRelease, "75px", li);
+						col.style.backgroundColor = "#ddf";
+						col = addCol(Math.round(ncCall.rate) + "%", "75px", li);
+						col.style.backgroundColor = "#ddf";
+
+						let toAdd = true;
+						for (let j = 0; j < D('release').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
+								D('release').insertBefore(li, D('release').children[j]);
+								toAdd = false;
+								break;
+							}
+						}
+						if (toAdd) D('ncRelease').appendChild(li);
 					}
 					if (bestCall) {					
 						let li = make('li');	
@@ -609,6 +678,26 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 }
 	
+function noCondorCalls(symbol) {
+	let data = optionsBySymbol[symbol];
+	let totalCalls = 0;
+	data.shortCall.forEach(function(contract) {
+		if (contract.collateral) totalCalls += contract.collateral;
+		else console.log("CALL CONTRACT LACKS COLLATERAL");
+	});	
+	return totalCalls;
+}
+	
+function noCondorPuts(symbol) {
+	let data = optionsBySymbol[symbol];
+	let totalPuts = 0;	
+	data.shortPut.forEach(function(contract) {
+		if (contract.collateral) totalPuts += contract.collateral;
+		else totalPuts += contract.strike;
+	});	
+	return totalPuts;
+}
+
 function condor(symbol, build) {
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};

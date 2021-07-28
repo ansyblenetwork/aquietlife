@@ -652,12 +652,14 @@ function noCondorPuts(symbol) {
 }
 
 function condor(symbol, build) {
+					let found = false;
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	data.shortCall.forEach(function(contract) {
 					if (build && symbol == "AMD") {
 					console.log("found an amd short call");
 					console.log(contract);
+					found = true;
 					}
 		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
 		if (contract.collateral !== undefined) {
@@ -665,6 +667,11 @@ function condor(symbol, build) {
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		} else console.log("CALL CONTRACT LACKS COLLATERAL");
 	});
+					
+					if (found) {
+					console.log("Printing the callexpires");
+					console.log(callExpireTypes[contract.expire][contract.strike]);
+					}
 	
 	let putExpireTypes = {};
 	data.shortPut.forEach(function(contract) {
@@ -699,6 +706,7 @@ function condor(symbol, build) {
 			}
 		}
 	}
+					if (found) console.log(totalSaved);
 	
 	let totalPuts = 0;
 	let totalCalls = 0;

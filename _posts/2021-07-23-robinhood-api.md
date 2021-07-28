@@ -799,7 +799,7 @@ function condor(symbol, build) {
 			addCol("$" + expireCalls, "100px", li);
 			let toAdd = true;
 			for (let j = 0; j < D('unpaired').children.length; j++) {
-				if (parseFloat(li.title) < parseFloat(D('unpaired').children[j].title)) {
+				if (parseFloat(li.title) > parseFloat(D('unpaired').children[j].title)) {
 					D('unpaired').insertBefore(li, D('unpaired').children[j]);
 					toAdd = false;
 					break;

@@ -426,25 +426,25 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let li = make('li');	
 						addColStock(li, symbol, "Put", ncPut);
 						addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
-						function addOrdered(li, D('ncRelease'));
+						addOrdered(li, D('ncRelease'));
 					}
 					if (bestPut) {						
 						let li = make('li');	
 						addColStock(li, symbol, "Put", bestPut);
 						addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
-						function addOrdered(li, D('release'));
+						addOrdered(li, D('release'));
 					}
 					if (ncCall) {					
 						let li = make('li');
 						addColStock(li, symbol, "Call", ncCall);
 						addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
-						function addOrdered(li, D('ncRelease'));
+						addOrdered(li, D('ncRelease'));
 					}
 					if (bestCall) {					
 						let li = make('li');	
 						addColStock(li, symbol, "Call", bestCall);
 						addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
-						function addOrdered(li, D('release'));
+						addOrdered(li, D('release'));
 					}
 					if (bestCondor.release) {
 						let li = make('li');
@@ -455,7 +455,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol("$" + bestCondor.put.strike/100, "75px", li);
 
 						addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					
-						function addOrdered(li, D('condorRelease'));
+						addOrdered(li, D('condorRelease'));
 					}
 				}
 			} 			       	       

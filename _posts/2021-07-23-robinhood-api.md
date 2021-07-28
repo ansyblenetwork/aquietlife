@@ -100,6 +100,7 @@ function clearDOM(myNode) {
 }
 	
 function wipeDOM() {	
+	clearDOM(D('singles'));
 	clearDOM(D('unpaired'));
 	clearDOM(D('release'));
 	clearDOM(D('condorRelease'));

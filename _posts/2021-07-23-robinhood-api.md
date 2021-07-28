@@ -404,7 +404,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let ncPut = null;
 				myPuts.forEach(function(contract) {
 				if (data.putExpDateMap[dateMap(contract.expire)]) {
-					if (!data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) console.log(contract);
+					if (!data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {
+					console.log(symbol);
+					console.log(contract);
+					}
 					contract.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].ask;
 					let expirationM = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].expirationDate;
 					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));

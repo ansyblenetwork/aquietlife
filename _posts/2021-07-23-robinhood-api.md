@@ -375,7 +375,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let prem = 0;
 						if (data.putExpDateMap[dateMap(contract.expire)])
 							prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
-						addCol(prem.toFixed(2), "100px", li);
+						let col = addCol(prem.toFixed(2), "100px", li);
+						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
 					}
 				});
@@ -393,7 +394,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let prem = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)])
 							prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
-						addCol(prem.toFixed(2), "100px", li);
+						let col = addCol(prem.toFixed(2), "100px", li);
+						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
 					}
 				});
@@ -766,7 +768,7 @@ function condor(symbol, build) {
 			addCol("$" + expirePuts, "100px", li);
 			let toAdd = true;
 			for (let j = 0; j < D('unpaired').children.length; j++) {
-				if (parseFloat(li.title) < parseFloat(D('unpaired').children[j].title)) {
+				if (parseFloat(li.title) > parseFloat(D('unpaired').children[j].title)) {
 					D('unpaired').insertBefore(li, D('unpaired').children[j]);
 					toAdd = false;
 					break;

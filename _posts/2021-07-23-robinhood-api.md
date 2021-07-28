@@ -655,6 +655,10 @@ function condor(symbol, build) {
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	data.shortCall.forEach(function(contract) {
+					if (build && symbol == "AMD") {
+					console.log("found an amd short call");
+					console.log(contract);
+					}
 		if (!callExpireTypes[contract.expire]) callExpireTypes[contract.expire] = {};
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;

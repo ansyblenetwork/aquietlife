@@ -24,7 +24,7 @@ Due to habit and the need to communicate, it is still convenient to refer to the
 2. spreads,
 3. iron condors. 
 
-__Remark:__ In fact, one can think of (1) as a degenerate version of (2), and (2) a degenerate version of (3). So if one wanted to be reductive, options trading could be described entirely by the phrase "mutually exclusive cash collateral," and all strategies could be viewed as combinations of (possibly degnerate) iron condors.
+In fact, one can think of (1) as a degenerate version of (2), and (2) a degenerate version of (3). So if one wanted to be reductive, options trading could be described entirely by the phrase "mutually exclusive cash collateral," and all strategies could be viewed as combinations of (possibly degnerate) iron condors.
 
 ### Cash and stock collateral (secured puts and calls)
 
@@ -55,7 +55,7 @@ Here is a chart which depicts the properties of a put credit spread depending on
 
 ### Mutually exclusive cash collateral (iron condors)
 
-Cash collateral held for an out-of-the-money (OTM) call spread can simultaneously be used for an OTM put spread (with the same expiration). The idea is that call and put spreads cannot be in-the-money (ITM) at the same time, so the collateral will only ever be needed to exercise one of the spreads, not both.
+Cash collateral held for an out-of-the-money (OTM) call spread can simultaneously be used for an OTM put spread, as long as the short legs of both have the same expiration. The idea is that call and put spreads cannot be in-the-money (ITM) at the same time, so the collateral will only ever be needed to exercise one of the spreads, not both.
 
 
 ### Relation to OCD

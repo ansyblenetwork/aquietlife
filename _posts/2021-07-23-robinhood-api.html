@@ -10,8 +10,9 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 <div style="margin-top:40px">
 	<div id="profileData" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
 		<div style="text-align:center; padding-bottom:20px">
-		<button onclick="getData();">Account Value Only</button>
-		<button id="optionButton" onclick="getData(); getOptions()">Options Collateral</button>
+		<button onclick="getData();">Account Value</button>
+		<button id="optionButton" onclick="getData(); getOptions();">Options Collateral</button>
+		<button id="optionButton" onclick="wipeRAM(); wipeDOM();">Log Out</button>
 		</div>		
 		<div id="cash" style="font-weight:bold; padding-top:20px">Total value:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: </div>		
 		<div style="padding-top:20px">Incomplete condors:
@@ -64,12 +65,37 @@ var authHeader = {};
 	
 var optionsBySymbol = {};
 	
+
+	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) D('profileData').style.display = "block";
 } 	
 	
 function D(str) { return document.getElementById(str); }
+	
+function wipeRAM() {
+	currentID = "";
+	form = {};
+	authData = {};
+	authHeader = {};	
+	optionsBySymbol = {};
+}
+	
+function clearDOM(myNode) {
+	while (myNode.firstChild) {
+		myNode.removeChild(myNode.lastChild);
+	}
+}
+	
+function wipeDOM() {
+	clearDOM(D('cash'));	
+	clearDOM(D('unpaired'));
+	clearDOM(D('release'));
+	clearDOM(D('condorRelease'));
+	clearDOM(D('ncRelease'));
+	clearDOM(D('itm'));
+}
 	
 function addCol(text, width, li) {								       
 	let col = make('span');
@@ -202,10 +228,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	
 	let queryString = "";
-	D('unpaired').textContent = "";
-	D('release').textContent = "";	
-	D('condorRelease').textContent = "";
-	D('itm').textContent = "";
+	wipeDOM();
 	for (let symbol in taskBySymbol) {
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {

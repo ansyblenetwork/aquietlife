@@ -670,7 +670,7 @@ function condor(symbol, build) {
 					
 					if (found) {
 					console.log("Printing the callexpires");
-					console.log(callExpireTypes[contract.expire][contract.strike]);
+					console.log(callExpireTypes);
 					}
 	
 	let putExpireTypes = {};

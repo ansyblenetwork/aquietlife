@@ -181,11 +181,11 @@ function submitMFAForm() {
 }
 
 function getData() {	
-	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data) {
-		//D('cash').textContent = "Cash available: $" + parseFloat(data.results[0].cash_available_for_withdrawal).toFixed(2);
-		console.log("Accounts");
-		console.log(data);
-	});
+//	fetchData("https://api.robinhood.com/accounts/", 'GET', {headers:authHeader}).then(function(data) {
+//		//D('cash').textContent = "Cash available: $" + parseFloat(data.results[0].cash_available_for_withdrawal).toFixed(2);
+//		console.log("Accounts");
+//		console.log(data);
+//	});
 	fetchData("https://api.robinhood.com/portfolios/", 'GET', {headers:authHeader}).then(function(data) {
 		let growth = data.results[0].equity - data.results[0].equity_previous_close;
 		

@@ -75,7 +75,7 @@ if (typeof(Storage) !== "undefined") {
 function D(str) { return document.getElementById(str); }
 	
 function wipeRAM() {
-	clearDOM(D('cash'));
+	D('cash').textContent = "Total value\xa0\xa0\xa0\xa0\xa0 \xa0\xa0\xa0\xa0\xa0 Cash available: "
 	currentID = "";
 	form = {};
 	authData = {};

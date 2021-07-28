@@ -42,5 +42,5 @@ I just watched a Tasty Trade video discussing the "perfect delta" to trade at. T
 
 That claim bugs me to no end, and here's why: A 0.5 delta contract is synonymous with an ATM contract. The conclusion of their research was the trivial fact that an ATM contract is most premium-efficient.
 
-This is just one instance demonstrating the harm of options Greeks: They mostly serve to obfuscate, sometimes to real detriment.
+This is just one instance demonstrating the harm of options Greeks: They mostly serve to obfuscate. This case was perhaps a mostly harmless instance of grandstanding, but sometimes the obfuscation leads to real detriment.
 

@@ -15,6 +15,9 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>		
 		<div style="font-weight:bold; padding-top:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>		
+		<div style="padding-top:20px">Incomplete spreads:
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
+		</div>		
 		<div style="padding-top:20px">Incomplete condors:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="unpaired"></ul>
 		</div>		
@@ -345,6 +348,38 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			if (data.status == "SUCCESS") {
 				let myPuts = optionsBySymbol[symbol].shortPut;
 				let myCalls = optionsBySymbol[symbol].shortCall;
+					
+				let myPutBuys = optionsBySymbol[symbol].defPut;
+				let myCallBuys = optionsBySymbol[symbol].defCall;
+					
+				
+				myPutBuys.forEach(function(contract) {
+					if (!contract.friend) {
+						let li = make('li');	
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol("Put", "100px", li);
+						addCol(contract.expire, "150px", li);
+						addCol("$" + contract.strike/100, "100px", li);
+						D('singles').appendChild(li);
+					}
+				});
+
+				myCallBuys.forEach(function(contract) {
+					if (!contract.friend) {
+						let li = make('li');	
+						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+						li.onmouseleave = function() { this.style.fontWeight = ""; }
+						li.style.textAlign = "center";	
+						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol("Call", "100px", li);
+						addCol(contract.expire, "150px", li);
+						addCol("$" + contract.strike/100, "100px", li);
+						D('singles').appendChild(li);
+					}
+				});
 
 				for (let contractDate in data.putExpDateMap) {
 					let expiration = contractDate.substring(0, 10);

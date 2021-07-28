@@ -361,7 +361,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					});
 					if (ncPut) {						
 						let li = make('li');	
-						li.title = ncPut.rate;
+						li.title = ncPut.ncRate;
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	
@@ -415,7 +415,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					}
 					if (ncCall) {					
 						let li = make('li');	
-						li.title = ncCall.rate;
+						li.title = ncCall.ncRate;
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	

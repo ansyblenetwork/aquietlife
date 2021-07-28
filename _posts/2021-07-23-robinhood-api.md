@@ -398,119 +398,114 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					}
 				});
 
-				for (let contractDate in data.putExpDateMap) {
-					let expiration = contractDate.substring(0, 10);
+				let bestPut = null;
+				let ncPut = null;
+				myPuts.forEach(function(contract) {
+				if (data.putExpDateMap[dateMap(contract.expire)]) {
+					contract.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].ask;
+					let expirationM = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].expirationDate;
+					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+					if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
 
-					let bestPut = null;
-					let ncPut = null;
-					myPuts.forEach(function(contract) {
-					if (contract.expire == expiration && data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-						contract.premium = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-						let expirationM = data.putExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
-						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-						if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
-						
-						contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
-						if ((!ncPut && contract.ncRelease > 0) || (ncPut && contract.ncRate < ncPut.ncRate)) ncPut = contract;
+					contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+					if ((!ncPut && contract.ncRelease > 0) || (ncPut && contract.ncRate < ncPut.ncRate)) ncPut = contract;
+				}
+				});
+
+				let bestCondor = {call:null, put:null, rate:Infinity};
+				let bestCall = null;
+				let ncCall = null;
+				myCalls.forEach(function(contract) {
+				if (data.callExpDateMap[dateMap(contract.expire)]) {
+					contract.premium = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].ask;
+					let expirationM = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].expirationDate;
+					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+					if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
+
+					contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+					if ((!ncCall && contract.ncRelease > 0) || (ncCall && contract.ncRate < ncCall.ncRate)) ncCall = contract;
+
+					contract.condorPair.forEach(function(pair) {
+						let contract2 = pair.condorPair;
+					if (contract2.expire == contract.expire) {
+						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][(contract2.strike/100).toFixed(1).toString()][0].ask;
+						let minExp = data.putExpDateMap[dateMap(contract.expire)][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
+						if (expirationM < minExp) minExp = expirationM
+						let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
+						if (condorRate < bestCondor.rate) {
+							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
+						}
 					}
 					});
+				}
+				});
 
-					let bestCondor = {call:null, put:null, rate:Infinity};
-					let bestCall = null;
-					let ncCall = null;
-					myCalls.forEach(function(contract) {
-					if (contract.expire == expiration && data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()]) {
-						contract.premium = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].ask;
-						let expirationM = data.callExpDateMap[contractDate][(contract.strike/100).toFixed(1).toString()][0].expirationDate;
-						contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
-						if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
-						
-						contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
-						if ((!ncCall && contract.ncRelease > 0) || (ncCall && contract.ncRate < ncCall.ncRate)) ncCall = contract;
+				function addColStock(li, symbol, type, obj) {
+					li.onmouseenter = function() { this.style.fontWeight = "bold"; }
+					li.onmouseleave = function() { this.style.fontWeight = ""; }
+					li.style.textAlign = "center";	
+					addCol(symbol, "75px", li);	
+					addCol(type, "75px", li);
+					addCol(obj.expire, "125px", li);
+					addCol("$" + obj.strike/100, "75px", li);
+				}
 
-						contract.condorPair.forEach(function(pair) {
-							let contract2 = pair.condorPair;
-						if (contract2.expire == expiration && data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()]) {
-							contract2.premium = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].ask;
-							let minExp = data.putExpDateMap[contractDate][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
-							if (expirationM < minExp) minExp = expirationM
-							let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
-							if (condorRate < bestCondor.rate) {
-								bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
-							}
+				function addOrdered(li, element) {
+					let toAdd = true;
+					for (let j = 0; j < element.children.length; j++) {
+						if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
+							element.insertBefore(li, element.children[j]);
+							toAdd = false;
+							break;
 						}
-						});
+					}
+					if (toAdd) element.appendChild(li);
+				}
 
-					}
-					});
-					
-					function addColStock(li, symbol, type, obj) {
-						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
-						li.onmouseleave = function() { this.style.fontWeight = ""; }
-						li.style.textAlign = "center";	
-						addCol(symbol, "75px", li);	
-						addCol(type, "75px", li);
-						addCol(obj.expire, "125px", li);
-						addCol("$" + obj.strike/100, "75px", li);
-					}
-					
-					function addOrdered(li, element) {
-						let toAdd = true;
-						for (let j = 0; j < element.children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
-								element.insertBefore(li, element.children[j]);
-								toAdd = false;
-								break;
-							}
-						}
-						if (toAdd) element.appendChild(li);
-					}
-					
-					function addColCost(li, elt, rate, collateral) {
-						li.title = rate;
-						let col = addCol(elt.premium.toFixed(2), "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol("$" + collateral, "75px", li);
-						col.style.backgroundColor = "#ddf";
-						col = addCol(Math.round(rate) + "%", "75px", li);
-						col.style.backgroundColor = "#ddf";
-					}
-					
-					if (ncPut) {						
-						let li = make('li');	
-						addColStock(li, symbol, "Put", ncPut);
-						addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
-						addOrdered(li, D('ncRelease'));
-					}
-					if (bestPut) {						
-						let li = make('li');	
-						addColStock(li, symbol, "Put", bestPut);
-						addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
-						addOrdered(li, D('release'));
-					}
-					if (ncCall) {					
-						let li = make('li');
-						addColStock(li, symbol, "Call", ncCall);
-						addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
-						addOrdered(li, D('ncRelease'));
-					}
-					if (bestCall) {					
-						let li = make('li');	
-						addColStock(li, symbol, "Call", bestCall);
-						addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
-						addOrdered(li, D('release'));
-					}
-					if (bestCondor.release) {
-						let li = make('li');
-						addColStock(li, symbol, "Call", bestCondor.call);
+				function addColCost(li, elt, rate, collateral) {
+					li.title = rate;
+					let col = addCol(elt.premium.toFixed(2), "75px", li);
+					col.style.backgroundColor = "#ddf";
+					col = addCol("$" + collateral, "75px", li);
+					col.style.backgroundColor = "#ddf";
+					col = addCol(Math.round(rate) + "%", "75px", li);
+					col.style.backgroundColor = "#ddf";
+				}
 
-						addCol("Put", "75px", li);
-						addCol(bestCondor.put.expire, "125px", li);
-						addCol("$" + bestCondor.put.strike/100, "75px", li);
+				if (ncPut) {						
+					let li = make('li');	
+					addColStock(li, symbol, "Put", ncPut);
+					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
+					addOrdered(li, D('ncRelease'));
+				}
+				if (bestPut) {						
+					let li = make('li');	
+					addColStock(li, symbol, "Put", bestPut);
+					addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
+					addOrdered(li, D('release'));
+				}
+				if (ncCall) {					
+					let li = make('li');
+					addColStock(li, symbol, "Call", ncCall);
+					addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
+					addOrdered(li, D('ncRelease'));
+				}
+				if (bestCall) {					
+					let li = make('li');	
+					addColStock(li, symbol, "Call", bestCall);
+					addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
+					addOrdered(li, D('release'));
+				}
+				if (bestCondor.release) {
+					let li = make('li');
+					addColStock(li, symbol, "Call", bestCondor.call);
 
-						addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					
-						addOrdered(li, D('condorRelease'));
-					}
+					addCol("Put", "75px", li);
+					addCol(bestCondor.put.expire, "125px", li);
+					addCol("$" + bestCondor.put.strike/100, "75px", li);
+
+					addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					
+					addOrdered(li, D('condorRelease'));
 				}
 			} 			       	       
 			});

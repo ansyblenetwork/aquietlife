@@ -7,7 +7,7 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 
 
 
-<div style="margin-top:40px">
+<div style="margin-top:30px">
 	<div id="profileData" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
 		<div style="text-align:center; padding-bottom:20px">
 		<button onclick="getData();">Account Value</button>

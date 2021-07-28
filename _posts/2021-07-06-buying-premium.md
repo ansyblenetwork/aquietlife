@@ -13,9 +13,9 @@ This rule is absolute. Some contrarian implications include:
 
 ### Never buy extrinsic value
 
-More generally, there is no reason to think that the case for shorting options suspends itself depending on your trading circumstance. In fact, adherence to the rule is the whole point of being an options seller. The service an option seller offers is the willingness to go through some inconvenience to manage risk, rather than paying someone else to guarantee it immediately.
+More generally, there is no reason to think that the case for shorting options suspends itself depending on your personal circumstances. In fact, adherence to the rule is the whole point of being an options seller. The service an option seller offers is the willingness to go through some inconvenience to manage risk, instead of paying someone else.
 
-Another way to think about this is to ask when you would buy an options contract in isolation. For a true believer in the case for shorting options contracts, the answer should be: essentially never.
+Another way to think about this is to ask when you would buy an options contract, in isolation. For a true believer in the case for shorting options contracts, the answer should be (essentially) never.
 
 
 ### Buy capital at a reasonable interest rate

@@ -459,7 +459,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							'ref_id': generate_device_token()
 						    }
 							console.log(form);
-							fetchData('https://api.robinhood.com/options/orders/', 'POST', { form:form }).then(function(data) {
+							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, form:form }).then(function(data) {
 								console.log("The response to the order: ");
 								console.log(data);
 							});

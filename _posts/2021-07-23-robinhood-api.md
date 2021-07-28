@@ -306,7 +306,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 				clearOption(friend);
 				clearOption(me);
-				me.expire = "never";
+				me.expire = "neverplus";
 
 				findCallPair(symbol, friend);			
 				me.closeRelease = totalCollateral - condor(symbol);

@@ -373,8 +373,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
 						let prem = 0;
-						if (data.putExpDateMap[dateMap(contract.expire)])
+						if (data.putExpDateMap[dateMap(contract.expire)]) {
+							console.log(data.putExpDateMap[dateMap(contract.expire)]);
 							prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)].bid;
+						}
 						addCol(prem.toFixed(2), "100px", li);
 						D('singles').appendChild(li);
 					}

@@ -377,9 +377,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						col.style.backgroundColor = "#ddf";
 
 						let toAdd = true;
-						for (let j = 0; j < D('release').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-								D('release').insertBefore(li, D('release').children[j]);
+						for (let j = 0; j < D('ncRelease').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('ncRelease').children[j].title)) {
+								D('ncRelease').insertBefore(li, D('ncRelease').children[j]);
 								toAdd = false;
 								break;
 							}
@@ -431,9 +431,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						col.style.backgroundColor = "#ddf";
 
 						let toAdd = true;
-						for (let j = 0; j < D('release').children.length; j++) {
-							if (parseFloat(li.title) < parseFloat(D('release').children[j].title)) {
-								D('release').insertBefore(li, D('release').children[j]);
+						for (let j = 0; j < D('ncRelease').children.length; j++) {
+							if (parseFloat(li.title) < parseFloat(D('ncRelease').children[j].title)) {
+								D('ncRelease').insertBefore(li, D('ncRelease').children[j]);
 								toAdd = false;
 								break;
 							}

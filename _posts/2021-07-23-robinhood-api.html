@@ -442,12 +442,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						//		'ref_id': str(uuid4()),
 						//	}
 
-						    let form = {
+						    form = {
 							'account': accountURL,
 							'direction': 'credit',
 							'time_in_force': 'gfd',
 							'legs': [
-							    {'position_effect': 'open', 'side': 'sell',
+							    {'position_effect': 'close', 'side': 'sell',
 								'ratio_quantity': 1, 'option': contract.url }
 							],
 							'type': 'limit',
@@ -458,8 +458,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							'override_dtbp_checks': false,
 							'ref_id': generate_device_token(),
 						    }
-
+							console.log(form);
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { form:form }).then(function(data) {
+								console.log("The response to the order: ");
 								console.log(data);
 							});
 						}

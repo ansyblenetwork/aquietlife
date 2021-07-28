@@ -2,6 +2,7 @@
 title: "Options collateral analysis via the Robinhood API"
 ---
 
+<br>
 A Robinhood API applet to analyze your options collateral. Login is persistent via local storage.
 
 

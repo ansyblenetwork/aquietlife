@@ -359,7 +359,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	
-						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol(symbol, "100px", li);	
 						addCol("Put", "100px", li);
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
@@ -373,7 +373,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	
-						addCol(data.quoteResponse.result[i].symbol, "100px", li);	
+						addCol(symbol, "100px", li);	
 						addCol("Call", "100px", li);
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);

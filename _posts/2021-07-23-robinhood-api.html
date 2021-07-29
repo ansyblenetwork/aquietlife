@@ -441,7 +441,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						//		'ref_id': str(uuid4()),
 						//	}
 
-						    form = {
+						   let json = {
 							'account': accountURL,
 							'direction': 'credit',
 							'time_in_force': 'gfd',
@@ -458,7 +458,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							'ref_id': generate_device_token()
 						    }
 							console.log(form);
-							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, form:form }).then(function(data) {
+							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 								console.log("The response to the order: ");
 								console.log(data);
 							});

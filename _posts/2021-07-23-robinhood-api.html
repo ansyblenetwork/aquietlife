@@ -261,7 +261,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 		if (data.results[i].cancel_url) {
 		fetchData(data.results[i].legs[0].option, 'GET').then(function(optionData) {
 			let json = data.results[i];
-			let contract = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+			let contract = {type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 			let symbol = data.results[i].chain_symbol;
 			
 			let orderli = makeli(symbol, contract);
@@ -310,14 +310,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	taskBySymbol = {};
 	for (let i = 0; i < accountOptions.length; i++) {			
 		if (!optionsBySymbol[accountOptions[i].chain_symbol]) {
-			optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
+			optionsBySymbol[accountOptions[i].chain_symbol] = {tick:optionData.min_ticks.below_tick, url:optionData.url, shortCall:[], shortPut:[], defCall:[], defPut:[]};
 			taskBySymbol[accountOptions[i].chain_symbol] = [];
 		}
 		
 		let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 			let quantity = parseInt(accountOptions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
-				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+				let dat = {type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 				if (accountOptions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -457,7 +457,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function createSingleOrder(li, contract, prem) {
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.onclick = function() {
-				if (confirm("Proceed to sell this orphan defensive leg?")) {
+				if (confirm("Proceed to sell this orphan defensive leg?")) {					
+					let orderPrem = prem + parseFloat(contract.tick);
 					let json = {
 						'account': accountURL,
 						'direction': 'credit',
@@ -465,7 +466,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': prem + 0.01,
+						'price': orderPrem,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,
@@ -485,7 +486,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							col.style.backgroundColor = "#ddf";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
 							col.style.backgroundColor = "#ddf";
-							col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+							col = addCol(orderPrem.toFixed(2), "75px", orderli);
 							col.style.backgroundColor = "#ddf";
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
@@ -522,7 +523,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let li = makeli(symbol, contract);
 						let prem = 0;
 						if (data.putExpDateMap[dateMap(contract.expire)]) {
-							if (!(data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
+							if (!(data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1; // this is in the money
 							else prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
 						}
 						let col = addCol(prem.toFixed(2), "75px", li);
@@ -603,6 +604,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to buy this spread for collateral?")) {
+					let orderPrem = contract.premium - parseFloat(contract.tick);
+					if (orderPrem <= 0) orderPrem = parseFloat(contract.tick);
 					let json = {
 						'account': accountURL,
 						'direction': 'debit',
@@ -610,7 +613,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'buy', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': contract.premium - 0.01,
+						'price': orderPrem,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,
@@ -630,7 +633,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							col.style.backgroundColor = "#ddf";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
 							col.style.backgroundColor = "#ddf";
-							col = addCol((contract.premium - 0.01).toFixed(2), "75px", orderli);
+							col = addCol(orderPrem.toFixed(2), "75px", orderli);
 							col.style.backgroundColor = "#ddf";
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);

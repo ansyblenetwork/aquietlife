@@ -290,7 +290,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 					else {
 						processedCol.textContent = 'X';
 						msg.textContent = "Cancelled!";
-						msg.style.cursor = "";
+						msg.style.pointerEvents = "none";
 						msg.style.backgroundColor = "";
 					}
 				});
@@ -479,14 +479,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 						console.log("The response to the order: ");
 						console.log(data);
-						li.style.color = "#aaa";
-						li.firstChild.style.backgroundColor = "";
-						li.firstChild.style.pointerEvents = "none";
 
 						let orderli = makeli(symbol, contract);
 						// orderli.style.marginBottom = "10px";
 						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 						else {
+							li.style.color = "#aaa";
+							li.firstChild.style.backgroundColor = "";
+							li.firstChild.style.pointerEvents = "none";
+
 							let col = addCol(json.legs[0].side, "75px", orderli);
 							col.style.backgroundColor = "#dff";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
@@ -512,7 +513,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									else {
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
-										msg.style.cursor = "";
+										msg.style.pointerEvents = "none";
 										msg.style.backgroundColor = "";	
 										li.style.color = "";
 										li.firstChild.style.backgroundColor = "#ddf";
@@ -634,14 +635,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 						console.log("The response to the order: ");
 						console.log(data);
-						li.style.color = "#aaa";
-						li.firstChild.style.backgroundColor = "";
-						li.firstChild.style.pointerEvents = "none";
 
 						let orderli = makeli(symbol, contract);
 						// orderli.style.marginBottom = "10px";
 						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 						else {
+							li.style.color = "#aaa";
+							li.firstChild.style.backgroundColor = "";
+							li.firstChild.style.pointerEvents = "none";
+							
 							let col = addCol(json.legs[0].side, "75px", orderli);
 							col.style.backgroundColor = "#dff";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
@@ -667,7 +669,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									else {
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
-										msg.style.cursor = "";
+										msg.style.pointerEvents = "none";
 										msg.style.backgroundColor = "";
 										li.style.color = "";
 										li.firstChild.style.backgroundColor = "#ddf";

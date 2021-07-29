@@ -814,11 +814,14 @@ function findCallPair(symbol, defCall, shortCall) {
 	}
 	
 	function evaluate(defCall, shortCall, subject) {
-		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral 
-		    && (!subject.friend || callCollateral(defCall, shortCall) < subject.collateral 
-			|| (callCollateral(defCall, shortCall) == subject.collateral && seeker.expire < subject.friend.expire))) {
+		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
+		    if (!subject.friend || callCollateral(defCall, shortCall) < subject.collateral 
+			|| (callCollateral(defCall, shortCall) == subject.collateral && 
+			    ((seeker == defCall && (seeker.strike > subject.friend.expire || seeker.expire < subject.friend.expire))
+			   || (seeker != defCall && (seeker.strike < subject.friend.expire || seeker.expire > subject.friend.expire))))) {
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
+		    }
 		}
 	}
 	
@@ -867,13 +870,14 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 	
 	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > release 
-		    && (!subject.friend || putGain(defPut, shortPut) > subject.release 
-			|| (putGain(defPut, shortPut) == subject.release && seeker.expire < subject.friend.expire))) {
-			
-			console.log("At least one candidate");
+		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > release) {
+		    if (!subject.friend || putGain(defPut, shortPut) > subject.release 
+			|| (putGain(defPut, shortPut) == subject.release && 
+			    ((seeker == defPut && (seeker.expire < subject.friend.expire || seeker.strike < subject.friend.strike))			    
+			    || (seeker != defPut && (seeker.expire > subject.friend.expire || seeker.strike > subject.friend.strike))))) {
 			release = putGain(defPut, shortPut);
 			candidate = subject;
+		    }
 		}
 	}
 

@@ -788,7 +788,7 @@ function condor(symbol, build) {
 			li.title = 0 - expirePuts;	
 			addCol(expiration, "125px", li);
 			addCol("call", "50px", li);
-			addCol("$" + expirePuts, "75px", li);
+			addCol("$" + expirePuts, "100px", li);
 			addOrdered(li, D('unpaired'));
 		}
 		totalPuts += expirePuts;
@@ -803,7 +803,7 @@ function condor(symbol, build) {
 			li.title = 0 - expireCalls;
 			addCol(expiration, "125px", li);
 			addCol("put", "50px", li);
-			addCol("$" + expireCalls, "75px", li);
+			addCol("$" + expireCalls, "100px", li);
 			addOrdered(li, D('unpaired'));
 		}
 		totalCalls += expireCalls;

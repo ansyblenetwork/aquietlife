@@ -878,7 +878,7 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 
 	function putGain(defPut, shortPut) {
-		if (defPut.strike < shortPut.strike) return release = defPut.strike;
+		if (defPut.strike < shortPut.strike) return defPut.strike;
 		return shortPut.strike;
 	}
 

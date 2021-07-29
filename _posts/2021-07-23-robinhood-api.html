@@ -814,8 +814,8 @@ function findCallPair(symbol, defCall, shortCall) {
 	
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral 
-		    && (callCollateral(defCall, shortCall) < subject.collateral || (callCollateral(defCall, shortCall) == subject.collateral && 
-										    (seeker.strike > subject.friend.strike || seeker.expire < subject.friend.expire)))) {
+		    && (callCollateral(defCall, shortCall) < subject.collateral 
+			|| (callCollateral(defCall, shortCall) == subject.collateral && seeker.expire < subject.friend.expire))) {
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
 		}
@@ -867,8 +867,8 @@ function findPutPair(symbol, defPut, shortPut) {
 	
 	function evaluate(defPut, shortPut, subject) {
 		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > release 
-		    && (putGain(defPut, shortPut) > subject.release || (putGain(defPut, shortPut) == subject.release && 
-									(seeker.strike < subject.friend.strike || seeker.expire < subject.friend.expire)) )) {
+		    && (putGain(defPut, shortPut) > subject.release 
+			|| (putGain(defPut, shortPut) == subject.release && seeker.expire < subject.friend.expire))) {
 			release = putGain(defPut, shortPut);
 			candidate = subject;
 		}

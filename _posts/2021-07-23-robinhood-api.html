@@ -422,6 +422,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				optionsBySymbol[symbol].defCall.forEach(function(contract) {
 					if (!contract.friend) {
 						let li = makeli(symbol, contract);
+						li.style.marginBottom = "10px";
 						let prem = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;

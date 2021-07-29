@@ -461,7 +461,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									col.style.backgroundColor = "#ddf";
 									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
 									col.style.backgroundColor = "#ddf";
-									col = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+									col = addCol(parseFloat(data.pending_quantity), "75px", orderli);
 									
 									orderli.firstChild.onclick = function() {
 										fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {

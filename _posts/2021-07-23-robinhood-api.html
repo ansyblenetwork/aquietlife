@@ -875,9 +875,8 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 
 	function putGain(defPut, shortPut) {
-		let release = shortPut.strike;
-		if (defPut.strike < shortPut.strike) release = defPut.strike;
-		return release;
+		if (defPut.strike < shortPut.strike) return release = defPut.strike;
+		return shortPut.strike;
 	}
 
 	if (candidate) {

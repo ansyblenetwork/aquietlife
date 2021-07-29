@@ -473,7 +473,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								
 								let orderli = makeli(symbol, contract);
 								let namecol = orderli.firstChild;
-								if (data.detail) addCol(data.detail, "calc(100% - 275px)", orderli);
+								if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 								else {
 									let prem = 0;
 									let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);

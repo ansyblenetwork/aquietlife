@@ -870,6 +870,8 @@ function findPutPair(symbol, defPut, shortPut) {
 		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > release 
 		    && (!subject.friend || putGain(defPut, shortPut) > subject.release 
 			|| (putGain(defPut, shortPut) == subject.release && seeker.expire < subject.friend.expire))) {
+			
+			console.log("At least one candidate");
 			release = putGain(defPut, shortPut);
 			candidate = subject;
 		}

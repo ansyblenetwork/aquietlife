@@ -274,9 +274,25 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			let processedCol = addCol(parseFloat(json.processed_quantity), "75px", orderli);
 			let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
-			if (parseFloat(json.processed_quantity) > 0) {
-				processedCol.textContent = "$" + parseFloat(json.processed_premium).toFixed(2);
-				msg.textContent = "Processed!";
+			function orderStatus() {
+				if (parseFloat(json.processed_quantity) > 0) {
+					processedCol.textContent = "$" + parseFloat(json.processed_premium).toFixed(2);
+					msg.textContent = "Partially completed...";
+				}								
+				if (Math.round(parseFloat(json.pending_quantity)) == 0) {
+					msg.textContent = "Completed!";
+					msg.style.pointerEvents = "none";
+					msg.style.backgroundColor = "";	
+				}
+			}
+			orderStatus();
+			
+			orderli.onclick = function() {
+				fetchData('https://api.robinhood.com/options/orders/' + json.id, 'GET', { headers:authHeader, json:json }).then(function(data) {
+					console.log("Checking for update on status for order:");
+					console.log(data);
+					orderStatus();
+				}
 			}
 
 			msg.style.cursor = "pointer";
@@ -497,9 +513,25 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
-							if (parseFloat(data.processed_quantity) > 0) {
-								processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-								msg.textContent = "Processed!";
+							function orderStatus() {
+								if (parseFloat(data.processed_quantity) > 0) {
+									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
+									msg.textContent = "Partially completed...";
+								}								
+								if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+									msg.textContent = "Completed!";
+									msg.style.pointerEvents = "none";
+									msg.style.backgroundColor = "";	
+								}
+							}
+							orderStatus();
+							
+							orderli.onclick = function() {
+								fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader}).then(function(data) {
+									console.log("Checking for update on status for order:");
+									console.log(data);
+									orderStatus();
+								}
 							}
 
 							msg.style.cursor = "pointer";
@@ -653,9 +685,26 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
-							if (parseFloat(data.processed_quantity) > 0) {
-								processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-								msg.textContent = "Processed!";
+							
+							function orderStatus() {
+								if (parseFloat(data.processed_quantity) > 0) {
+									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
+									msg.textContent = "Partially completed...";
+								}								
+								if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+									msg.textContent = "Completed!";
+									msg.style.pointerEvents = "none";
+									msg.style.backgroundColor = "";	
+								}
+							}
+							orderStatus();
+							
+							orderli.onclick = function() {
+								fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader }).then(function(data) {
+									console.log("Checking for update on status for order:");
+									console.log(data);
+									orderStatus();
+								}
 							}
 
 							msg.style.cursor = "pointer";

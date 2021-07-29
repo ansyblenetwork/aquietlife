@@ -422,7 +422,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				optionsBySymbol[symbol].defCall.forEach(function(contract) {
 					if (!contract.friend) {
 						let li = makeli(symbol, contract);
-						let ncol = li.firstChild;
 						let prem = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
@@ -432,40 +431,21 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
 						
-						
-						ncol.style.cursor = "pointer";
-	
-						ncol.onclick = function() {
-						//	payload = {
-						//		'account': load_account_profile(info='url'),
-						//		'direction': creditOrDebit,
-						//		'time_in_force': timeInForce,
-						//		'legs': [
-						//		    {'position_effect': positionEffect, 'side': 'sell',
-						//			'ratio_quantity': 1, 'option': option_instruments_url(optionID)},
-						//		],
-						//		'type': 'limit',
-						//		'trigger': 'immediate',
-						//		'price': price,
-						//		'quantity': quantity,
-						//		'override_day_trade_checks': False,
-						//		'override_dtbp_checks': False,
-						//		'ref_id': str(uuid4()),
-						//	}
-
-						   let json = {
-							'account': accountURL,
-							'direction': 'credit',
-							'time_in_force': 'gfd',
-							'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
-							'type': 'limit',
-							'trigger': 'immediate',
-							'price': prem + 0.01,
-							'quantity': 1,
-							'override_day_trade_checks': false,
-							'override_dtbp_checks': false,
-							'ref_id': generate_device_token()
-						    }
+						li.firstChild.style.cursor = "pointer";	
+						li.firstChild.onclick = function() {
+							let json = {
+								'account': accountURL,
+								'direction': 'credit',
+								'time_in_force': 'gfd',
+								'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
+								'type': 'limit',
+								'trigger': 'immediate',
+								'price': prem + 0.01,
+								'quantity': 1,
+								'override_day_trade_checks': false,
+								'override_dtbp_checks': false,
+								'ref_id': generate_device_token()
+							}
 							console.log(json);
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 								console.log("The response to the order: ");
@@ -475,11 +455,19 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								let namecol = orderli.firstChild;
 								if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 								else {
-									let prem = 0;
-									let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+									let col = addCol(json.legs[0].side, "75px", orderli);
+									col.style.backgroundColor = "#ddf";
+									col = addCol(json.legs[0].position_effect, "75px", orderli);
+									col.style.backgroundColor = "#ddf";
+									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+									col.style.backgroundColor = "#ddf";
+								}
+								orderli.firstChild.onclick = function() {
+									fetchData('', 'POST', { headers:authHeader }).then(function(data) {
+										
+									});
 								}
 								D('orders').appendChild(orderli);
-								
 							});
 						}
 					}
@@ -565,7 +553,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 			} 			       	       
 			});
-			
 		});
 	}
 	
@@ -579,7 +566,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					D('itm').appendChild(li);
 				}
 			});
-
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall.forEach(function(contract) {
 				if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
 					let li = makeli(data.quoteResponse.result[i].symbol, contract);

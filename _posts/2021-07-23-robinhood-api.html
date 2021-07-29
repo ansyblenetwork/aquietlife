@@ -555,7 +555,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (bestCondor.release) {
 					let li = makeli(symbol, "Call", bestCondor.call);
 
-					addCol("Put", "75px", li);
+					addCol("Put", "50px", li);
 					addCol("$" + bestCondor.put.strike/100, "75px", li);
 
 					addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					

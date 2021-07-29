@@ -461,11 +461,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									col.style.backgroundColor = "#ddf";
 									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
 									col.style.backgroundColor = "#ddf";
-								}
-								orderli.firstChild.onclick = function() {
-									fetchData('', 'POST', { headers:authHeader }).then(function(data) {
-										
-									});
+									col = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+									
+									orderli.firstChild.onclick = function() {
+										fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+											console.log("The response to the cancel request: ");
+											console.log(data);
+										});
+									}
 								}
 								D('orders').appendChild(orderli);
 							});

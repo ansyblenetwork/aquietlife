@@ -97,7 +97,7 @@ function makeli(symbol, type, contract) {
 	li.style.textAlign = "center";	
 	addCol(symbol, "75px", li);	
 	if (contract) addCol(contract.expire, "125px", li);	
-	addCol(type, "75px", li);
+	addCol(type, "50px", li);
 	if (contract) addCol("$" + contract.strike/100, "100px", li);
 	return li;
 }

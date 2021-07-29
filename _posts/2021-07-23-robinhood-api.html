@@ -8,6 +8,14 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 
 
 <div style="margin-top:30px">
+	
+	
+	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">	
+		<div style="padding-top:20px">Orders:
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
+		</div>		
+	</div>
+	
 	<div id="profilePage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
 		<div style="text-align:center; padding-bottom:20px">
 		<button onclick="getData();">Account Value</button>
@@ -35,12 +43,6 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		</div>		
 	</div>
 	
-	
-	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">	
-		<div style="text-align:center; padding-bottom:20px">
-		<button onclick="sellOrder();">Sell</button>
-		</div>			
-	</div>
 	
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
 		Username:<br>
@@ -405,7 +407,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 						li.onmouseleave = function() { this.style.fontWeight = ""; }
 						li.style.textAlign = "center";	
-						addCol(symbol, "100px", li);	
+						let ncol = addCol(symbol, "100px", li);	
 						addCol("Call", "100px", li);
 						addCol(contract.expire, "150px", li);
 						addCol("$" + contract.strike/100, "100px", li);
@@ -421,9 +423,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						
 						
 						
-						li.style.cursor = "pointer";
+						ncol.style.cursor = "pointer";
 	
-						li.onclick = function() {
+						ncol.onclick = function() {
 						//	payload = {
 						//		'account': load_account_profile(info='url'),
 						//		'direction': creditOrDebit,
@@ -445,25 +447,34 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							'account': accountURL,
 							'direction': 'credit',
 							'time_in_force': 'gfd',
-							'legs': [
-							    {'position_effect': 'close', 'side': 'sell',
-								'ratio_quantity': 1, 'option': contract.url }
-							],
+							'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
 							'type': 'limit',
 							'trigger': 'immediate',
-							'price': 0.05,
+							'price': prem + 0.01,
 							'quantity': 1,
 							'override_day_trade_checks': false,
 							'override_dtbp_checks': false,
 							'ref_id': generate_device_token()
 						    }
-							console.log(form);
+							console.log(json);
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 								console.log("The response to the order: ");
 								console.log(data);
+								
+								let orderli = make('li');	
+								orderli.onmouseenter = function() { this.style.fontWeight = "bold"; }
+								orderli.onmouseleave = function() { this.style.fontWeight = ""; }
+								orderli.style.textAlign = "center";	
+								let namecol = addCol(symbol, "75px", orderli);	
+								addCol("Call", "75px", orderli);
+								addCol(contract.expire, "125px", orderli);
+								addCol("$" + contract.strike/100, "75px", orderli);
+								let prem = 0;
+								let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+								D('orders').appendChild(orderli);
+								
 							});
 						}
-						
 					}
 				});
 

@@ -10,19 +10,19 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 <div style="margin-top:30px">
 	
 	
-	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid;">	
+	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; margin-bottom:20px; border-bottom:solid;">	
 		<div style="padding-top:20px">Orders:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
 		</div>		
 	</div>
 	
 	<div id="profilePage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
-		<div style="text-align:center; padding-bottom:20px">
+		<div style="text-align:center;">
 		<button onclick="getData();">Account Value</button>
 		<button id="optionButton" onclick="getData(); getOptions();">Options Collateral</button>
 		<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>		
-		<div style="font-weight:bold; padding-top:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
+		<div style="font-weight:bold; padding:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
 		<div style="padding-top:20px">Near or in the money:
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>			

@@ -270,7 +270,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			col.style.backgroundColor = "#ddf";
 			col = addCol(json.legs[0].position_effect, "75px", orderli);
 			col.style.backgroundColor = "#ddf";
-			col = addCol(json.price.toFixed(2), "75px", orderli);
+			col = addCol(parseFloat(json.price).toFixed(2), "75px", orderli);
 			col.style.backgroundColor = "#ddf";
 			let processedCol = addCol(parseFloat(json.processed_quantity), "75px", orderli);
 			let msg = addCol("Pending...", "calc(100% - 650px)", orderli);

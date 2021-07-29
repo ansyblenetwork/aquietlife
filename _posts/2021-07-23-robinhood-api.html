@@ -258,7 +258,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 	console.log("All open orders:");
 	console.log(data);
 	
-	for (let i = 0; i < data.results.length; i++) {			
+	for (let i = 0; i < data.results.length; i++) {	
+		if (data.results[i].cancel_url) {
 		fetchData(data.results[i].legs[0].option, 'GET').then(function(optionData) {
 			let json = data.results[i];
 			let contract = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
@@ -269,7 +270,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			col.style.backgroundColor = "#ddf";
 			col = addCol(json.legs[0].position_effect, "75px", orderli);
 			col.style.backgroundColor = "#ddf";
-			col = addCol(json.legs[0].price.toFixed(2), "75px", orderli);
+			col = addCol(json.price.toFixed(2), "75px", orderli);
 			col.style.backgroundColor = "#ddf";
 			let processedCol = addCol(parseFloat(json.processed_quantity), "75px", orderli);
 			let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
@@ -293,6 +294,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			}
 			D('orders').appendChild(orderli);
 		});
+		}
 	}
 });
 	

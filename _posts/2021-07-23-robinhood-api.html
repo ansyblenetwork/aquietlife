@@ -279,8 +279,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 				msg.textContent = "Processed!";
 			}
 
-			orderli.firstChild.style.cursor = "pointer";	
-			orderli.firstChild.onclick = function() {
+			msg.style.cursor = "pointer";	
+			msg.onclick = function() {
 				fetchData(json.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 					console.log("The response to the cancel request: ");
 					console.log(data);
@@ -493,8 +493,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								msg.textContent = "Processed!";
 							}
 
-							orderli.firstChild.style.cursor = "pointer";	
-							orderli.firstChild.onclick = function() {										
+							msg.style.cursor = "pointer";	
+							msg.onclick = function() {										
 							if (confirm("Cancel selling this orphan defensive leg?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 									console.log("The response to the cancel request: ");
@@ -638,8 +638,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								msg.textContent = "Processed!";
 							}
 
-							orderli.firstChild.style.cursor = "pointer";	
-							orderli.firstChild.onclick = function() {										
+							msg.style.cursor = "pointer";	
+							msg.onclick = function() {										
 							if (confirm("Cancel buying this spread for collateral?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 									console.log("The response to the cancel request: ");

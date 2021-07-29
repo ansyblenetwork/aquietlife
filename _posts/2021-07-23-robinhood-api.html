@@ -821,6 +821,11 @@ function findCallPair(symbol, defCall, shortCall) {
 		}
 	}
 	
+	function callCollateral(defCall, shortCall) {	
+		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
+		return 0;
+	}
+	
 	if (candidate) {
 		let orphan = candidate.friend;
 		if (orphan) clearOption(orphan);
@@ -835,11 +840,6 @@ function findCallPair(symbol, defCall, shortCall) {
 			else if (shortCall) findCallPair(symbol, null, orphan);
 		}
 	}	
-
-	function callCollateral(defCall, shortCall) {	
-		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
-		return 0;
-	}
 }
 	
 function clearOption(option) {

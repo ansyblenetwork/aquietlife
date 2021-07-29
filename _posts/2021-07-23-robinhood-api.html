@@ -292,7 +292,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 					console.log("Checking for update on status for order:");
 					console.log(data);
 					orderStatus();
-				}
+				});
 			}
 
 			msg.style.cursor = "pointer";
@@ -531,7 +531,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									console.log("Checking for update on status for order:");
 									console.log(data);
 									orderStatus();
-								}
+								});
 							}
 
 							msg.style.cursor = "pointer";
@@ -704,7 +704,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									console.log("Checking for update on status for order:");
 									console.log(data);
 									orderStatus();
-								}
+								});
 							}
 
 							msg.style.cursor = "pointer";

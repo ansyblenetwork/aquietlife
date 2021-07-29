@@ -368,18 +368,20 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
 					let mypair = optionsBySymbol[symbol].shortPut[j];
-					let myPairStrike = mypair.strike;
-					let pairFriend = mypair.friend;
-					if (pairFriend) {
-						clearOption(pairFriend);
-						clearOption(mypair);
-						mypair.strike = 0;
+					if (myExpire == mypair.expire) {
+						let myPairStrike = mypair.strike;
+						let pairFriend = mypair.friend;
+						if (pairFriend) {
+							clearOption(pairFriend);
+							clearOption(mypair);
+							mypair.strike = 0;
 
-						findPutPair(symbol, pairFriend);
-						me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
+							findPutPair(symbol, pairFriend);
+							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
-						mypair.strike = myPairStrike;
-						findPutPair(symbol, null, mypair);
+							mypair.strike = myPairStrike;
+							findPutPair(symbol, null, mypair);
+						}
 					}
 				}
 
@@ -514,15 +516,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					contract.condorPair.forEach(function(pair) {
 						let contract2 = pair.condorPair;
-					if (contract2.expire == contract.expire) {
 						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][(contract2.strike/100).toFixed(1).toString()][0].ask;
 						let minExp = data.putExpDateMap[dateMap(contract.expire)][(contract2.strike/100).toFixed(1).toString()][0].expirationDate;
-						if (expirationM < minExp) minExp = expirationM
+						if (expirationM < minExp) minExp = expirationM;
 						let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + minExp-Date.now()));
-						if (condorRate < bestCondor.rate) {
-							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
-						}
-					}
+						if (condorRate < bestCondor.rate) bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
 					});
 				}
 				});

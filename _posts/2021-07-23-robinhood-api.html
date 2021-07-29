@@ -463,7 +463,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
 									col.style.backgroundColor = "#ddf";
 									let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
-									let msg = addCol(parseFloat("status", "calc(100% - 575px)", orderli);
+									let msg = addCol("(status)", "calc(100% - 575px)", orderli);
 									
 									orderli.firstChild.style.cursor = "pointer";	
 									orderli.firstChild.onclick = function() {

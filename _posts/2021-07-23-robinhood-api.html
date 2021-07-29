@@ -462,11 +462,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								console.log(data);
 								
 								let orderli = make('li');
+								orderli.onmouseenter = function() { this.style.fontWeight = "bold"; }
+								orderli.onmouseleave = function() { this.style.fontWeight = ""; }
+								orderli.style.textAlign = "center";	
 								if (data.detail) addCol(data.detail, "500px", orderli);
 								else {
-									orderli.onmouseenter = function() { this.style.fontWeight = "bold"; }
-									orderli.onmouseleave = function() { this.style.fontWeight = ""; }
-									orderli.style.textAlign = "center";	
 									let namecol = addCol(symbol, "75px", orderli);	
 									addCol("Call", "75px", orderli);
 									addCol(contract.expire, "125px", orderli);

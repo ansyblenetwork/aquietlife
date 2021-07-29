@@ -281,6 +281,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 
 			msg.style.cursor = "pointer";	
 			msg.onclick = function() {
+				if (confirm("Cancel " + json.legs[0].side + "ing?")) {
 				fetchData(json.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 					console.log("The response to the cancel request: ");
 					console.log(data);
@@ -290,6 +291,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 						msg.textContent = "Cancelled!";
 					}
 				});
+				}
 			}
 			D('orders').appendChild(orderli);
 		});

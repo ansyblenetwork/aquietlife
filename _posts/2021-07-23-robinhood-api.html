@@ -290,6 +290,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 					else {
 						processedCol.textContent = 'X';
 						msg.textContent = "Cancelled!";
+						msg.style.cursor = "";
+						msg.style.backgroundColor = "";
 					}
 				});
 				}
@@ -510,6 +512,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									else {
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
+										msg.style.cursor = "";
+										msg.style.backgroundColor = "";	
 										li.style.color = "";
 										li.firstChild.style.backgroundColor = "#ddf";
 										li.firstChild.style.pointerEvents = "";
@@ -663,6 +667,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									else {
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
+										msg.style.cursor = "";
+										msg.style.backgroundColor = "";
 										li.style.color = "";
 										li.firstChild.style.backgroundColor = "#ddf";
 										li.firstChild.style.pointerEvents = "";

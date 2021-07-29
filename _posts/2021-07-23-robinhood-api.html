@@ -459,8 +459,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
-				if (confirm("Proceed to sell this orphan defensive leg?")) {					
-					let orderPrem = prem + parseFloat(contract.tick);
+				if (confirm("Proceed to sell this orphan defensive leg?")) {
 					let json = {
 						'account': accountURL,
 						'direction': 'credit',
@@ -468,7 +467,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': orderPrem,
+						'price': prem,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,
@@ -488,7 +487,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							col.style.backgroundColor = "#dff";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
 							col.style.backgroundColor = "#dff";
-							col = addCol(orderPrem.toFixed(2), "75px", orderli);
+							col = addCol(prem.toFixed(2), "75px", orderli);
 							col.style.backgroundColor = "#dff";
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
@@ -510,6 +509,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
 										li.style.color = "";
+										createSingleOrder(orderli, contract, prem - parseFloat(contract.tick));
 									}
 								});
 							}
@@ -533,7 +533,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (prem > 0) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
-						createSingleOrder(li, contract, prem);
+						createSingleOrder(li, contract, prem + parseFloat(contract.tick));
 					}
 				});
 
@@ -549,7 +549,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (prem > 0) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
-						createSingleOrder(li, contract, prem);
+						createSingleOrder(li, contract, prem + parseFloat(contract.tick));
 					}
 				});
 				
@@ -603,12 +603,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				
-				function createOrder(li, contract) {
+				function createOrder(li, contract, orderPrem) {
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to buy this spread for collateral?")) {
-					let orderPrem = contract.premium - parseFloat(contract.tick);
 					if (orderPrem <= 0) orderPrem = parseFloat(contract.tick);
 					let json = {
 						'account': accountURL,
@@ -659,6 +658,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
 										li.style.color = "";
+										createOrder(orderli, contract, orderPrem + parseFloat(contract.tick));
 									}
 								});
 							}
@@ -674,25 +674,25 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let li = makeli(symbol, ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
-					createOrder(li, ncPut);
+					createOrder(li, ncPut, ncPut.premium - parseFloat(ncPut.tick));
 				}
 				if (bestPut) {						
 					let li = makeli(symbol, bestPut);
 					addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
 					addOrdered(li, D('release'));
-					createOrder(li, bestPut);
+					createOrder(li, bestPut, bestPut.premium - parseFloat(bestPut.tick));
 				}
 				if (ncCall) {					
 					let li = makeli(symbol, ncCall);
 					addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
 					addOrdered(li, D('ncRelease'));
-					createOrder(li, ncCall);
+					createOrder(li, ncCall, ncCall.premium - parseFloat(ncCall.tick));
 				}
 				if (bestCall) {					
 					let li = makeli(symbol, bestCall);
 					addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
 					addOrdered(li, D('release'));
-					createOrder(li, bestCall);
+					createOrder(li, bestCall, bestCall.premium - parseFloat(bestCall.tick));
 				}
 				if (bestCondor.release) {
 					let li = makeli(symbol, bestCondor.call);

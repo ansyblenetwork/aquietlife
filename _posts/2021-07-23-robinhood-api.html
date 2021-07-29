@@ -91,14 +91,17 @@ if (typeof(Storage) !== "undefined") {
 	
 function D(str) { return document.getElementById(str); }
 	
-function makeli(symbol, type, expiration) {
+function makeli(symbol, type, contract) {
 	let li = make('li');
 	li.onmouseenter = function() { this.style.fontWeight = "bold"; }
 	li.onmouseleave = function() { this.style.fontWeight = ""; }
 	li.style.textAlign = "center";	
 	addCol(symbol, "75px", li);	
 	addCol(type, "75px", li);
-	addCol(expiration, "125px", li);
+	if (contract) {
+		addCol(contract.expiration, "125px", li);
+		addCol("$" + contract.strike/100, "100px", li);
+	}
 	return li;
 }
 	
@@ -393,8 +396,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					
 				myPutBuys.forEach(function(contract) {
 					if (!contract.friend) {
-						let li = makeli(symbol, "Put", contract.expire);
-						addCol("$" + contract.strike/100, "100px", li);
+						let li = makeli(symbol, "Put", contract);
 						let prem = 0;
 						if (data.putExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
@@ -408,9 +410,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 				myCallBuys.forEach(function(contract) {
 					if (!contract.friend) {
-						let li = makeli(symbol, "Call", contract.expire);
+						let li = makeli(symbol, "Call", contract);
 						let ncol = li.firstChild;
-						addCol("$" + contract.strike/100, "100px", li);
 						let prem = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
@@ -461,11 +462,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								console.log("The response to the order: ");
 								console.log(data);
 								
-								let orderli = makeli(symbol, "Call", contract.expire);
+								let orderli = makeli(symbol, "Call", contract);
 								let namecol = orderli.firstChild;
 								if (data.detail) addCol(data.detail, "calc(100% - 275px)", orderli);
 								else {
-									addCol("$" + contract.strike/100, "75px", orderli);
 									let prem = 0;
 									let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
 								}
@@ -518,9 +518,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 				});
 
-				function addColStock(li, obj) {
-					addCol("$" + obj.strike/100, "75px", li);
-				}
 
 				function addOrdered(li, element) {
 					let toAdd = true;
@@ -545,32 +542,27 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				if (ncPut) {						
-					let li = makeli(symbol, "Put", ncPut.expire);
-					addColStock(li, ncPut);
+					let li = makeli(symbol, "Put", ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
 				}
 				if (bestPut) {						
-					let li = makeli(symbol, "Put", bestPut.expire);	
-					addColStock(li, bestPut);
+					let li = makeli(symbol, "Put", bestPut);
 					addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
 					addOrdered(li, D('release'));
 				}
 				if (ncCall) {					
-					let li = makeli(symbol, "Call", ncCall.expire);
-					addColStock(li, ncCall);
+					let li = makeli(symbol, "Call", ncCall);
 					addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
 					addOrdered(li, D('ncRelease'));
 				}
 				if (bestCall) {					
-					let li = makeli(symbol, "Call", bestCall.expire);	
-					addColStock(li, bestCall);
+					let li = makeli(symbol, "Call", bestCall);
 					addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
 					addOrdered(li, D('release'));
 				}
 				if (bestCondor.release) {
-					let li = makeli(symbol, "Call", bestCondor.call.expire);
-					addColStock(li, bestCondor.call);
+					let li = makeli(symbol, "Call", bestCondor.call);
 
 					addCol("Put", "75px", li);
 					addCol(bestCondor.put.expire, "125px", li);
@@ -594,16 +586,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			myPuts.forEach(function(contract) {
 				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
-					let li = makeli(data.quoteResponse.result[i].symbol, "Put", contract.expire);
-					addCol("$" + contract.strike/100, "100px", li);
+					let li = makeli(data.quoteResponse.result[i].symbol, "Put", contract);
 					D('itm').appendChild(li);
 				}
 			});
 
 			myCalls.forEach(function(contract) {
 				if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
-					let li = makeli(data.quoteResponse.result[i].symbol, "Call", contract.expire);
-					addCol("$" + contract.strike/100, "100px", li);
+					let li = makeli(data.quoteResponse.result[i].symbol, "Call", contract);
 					D('itm').appendChild(li);
 				}
 			});
@@ -815,8 +805,9 @@ function condor(symbol, build) {
 		}
 		
 		if (build && expirePuts > 0) {
-			let li = makeli(symbol, "Call", expiration);
+			let li = makeli(symbol, "Call");
 			li.title = expirePuts;	
+			addCol(expiration, "125px", li);
 			addCol("$" + expirePuts, "100px", li);
 			let toAdd = true;
 			for (let j = 0; j < D('unpaired').children.length; j++) {
@@ -836,8 +827,9 @@ function condor(symbol, build) {
 		}
 		
 		if (build && expireCalls > 0) {
-			let li = makeli(symbol, "Put", expiration);
+			let li = makeli(symbol, "Put");
 			li.title = expireCalls;
+			addCol(expiration, "125px", li);
 			addCol("$" + expireCalls, "100px", li);
 			let toAdd = true;
 			for (let j = 0; j < D('unpaired').children.length; j++) {

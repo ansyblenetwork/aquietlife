@@ -76,9 +76,7 @@ var authData = {};
 var authHeader = {};
 var accountURL = "";
 	
-var optionsBySymbol = {};
-var currentInstrument = "";
-	
+var optionsBySymbol = {};	
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
@@ -126,6 +124,7 @@ function clearDOM(myNode) {
 }
 	
 function wipeDOM() {	
+	clearDOM(D('orders'));
 	clearDOM(D('singles'));
 	clearDOM(D('unpaired'));
 	clearDOM(D('release'));

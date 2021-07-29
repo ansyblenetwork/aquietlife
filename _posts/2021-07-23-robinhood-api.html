@@ -450,6 +450,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 								console.log("The response to the order: ");
 								console.log(data);
+								li.style.color = "#aaa";
 								
 								let orderli = makeli(symbol, contract);
 								let namecol = orderli.firstChild;
@@ -462,13 +463,18 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
 									col.style.backgroundColor = "#ddf";
 									let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+									let msg = addCol(parseFloat("status", "calc(100% - 575px)", orderli);
 									
 									orderli.firstChild.style.cursor = "pointer";	
 									orderli.firstChild.onclick = function() {
 										fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 											console.log("The response to the cancel request: ");
 											console.log(data);
-											processedCol.textContent = 'X';
+											if (data.detail) msg.textContent = data.detail;
+											else {
+												processedCol.textContent = 'X';
+												msg.textContent = "Cancelled"
+											}
 										});
 									}
 								}

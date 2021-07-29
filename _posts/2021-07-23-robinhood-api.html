@@ -461,16 +461,19 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								console.log("The response to the order: ");
 								console.log(data);
 								
-								let orderli = make('li');	
-								orderli.onmouseenter = function() { this.style.fontWeight = "bold"; }
-								orderli.onmouseleave = function() { this.style.fontWeight = ""; }
-								orderli.style.textAlign = "center";	
-								let namecol = addCol(symbol, "75px", orderli);	
-								addCol("Call", "75px", orderli);
-								addCol(contract.expire, "125px", orderli);
-								addCol("$" + contract.strike/100, "75px", orderli);
-								let prem = 0;
-								let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+								let orderli = make('li');
+								if (data.detail) addCol(data.detail, "500px", orderli);
+								else {
+									orderli.onmouseenter = function() { this.style.fontWeight = "bold"; }
+									orderli.onmouseleave = function() { this.style.fontWeight = ""; }
+									orderli.style.textAlign = "center";	
+									let namecol = addCol(symbol, "75px", orderli);	
+									addCol("Call", "75px", orderli);
+									addCol(contract.expire, "125px", orderli);
+									addCol("$" + contract.strike/100, "75px", orderli);
+									let prem = 0;
+									let col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+								}
 								D('orders').appendChild(orderli);
 								
 							});

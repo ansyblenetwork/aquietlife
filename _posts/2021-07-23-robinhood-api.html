@@ -144,6 +144,18 @@ function addCol(text, width, li) {
 	return col;
 }		
 	
+function addOrdered(li, element) {
+	let toAdd = true;
+	for (let j = 0; j < element.children.length; j++) {
+		if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
+			element.insertBefore(li, element.children[j]);
+			toAdd = false;
+			break;
+		}
+	}
+	if (toAdd) element.appendChild(li);
+}
+	
 function fetchData(url, method, data) {
 	if (data) {
 	return fetch("https://sandboxansyble.herokuapp.com/cors/", 
@@ -514,18 +526,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					});
 				}
 				});
-
-				function addOrdered(li, element) {
-					let toAdd = true;
-					for (let j = 0; j < element.children.length; j++) {
-						if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
-							element.insertBefore(li, element.children[j]);
-							toAdd = false;
-							break;
-						}
-					}
-					if (toAdd) element.appendChild(li);
-				}
 
 				function addColCost(li, elt, rate, collateral) {
 					li.title = rate;

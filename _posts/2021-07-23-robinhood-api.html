@@ -470,7 +470,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				optionsBySymbol[symbol].defCall.forEach(function(contract) {
 					if (!contract.friend) {
 						let li = makeli(symbol, contract);
-						li.style.marginBottom = "10px";
 						let prem = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
@@ -502,6 +501,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								li.style.color = "#aaa";
 								
 								let orderli = makeli(symbol, contract);
+								// orderli.style.marginBottom = "10px";
 								if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 								else {
 									let col = addCol(json.legs[0].side, "75px", orderli);

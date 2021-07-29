@@ -96,11 +96,9 @@ function makeli(symbol, type, contract) {
 	li.onmouseleave = function() { this.style.fontWeight = ""; }
 	li.style.textAlign = "center";	
 	addCol(symbol, "75px", li);	
+	if (contract) addCol(contract.expire, "125px", li);	
 	addCol(type, "75px", li);
-	if (contract) {
-		addCol(contract.expire, "125px", li);
-		addCol("$" + contract.strike/100, "100px", li);
-	}
+	if (contract) addCol("$" + contract.strike/100, "100px", li);
 	return li;
 }
 	
@@ -558,7 +556,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let li = makeli(symbol, "Call", bestCondor.call);
 
 					addCol("Put", "75px", li);
-					addCol(bestCondor.put.expire, "125px", li);
 					addCol("$" + bestCondor.put.strike/100, "75px", li);
 
 					addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					

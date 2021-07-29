@@ -478,6 +478,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						console.log("The response to the order: ");
 						console.log(data);
 						li.style.color = "#aaa";
+						li.firstChild.style.backgroundColor = "";
+						li.firstChild.style.pointerEvents = "none";
 
 						let orderli = makeli(symbol, contract);
 						// orderli.style.marginBottom = "10px";
@@ -509,6 +511,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
 										li.style.color = "";
+										li.firstChild.style.backgroundColor = "#ddf";
+										li.firstChild.style.pointerEvents = "";
 										createSingleOrder(orderli, contract, prem - parseFloat(contract.tick));
 									}
 								});
@@ -627,6 +631,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						console.log("The response to the order: ");
 						console.log(data);
 						li.style.color = "#aaa";
+						li.firstChild.style.backgroundColor = "";
+						li.firstChild.style.pointerEvents = "none";
 
 						let orderli = makeli(symbol, contract);
 						// orderli.style.marginBottom = "10px";
@@ -658,6 +664,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										processedCol.textContent = 'X';
 										msg.textContent = "Cancelled!";
 										li.style.color = "";
+										li.firstChild.style.backgroundColor = "#ddf";
+										li.firstChild.style.pointerEvents = "";
 										createOrder(orderli, contract, orderPrem + parseFloat(contract.tick));
 									}
 								});

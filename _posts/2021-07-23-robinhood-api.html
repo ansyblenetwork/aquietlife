@@ -310,14 +310,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	taskBySymbol = {};
 	for (let i = 0; i < accountOptions.length; i++) {			
 		if (!optionsBySymbol[accountOptions[i].chain_symbol]) {
-			optionsBySymbol[accountOptions[i].chain_symbol] = {tick:optionData.min_ticks.below_tick, url:optionData.url, shortCall:[], shortPut:[], defCall:[], defPut:[]};
+			optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
 			taskBySymbol[accountOptions[i].chain_symbol] = [];
 		}
 		
 		let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
 			let quantity = parseInt(accountOptions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
-				let dat = {type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+				let dat = {tick:optionData.min_ticks.below_tick, url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 				if (accountOptions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);

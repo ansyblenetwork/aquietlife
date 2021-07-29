@@ -359,15 +359,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
-				else if (a.strike < b.strike) return 1;
-				else if (a.strike > b.strike) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
 				else return 0;					
 			});
 			optionsBySymbol[symbol].defPut.sort(function(b, a) { 
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike < b.strike) return 1;
-				else if (a.strike > b.strike) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
 				else return 0;					
 			});
 
@@ -379,15 +379,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].shortCall.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
-				else if (a.strike > b.strike) return 1;
-				else if (a.strike < b.strike) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
 				else return 0;					
 			});
 			optionsBySymbol[symbol].defCall.sort(function(b, a) {
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike > b.strike) return 1;
-				else if (a.strike < b.strike) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
 				else return 0;					
 			});
 
@@ -424,7 +424,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let myExpire = me.expire;
 				let friend = me.friend;
 
-				if (!friend) { console.log("issue, no friend:"); console.log(me);}
 				clearOption(friend);
 				clearOption(me);
 				me.expire = "neverplus";
@@ -798,36 +797,32 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
+	let maxGain = 0;
 	let collateral = Infinity;
 	let candidate = null;
 	let seeker = defCall;
 	if (!seeker) seeker = shortCall;
 	if (defCall) {
 		for (let j = 0; j < data.shortCall.length; j++) {
-			evaluate(defCall, data.shortCall[j], data.shortCall[j]);
+			if (evaluate(defCall, data.shortCall[j], data.shortCall[j])) break;
 		}
 	}
 	if (shortCall) {
 		for (let j = 0; j < data.defCall.length; j++) {
-			evaluate(data.defCall[j], shortCall, data.defCall[j]);
+			if (evaluate(data.defCall[j], shortCall, data.defCall[j])) break;
 		}
 	}
 	
 	function evaluate(defCall, shortCall, subject) {
-		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
-		    if (!subject.friend || callCollateral(defCall, shortCall) < subject.collateral 
-			|| (callCollateral(defCall, shortCall) == subject.collateral && 
-			    ((seeker == defCall && (seeker.strike > subject.friend.expire || seeker.expire < subject.friend.expire))
-			   || (seeker != defCall && (seeker.strike < subject.friend.expire || seeker.expire > subject.friend.expire))))) {
+		if (defCall.expire >= shortCall.expire 
+		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
-		    }
+			if (callGain(defCall, shortCall, subject) == Infinity) return true;
+			if (candidate.friend) return true;
 		}
-	}
-	
-	function callCollateral(defCall, shortCall) {	
-		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
-		return 0;
+		return false;
 	}
 	
 	if (candidate) {
@@ -844,6 +839,16 @@ function findCallPair(symbol, defCall, shortCall) {
 			else if (shortCall) findCallPair(symbol, null, orphan);
 		}
 	}	
+
+	function callCollateral(defCall, shortCall) {	
+		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
+		return 0;
+	}
+
+	function callGain(defCall, shortCall, subject) {
+		if (!subject.friend) return Infinity;
+		return subject.collateral - callCollateral(defCall, shortCall);
+	}
 }
 	
 function clearOption(option) {
@@ -854,36 +859,19 @@ function clearOption(option) {
 	
 function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
-	let release = 0;
+	let maxGain = 0;
 	let candidate = null;
 	let seeker = defPut;
 	if (!seeker) seeker = shortPut;
 	if (defPut) {
 		for (let j = 0; j < data.shortPut.length; j++) {
-			evaluate(defPut, data.shortPut[j], data.shortPut[j]);
+			if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
 		}
 	}
 	if (shortPut) {
 		for (let j = 0; j < data.defPut.length; j++) {
-			evaluate(data.defPut[j], shortPut, data.defPut[j]);
+			if (evaluate(data.defPut[j], shortPut, data.defPut[j])) break;
 		}
-	}
-	
-	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut) > release) {
-		    if (!subject.friend || putGain(defPut, shortPut) > subject.release 
-			|| (putGain(defPut, shortPut) == subject.release && 
-			    ((seeker == defPut && (seeker.expire < subject.friend.expire || seeker.strike < subject.friend.strike))			    
-			    || (seeker != defPut && (seeker.expire > subject.friend.expire || seeker.strike > subject.friend.strike))))) {
-			release = putGain(defPut, shortPut);
-			candidate = subject;
-		    }
-		}
-	}
-
-	function putGain(defPut, shortPut) {
-		if (defPut.strike < shortPut.strike) return defPut.strike;
-		return shortPut.strike;
 	}
 
 	if (candidate) {
@@ -892,8 +880,9 @@ function findPutPair(symbol, defPut, shortPut) {
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;
-		candidate.release = release;
-		seeker.release = release;
+		if (!candidate.release) candidate.release = 0;
+		candidate.release += maxGain;
+		seeker.release = candidate.release;
 		
 		candidate.collateral = candidate.strike - candidate.release;
 		seeker.collateral = seeker.strike - seeker.release;
@@ -903,6 +892,22 @@ function findPutPair(symbol, defPut, shortPut) {
 			else if (shortPut) findPutPair(symbol, null, orphan);
 		}
 	}	
+	
+	function evaluate(defPut, shortPut, subject) {
+		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut, subject) > maxGain) {
+			maxGain = putGain(defPut, shortPut, subject);
+			candidate = subject;
+			if (candidate.friend) return true;
+		}
+		return false;
+	}
+
+	function putGain(defPut, shortPut, subject) {
+		let release = shortPut.strike;
+		if (defPut.strike < shortPut.strike) release = defPut.strike;
+		if (!subject.friend) return release;
+		return release - subject.release;
+	}
 }
 	
 function noCondorCalls(symbol) {

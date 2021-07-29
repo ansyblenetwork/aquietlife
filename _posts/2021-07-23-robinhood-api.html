@@ -452,6 +452,69 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function dateMap(expiration) { return dateMapData[expiration]; }
 				function strikeMap(strike) { return (strike/100).toFixed(1).toString();	}
 					
+				function createSingleOrder(li, contract, prem) {
+				li.firstChild.style.cursor = "pointer";	
+				li.firstChild.onclick = function() {
+				if (confirm("Proceed to sell this orphan defensive leg?")) {
+					let json = {
+						'account': accountURL,
+						'direction': 'credit',
+						'time_in_force': 'gfd',
+						'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
+						'type': 'limit',
+						'trigger': 'immediate',
+						'price': prem + 0.01,
+						'quantity': 1,
+						'override_day_trade_checks': false,
+						'override_dtbp_checks': false,
+						'ref_id': generate_device_token()
+					}
+					console.log(json);
+					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+						console.log("The response to the order: ");
+						console.log(data);
+						li.style.color = "#aaa";
+
+						let orderli = makeli(symbol, contract);
+						// orderli.style.marginBottom = "10px";
+						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
+						else {
+							let col = addCol(json.legs[0].side, "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							col = addCol(json.legs[0].position_effect, "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
+
+							if (parseFloat(data.processed_quantity) > 0) {
+								processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
+								msg.textContent = "Processed!";
+							}
+
+							orderli.firstChild.style.cursor = "pointer";	
+							orderli.firstChild.onclick = function() {										
+							if (confirm("Cancel selling this orphan defensive leg?")) {
+								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+									console.log("The response to the cancel request: ");
+									console.log(data);
+									if (data.detail) msg.textContent = data.detail;
+									else {
+										processedCol.textContent = 'X';
+										msg.textContent = "Cancelled!";
+										li.style.color = "";
+									}
+								});
+							}
+							}
+						}
+						D('orders').appendChild(orderli);
+					});
+				}
+				}
+				}
+				
 				optionsBySymbol[symbol].defPut.forEach(function(contract) {
 					if (!contract.friend) {
 						let li = makeli(symbol, contract);
@@ -463,6 +526,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let col = addCol(prem.toFixed(2), "75px", li);
 						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
+						
+						function createSingleOrder(li, contract, prem);
 					}
 				});
 
@@ -478,62 +543,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (prem > 0) col.style.backgroundColor = "#ddf";
 						D('singles').appendChild(li);
 						
-						li.firstChild.style.cursor = "pointer";	
-						li.firstChild.onclick = function() {
-							let json = {
-								'account': accountURL,
-								'direction': 'credit',
-								'time_in_force': 'gfd',
-								'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
-								'type': 'limit',
-								'trigger': 'immediate',
-								'price': prem + 0.01,
-								'quantity': 1,
-								'override_day_trade_checks': false,
-								'override_dtbp_checks': false,
-								'ref_id': generate_device_token()
-							}
-							console.log(json);
-							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
-								console.log("The response to the order: ");
-								console.log(data);
-								li.style.color = "#aaa";
-								
-								let orderli = makeli(symbol, contract);
-								// orderli.style.marginBottom = "10px";
-								if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
-								else {
-									let col = addCol(json.legs[0].side, "75px", orderli);
-									col.style.backgroundColor = "#ddf";
-									col = addCol(json.legs[0].position_effect, "75px", orderli);
-									col.style.backgroundColor = "#ddf";
-									col = addCol((prem + 0.01).toFixed(2), "75px", orderli);
-									col.style.backgroundColor = "#ddf";
-									let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
-									let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
-									
-									if (parseFloat(data.processed_quantity) > 0) {
-										processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-										msg.textContent = "Processed!";
-									}
-									
-									orderli.firstChild.style.cursor = "pointer";	
-									orderli.firstChild.onclick = function() {
-										fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-											console.log("The response to the cancel request: ");
-											console.log(data);
-											if (data.detail) msg.textContent = data.detail;
-											else {
-												processedCol.textContent = 'X';
-												msg.textContent = "Cancelled!";
-												li.style.color = "";
-											}
-										});
-									}
-								}
-								D('orders').appendChild(orderli);
-							});
-						}
+						function createSingleOrder(li, contract, prem);
 					}
 				});
 				
@@ -586,25 +596,93 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					col.style.backgroundColor = "#ddf";
 				}
 
+				
+				function createOrder(li, contract) {
+				li.firstChild.style.cursor = "pointer";	
+				li.firstChild.onclick = function() {
+				if (confirm("Proceed to buy this spread for collateral?")) {
+					let json = {
+						'account': accountURL,
+						'direction': 'debit',
+						'time_in_force': 'gfd',
+						'legs': [{'position_effect': 'close', 'side': 'buy', 'ratio_quantity': 1, 'option': contract.url }],
+						'type': 'limit',
+						'trigger': 'immediate',
+						'price': contract.premium - 0.01,
+						'quantity': 1,
+						'override_day_trade_checks': false,
+						'override_dtbp_checks': false,
+						'ref_id': generate_device_token()
+					}
+					console.log(json);
+					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+						console.log("The response to the order: ");
+						console.log(data);
+						li.style.color = "#aaa";
+
+						let orderli = makeli(symbol, contract);
+						// orderli.style.marginBottom = "10px";
+						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
+						else {
+							let col = addCol(json.legs[0].side, "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							col = addCol(json.legs[0].position_effect, "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							col = addCol((contract.premium - 0.01).toFixed(2), "75px", orderli);
+							col.style.backgroundColor = "#ddf";
+							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
+
+							if (parseFloat(data.processed_quantity) > 0) {
+								processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
+								msg.textContent = "Processed!";
+							}
+
+							orderli.firstChild.style.cursor = "pointer";	
+							orderli.firstChild.onclick = function() {										
+							if (confirm("Cancel buying this spread for collateral?")) {
+								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+									console.log("The response to the cancel request: ");
+									console.log(data);
+									if (data.detail) msg.textContent = data.detail;
+									else {
+										processedCol.textContent = 'X';
+										msg.textContent = "Cancelled!";
+										li.style.color = "";
+									}
+								});
+							}
+							}
+						}
+						D('orders').appendChild(orderli);
+					});
+				}
+				}
+				}
+
 				if (ncPut) {						
 					let li = makeli(symbol, ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
+					createOrder(li, ncPut);
 				}
 				if (bestPut) {						
 					let li = makeli(symbol, bestPut);
 					addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
 					addOrdered(li, D('release'));
+					createOrder(li, bestPut);
 				}
 				if (ncCall) {					
 					let li = makeli(symbol, ncCall);
 					addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
 					addOrdered(li, D('ncRelease'));
+					createOrder(li, ncCall);
 				}
 				if (bestCall) {					
 					let li = makeli(symbol, bestCall);
 					addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
 					addOrdered(li, D('release'));
+					createOrder(li, bestCall);
 				}
 				if (bestCondor.release) {
 					let li = makeli(symbol, bestCondor.call);

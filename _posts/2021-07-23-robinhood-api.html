@@ -99,7 +99,7 @@ function makeli(symbol, type, contract) {
 	addCol(symbol, "75px", li);	
 	addCol(type, "75px", li);
 	if (contract) {
-		addCol(contract.expiration, "125px", li);
+		addCol(contract.expire, "125px", li);
 		addCol("$" + contract.strike/100, "100px", li);
 	}
 	return li;

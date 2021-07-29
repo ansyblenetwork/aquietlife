@@ -266,11 +266,11 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			
 			let orderli = makeli(symbol, contract);
 			let col = addCol(json.legs[0].side, "75px", orderli);
-			col.style.backgroundColor = "#ddf";
+			col.style.backgroundColor = "#dff";
 			col = addCol(json.legs[0].position_effect, "75px", orderli);
-			col.style.backgroundColor = "#ddf";
+			col.style.backgroundColor = "#dff";
 			col = addCol(parseFloat(json.price).toFixed(2), "75px", orderli);
-			col.style.backgroundColor = "#ddf";
+			col.style.backgroundColor = "#dff";
 			let processedCol = addCol(parseFloat(json.processed_quantity), "75px", orderli);
 			let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
@@ -279,7 +279,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 				msg.textContent = "Processed!";
 			}
 
-			msg.style.cursor = "pointer";	
+			msg.style.cursor = "pointer";
+			msg.style.backgroundColor = "#ddf";		
 			msg.onclick = function() {
 				if (confirm("Cancel " + json.legs[0].side + "ing?")) {
 				fetchData(json.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
@@ -456,6 +457,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					
 				function createSingleOrder(li, contract, prem) {
 				li.firstChild.style.cursor = "pointer";	
+				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to sell this orphan defensive leg?")) {					
 					let orderPrem = prem + parseFloat(contract.tick);
@@ -483,11 +485,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 						else {
 							let col = addCol(json.legs[0].side, "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							col = addCol(orderPrem.toFixed(2), "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
@@ -496,7 +498,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								msg.textContent = "Processed!";
 							}
 
-							msg.style.cursor = "pointer";	
+							msg.style.cursor = "pointer";
+							msg.style.backgroundColor = "#ddf";		
 							msg.onclick = function() {										
 							if (confirm("Cancel selling this orphan defensive leg?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
@@ -527,7 +530,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							else prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
 						}
 						let col = addCol(prem.toFixed(2), "75px", li);
-						if (prem > 0) col.style.backgroundColor = "#ddf";
+						if (prem > 0) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
 						createSingleOrder(li, contract, prem);
@@ -543,7 +546,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
 						}
 						let col = addCol(prem.toFixed(2), "75px", li);
-						if (prem > 0) col.style.backgroundColor = "#ddf";
+						if (prem > 0) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
 						createSingleOrder(li, contract, prem);
@@ -592,16 +595,17 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function addColCost(li, elt, rate, collateral) {
 					li.title = rate;
 					let col = addCol(elt.premium.toFixed(2), "75px", li);
-					col.style.backgroundColor = "#ddf";
+					col.style.backgroundColor = "#dff";
 					col = addCol("$" + collateral, "75px", li);
-					col.style.backgroundColor = "#ddf";
+					col.style.backgroundColor = "#dff";
 					col = addCol(Math.round(rate) + "%", "75px", li);
-					col.style.backgroundColor = "#ddf";
+					col.style.backgroundColor = "#dff";
 				}
 
 				
 				function createOrder(li, contract) {
 				li.firstChild.style.cursor = "pointer";	
+				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to buy this spread for collateral?")) {
 					let orderPrem = contract.premium - parseFloat(contract.tick);
@@ -630,11 +634,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
 						else {
 							let col = addCol(json.legs[0].side, "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							col = addCol(json.legs[0].position_effect, "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							col = addCol(orderPrem.toFixed(2), "75px", orderli);
-							col.style.backgroundColor = "#ddf";
+							col.style.backgroundColor = "#dff";
 							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
 
@@ -643,7 +647,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								msg.textContent = "Processed!";
 							}
 
-							msg.style.cursor = "pointer";	
+							msg.style.cursor = "pointer";
+							msg.style.backgroundColor = "#ddf";	
 							msg.onclick = function() {										
 							if (confirm("Cancel buying this spread for collateral?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {

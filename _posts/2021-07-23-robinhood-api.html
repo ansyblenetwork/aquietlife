@@ -747,12 +747,16 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut.forEach(function(contract) {
 				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
 					let li = makeli(data.quoteResponse.result[i].symbol, contract);
+					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
+					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
 				}
 			});
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall.forEach(function(contract) {
 				if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
 					let li = makeli(data.quoteResponse.result[i].symbol, contract);
+					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
+					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
 				}
 			});
@@ -957,7 +961,8 @@ function condor(symbol, build) {
 			li.title = 0 - expirePuts;	
 			addCol(expiration, "125px", li);
 			addCol("call", "50px", li);
-			addCol("$" + expirePuts, "100px", li);
+			let col = addCol("$" + expirePuts, "100px", li);
+			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
 		}
 		totalPuts += expirePuts;
@@ -972,7 +977,8 @@ function condor(symbol, build) {
 			li.title = 0 - expireCalls;
 			addCol(expiration, "125px", li);
 			addCol("put", "50px", li);
-			addCol("$" + expireCalls, "100px", li);
+			let col = addCol("$" + expireCalls, "100px", li);
+			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
 		}
 		totalCalls += expireCalls;

@@ -345,7 +345,7 @@ function getData() {
 	
 function getOptions() {	
 D('optionButton').disabled = true;
-	
+wipeDOM();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	console.log("All open orders:");
 	console.log(data);
@@ -427,7 +427,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	let queryString = "";
-	wipeDOM();
 	for (let symbol in taskBySymbol) {
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {

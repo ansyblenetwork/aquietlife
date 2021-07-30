@@ -684,6 +684,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to buy this spread for collateral?")) {
 					if (orderPrem <= 0) orderPrem = parseFloat(contract.tick);
+					else orderPrem = Math.round(100*orderPrem)/100;
 					let json = {
 						'account': accountURL,
 						'direction': 'debit',

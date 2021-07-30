@@ -784,12 +784,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
 		for (let i = 0; i < data.quoteResponse.result.length; i++) {
+			let monitorQuery = [];
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut.forEach(function(contract) {
 				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
 					let li = makeli(data.quoteResponse.result[i].symbol, contract);
 					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
 					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
+					if (!monitorQuery.includes(data.quoteResponse.result[i].symbol)) monitorQuery.push(data.quoteResponse.result[i].symbol);
 				}
 			});
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall.forEach(function(contract) {
@@ -798,8 +800,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
 					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
+					if (!monitorQuery.includes(data.quoteResponse.result[i].symbol)) monitorQuery.push(data.quoteResponse.result[i].symbol);
 				}
 			});
+			submitTicker(monitorQuery.join());
 		}
 		});
 	});

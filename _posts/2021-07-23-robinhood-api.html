@@ -804,12 +804,12 @@ function findCallPair(symbol, defCall, shortCall) {
 	if (!seeker) seeker = shortCall;
 	if (defCall) {
 		for (let j = 0; j < data.shortCall.length; j++) {
-			if (evaluate(defCall, data.shortCall[j], data.shortCall[j])) break;
+			evaluate(defCall, data.shortCall[j], data.shortCall[j]);
 		}
 	}
 	if (shortCall) {
 		for (let j = 0; j < data.defCall.length; j++) {
-			if (evaluate(data.defCall[j], shortCall, data.defCall[j])) break;
+			evaluate(data.defCall[j], shortCall, data.defCall[j]);
 		}
 	}
 	
@@ -819,10 +819,17 @@ function findCallPair(symbol, defCall, shortCall) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
-			if (callGain(defCall, shortCall, subject) == Infinity) return true;
-			if (candidate.friend) return true;
 		}
-		return false;
+	}
+
+	function callCollateral(defCall, shortCall) {	
+		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
+		return 0;
+	}
+
+	function callGain(defCall, shortCall, subject) {
+		if (!subject.friend) return Infinity;
+		return subject.collateral - callCollateral(defCall, shortCall);
 	}
 	
 	if (candidate) {
@@ -839,16 +846,6 @@ function findCallPair(symbol, defCall, shortCall) {
 			else if (shortCall) findCallPair(symbol, null, orphan);
 		}
 	}	
-
-	function callCollateral(defCall, shortCall) {	
-		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
-		return 0;
-	}
-
-	function callGain(defCall, shortCall, subject) {
-		if (!subject.friend) return Infinity;
-		return subject.collateral - callCollateral(defCall, shortCall);
-	}
 }
 	
 function clearOption(option) {
@@ -860,18 +857,37 @@ function clearOption(option) {
 function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
+	let release = 0;
 	let candidate = null;
 	let seeker = defPut;
 	if (!seeker) seeker = shortPut;
 	if (defPut) {
 		for (let j = 0; j < data.shortPut.length; j++) {
-			if (evaluate(defPut, data.shortPut[j], data.shortPut[j])) break;
+			evaluate(defPut, data.shortPut[j], data.shortPut[j]);
 		}
 	}
 	if (shortPut) {
 		for (let j = 0; j < data.defPut.length; j++) {
-			if (evaluate(data.defPut[j], shortPut, data.defPut[j])) break;
+			evaluate(data.defPut[j], shortPut, data.defPut[j]);
 		}
+	}
+	
+	function evaluate(defPut, shortPut, subject) {
+		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut, subject) > maxGain) {
+			maxGain = putGain(defPut, shortPut, subject);
+			release = putRelease(defPut, shortPut);
+			candidate = subject;
+		}
+	}
+	
+	function putRelease(defPut, shortPut) {		
+		if (defPut.strike < shortPut.strike) return defPut.strike;
+		return shortPut.strike;		
+	}
+
+	function putGain(defPut, shortPut, subject) {
+		if (!subject.friend) return putRelease(defPut, shortPut);
+		return putRelease(defPut, shortPut) - subject.release;
 	}
 
 	if (candidate) {
@@ -880,9 +896,8 @@ function findPutPair(symbol, defPut, shortPut) {
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;
-		if (!candidate.release) candidate.release = 0;
-		candidate.release += maxGain;
-		seeker.release = candidate.release;
+		candidate.release = release;
+		seeker.release = release;
 		
 		candidate.collateral = candidate.strike - candidate.release;
 		seeker.collateral = seeker.strike - seeker.release;
@@ -892,22 +907,6 @@ function findPutPair(symbol, defPut, shortPut) {
 			else if (shortPut) findPutPair(symbol, null, orphan);
 		}
 	}	
-	
-	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut, subject) > maxGain) {
-			maxGain = putGain(defPut, shortPut, subject);
-			candidate = subject;
-			if (candidate.friend) return true;
-		}
-		return false;
-	}
-
-	function putGain(defPut, shortPut, subject) {
-		let release = shortPut.strike;
-		if (defPut.strike < shortPut.strike) release = defPut.strike;
-		if (!subject.friend) return release;
-		return release - subject.release;
-	}
 }
 	
 function noCondorCalls(symbol) {

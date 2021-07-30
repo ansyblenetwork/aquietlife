@@ -1304,5 +1304,20 @@ function round(num, percent) {
 	if (num < 1 && !percent) return Math.round(num*1000)/1000;
 	return Math.round(num*100)/100;
 }
+	
+function setInput(elt, stock) {
+	elt.style.textAlign = "center";	
+	elt.onfocus = function() { elt.select(); }
+	elt.onkeydown = function() { 
+		if ((event.keyCode > 57 && event.keyCode < 91) && !event.altKey && !event.ctrlKey) event.preventDefault();
+	}
+	elt.onkeyup = function() {
+		if (event.keyCode == 13) {
+			event.preventDefault(); 
+			elt.blur();
+		}
+	};   
+	if (stock) elt.onblur = function() { updateDisplay(stock, elt); };   
+} 
 
 </script>

@@ -611,12 +611,18 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					if (!contract.friend) {
 						let li = makeli(symbol, contract);
 						let prem = 0;
+						let vol = 0;
 						if (data.callExpDateMap[dateMap(contract.expire)]) {
 							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
-							prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
+							else {
+								prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
+								vol = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].totalVolume;
+							}
 						}
 						let col = addCol(prem.toFixed(2), "75px", li);
 						if (prem > 0) col.style.backgroundColor = "#dff";
+						col = addCol(vol, "75px", li);
+						if (vol > 15) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
 						createSingleOrder(li, contract, prem + parseFloat(contract.tick));

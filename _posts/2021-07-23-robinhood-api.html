@@ -552,7 +552,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': Math.round(100*parseFloat(orderPrem))/100,,
+						'price': Math.round(100*parseFloat(orderPrem))/100,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,

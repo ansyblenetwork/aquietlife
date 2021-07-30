@@ -95,6 +95,7 @@ var accountURL = "";
 var optionsBySymbol = {};
 	
 var urlMap = {};
+var tickerList = [];
 var d = new Date();
 	
 if (typeof(Storage) !== "undefined") {
@@ -132,6 +133,7 @@ function logout() {
 	authHeader = {};	
 	optionsBySymbol = {};
 	urlMap = {};
+	tickerList = [];
 	
 	hide('profilePage');
 	hide('monitorPage');
@@ -151,6 +153,7 @@ function wipeDOM() {
 	clearDOM(D('condorRelease'));
 	clearDOM(D('ncRelease'));
 	clearDOM(D('itm'));
+	clearDOM(D('stocklist'));
 }
 	
 function addCol(text, width, li) {								       

@@ -10,9 +10,9 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 <div style="margin-top:30px">
 	
 	
-	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; margin-bottom:20px; border-bottom:solid;">	
-		<div style="padding-top:20px">Orders:
-		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
+	<div id="monitorPage" style="text-align:center; display:none; padding-top:20px; margin-bottom:20px; border-bottom:solid;">	
+		<div style="padding-top:20px">Near or in the money:
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>		
 	</div>
 	
@@ -23,9 +23,9 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>		
 		<div style="font-weight:bold; padding:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
-		<div style="padding-top:20px">Near or in the money:
-		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
-		</div>			
+		<div style="padding-top:20px">Orders:
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
+		</div>
 		<div style="padding-top:20px">Incomplete spreads:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
 		</div>		
@@ -84,7 +84,7 @@ if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) {
 		D('profilePage').style.display = "block";
-		D('orderPage').style.display = "block";
+		D('monitorPage').style.display = "block";
 	}
 } 	
 	
@@ -117,7 +117,7 @@ function logout() {
 	urlMap = {};
 	
 	hide('profilePage');
-	hide('orderPage');
+	hide('monitorPage');
 	
 	// if (typeof(Storage) !== "undefined") localStorage.setItem("authString", "");
 }
@@ -216,7 +216,7 @@ function submitMFAForm() {
 		fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
 			hide('MFAForm');
 			show('profilePage');
-			show('orderPage');
+			show('monitorPage');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
 	

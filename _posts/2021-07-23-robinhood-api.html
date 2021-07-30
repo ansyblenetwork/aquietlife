@@ -301,10 +301,10 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 				msg.style.backgroundColor = "#ddf";		
 				msg.onclick = function() {
 					if (confirm("Cancel " + data.legs[0].side + "ing?")) {
-					fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+					fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(cancelData) {
 						console.log("The response to the cancel request: ");
-						console.log(data);
-						if (data.detail) msg.textContent = data.detail;
+						console.log(cancelData);
+						if (cancelData.detail) msg.textContent = cancelData.detail;
 						else {
 							processedCol.textContent = 'X';
 							msg.textContent = "Cancelled!";

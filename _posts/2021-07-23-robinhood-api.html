@@ -95,8 +95,11 @@ var accountURL = "";
 var optionsBySymbol = {};
 	
 var urlMap = {};
+	
 var tickerList = [];
 var d = new Date();
+var volumes = {};
+var prices = {};
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };

@@ -803,6 +803,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					if (!monitorQuery.includes(data.quoteResponse.result[i].symbol)) monitorQuery.push(data.quoteResponse.result[i].symbol);
 				}
 			});
+			console.log(monitorQuery);
 			submitTicker(monitorQuery.join());
 		}
 		});

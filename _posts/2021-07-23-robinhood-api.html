@@ -252,6 +252,97 @@ function getData() {
 function getOptions() {	
 D('optionButton').disabled = true;
 	
+function makeOrderli(symbol, contract, data, origin) {
+	console.log("The response to the order: ");
+	console.log(data);				
+	let orderli;
+	if (data.detail) {
+		orderli = makeli(symbol, contract);
+		addCol(data.detail, "calc(100% - 350px)", orderli);
+	}
+	else {
+		if (origin) {
+			origin.style.color = "#aaa";
+			origin.firstChild.style.backgroundColor = "";
+			origin.firstChild.style.pointerEvents = "none";
+		}
+		orderli = makeli(symbol, contract);
+		let col = addCol(data.legs[0].side, "75px", orderli);
+		col.style.backgroundColor = "#dff";
+		col = addCol(data.legs[0].position_effect, "75px", orderli);
+		col.style.backgroundColor = "#dff";
+		col = addCol(parseFloat(data.price).toFixed(2), "75px", orderli);
+		col.style.backgroundColor = "#dff";
+		let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
+		let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
+		msg.style.cursor = "pointer";
+		msg.style.backgroundColor = "#ddf";	
+
+		function orderStatus(data) {
+			if (parseFloat(data.processed_quantity) > 0) {
+				processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
+				msg.textContent = "Partially completed...";
+			}								
+			if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
+				msg.textContent = "Completed!";
+				msg.style.pointerEvents = "none";
+				msg.style.backgroundColor = "";	
+			}
+		}
+		orderStatus(data);
+
+		orderli.onclick = function() {
+			fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader}).then(function(data) {
+				console.log("Checking for update on status for order:");
+				console.log(data);
+				orderStatus(data);
+			});
+		}
+	}
+	return orderli;
+}
+
+function stylizeCancel(orderli, data, origin) {
+	console.log("The response to the cancel request: ");
+	console.log(data);
+	if (data.detail) orderli.lastElementChild.textContent = data.detail;
+	else {
+		if (origin) {
+			origin.style.color = "";
+			origin.firstChild.style.backgroundColor = "#ddf";
+			origin.firstChild.style.pointerEvents = "";
+		}
+		orderli.lastElementChild.textContent = "Cancelled!";
+		orderli.lastElementChild.style.pointerEvents = "none";
+		orderli.lastElementChild.style.backgroundColor = "";
+		if (orderli.lastElementChild.previousElementSibling.textContent == '0')
+			orderli.lastElementChild.previousElementSibling.textContent = 'X';
+
+		orderli.firstChild.style.cursor = "pointer";	
+		orderli.firstChild.style.backgroundColor = "#ddf";
+	}
+}
+	
+function orderForm(data, price) {
+	let json = {
+		'account': accountURL,
+		'direction': data.direction,
+		'time_in_force': 'gfd',
+		'legs': [{'position_effect': data.legs[0].position_effect,
+			  'side': data.legs[0].side,
+			  'ratio_quantity': 1, 
+			  'option': data.legs[0].option }],
+		'type': 'limit',
+		'trigger': 'immediate',
+		'price': Math.round(parseFloat(price)*100)/100,
+		'quantity': 1,
+		'override_day_trade_checks': false,
+		'override_dtbp_checks': false,
+		'ref_id': generate_device_token()
+	};
+	console.log(json);
+	return json;
+}
 	
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	console.log("All open orders:");
@@ -260,94 +351,34 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 	for (let i = 0; i < data.results.length; i++) {	
 		if (data.results[i].cancel_url) {
 		fetchData(data.results[i].legs[0].option, 'GET').then(function(optionData) {
-			let json = data.results[i];
 			let contract = {type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
 			let symbol = data.results[i].chain_symbol;
 			
-			
-			function createAllOrders(data) {
-				let orderli = makeli(symbol, contract);
-				let col = addCol(data.legs[0].side, "75px", orderli);
-				col.style.backgroundColor = "#dff";
-				col = addCol(data.legs[0].position_effect, "75px", orderli);
-				col.style.backgroundColor = "#dff";
-				col = addCol(parseFloat(data.price).toFixed(2), "75px", orderli);
-				col.style.backgroundColor = "#dff";
-				let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
-				let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
-
-				function orderStatus(data) {
-					if (parseFloat(data.processed_quantity) > 0) {
-						processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-						msg.textContent = "Partially completed...";
-					}								
-					if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
-						msg.textContent = "Completed!";
-						msg.style.pointerEvents = "none";
-						msg.style.backgroundColor = "";	
-					}
-				}
-				orderStatus(data);
-
-				orderli.onclick = function() {
-					fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader, json:data }).then(function(data) {
-						console.log("Checking for update on status for order:");
-						console.log(data);
-						orderStatus(data);
-					});
-				}
-
-				msg.style.cursor = "pointer";
-				msg.style.backgroundColor = "#ddf";		
-				msg.onclick = function() {
-					if (confirm("Cancel " + data.legs[0].side + "ing?")) {
+			function createAllOrders(data, origin) {
+				let orderli = makeOrderli(symbol, contract, data, origin);	
+				orderli.lastElementChild.onclick = function() {
+				if (confirm("Cancel " + data.legs[0].side + "ing to " + data.legs[0].position_effect + "?")) {
 					fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(cancelData) {
-						console.log("The response to the cancel request: ");
-						console.log(cancelData);
-						if (cancelData.detail) msg.textContent = cancelData.detail;
-						else {
-							processedCol.textContent = 'X';
-							msg.textContent = "Cancelled!";
-							msg.style.pointerEvents = "none";
-							msg.style.backgroundColor = "";
-							
-							orderli.firstChild.style.cursor = "pointer";	
-							orderli.firstChild.style.backgroundColor = "#ddf";	
-							orderli.firstChild.onclick = function() {
-							if (confirm("Proceed to re-order?")) {
-								let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
-								if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
-								let json = {
-									'account': accountURL,
-									'direction': data.direction,
-									'time_in_force': 'gfd',
-									'legs': [{'position_effect': data.legs[0].position_effect,
-										  'side': data.legs[0].side,
-										  'ratio_quantity': 1, 
-										  'option': data.legs[0].option }],
-									'type': 'limit',
-									'trigger': 'immediate',
-									'price': price,
-									'quantity': 1,
-									'override_day_trade_checks': false,
-									'override_dtbp_checks': false,
-									'ref_id': generate_device_token()
-								}
-								console.log(json);
-								fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
-									console.log("The response to the order: ");
-									console.log(data);
-									createAllOrders(data);
-								});
+						stylizeCancel(orderli, cancelData, origin);
+						
+						if (!cancelData.detail) orderli.firstChild.onclick = function() {
+						if (confirm("Proceed to re-order?")) {
+							let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
+							if (data.legs[0].side == 'sell') {
+								price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
+								if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
 							}
-							}
+							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:orderForm(data, price) }).then(function(data) {
+								createAllOrders(data, orderli);
+							});
+						}
 						}
 					});
-					}
+				}
 				}
 				D('orders').appendChild(orderli);
 			}			
-			createAllOrders(json);
+			createAllOrders(data.results[i]);
 		});
 		}
 	}
@@ -508,11 +539,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function dateMap(expiration) { return dateMapData[expiration]; }
 				function strikeMap(strike) { return (strike/100).toFixed(1).toString();	}
 					
-				function createSingleOrder(li, contract, prem) {
+				function createSingleOrder(li, contract, orderPrem) {
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to sell this orphan defensive leg?")) {
+					if (parseFloat(orderPrem) <= 0) orderPrem = contract.tick;
 					let json = {
 						'account': accountURL,
 						'direction': 'credit',
@@ -520,7 +552,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': prem,
+						'price': Math.round(100*parseFloat(orderPrem))/100,,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,
@@ -528,65 +560,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					}
 					console.log(json);
 					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
-						console.log("The response to the order: ");
-						console.log(data);
-
-						let orderli = makeli(symbol, contract);
-						// orderli.style.marginBottom = "10px";
-						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
-						else {
-							li.style.color = "#aaa";
-							li.firstChild.style.backgroundColor = "";
-							li.firstChild.style.pointerEvents = "none";
-
-							let col = addCol(json.legs[0].side, "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							col = addCol(json.legs[0].position_effect, "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							col = addCol(prem.toFixed(2), "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
-							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
-
-							function orderStatus(data) {
-								if (parseFloat(data.processed_quantity) > 0) {
-									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-									msg.textContent = "Partially completed...";
-								}								
-								if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
-									msg.textContent = "Completed!";
-									msg.style.pointerEvents = "none";
-									msg.style.backgroundColor = "";	
-								}
-							}
-							orderStatus(data);
-							
-							orderli.onclick = function() {
-								fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader}).then(function(data) {
-									console.log("Checking for update on status for order:");
-									console.log(data);
-									orderStatus(data);
-								});
-							}
-
-							msg.style.cursor = "pointer";
-							msg.style.backgroundColor = "#ddf";		
-							msg.onclick = function() {										
+						let orderli = makeOrderli(symbol, contract, data, li);						
+						if (!data.detail) {
+							orderli.lastElementChild.onclick = function() {										
 							if (confirm("Cancel selling this orphan defensive leg?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									console.log("The response to the cancel request: ");
-									console.log(data);
-									if (data.detail) msg.textContent = data.detail;
-									else {
-										processedCol.textContent = 'X';
-										msg.textContent = "Cancelled!";
-										msg.style.pointerEvents = "none";
-										msg.style.backgroundColor = "";	
-										li.style.color = "";
-										li.firstChild.style.backgroundColor = "#ddf";
-										li.firstChild.style.pointerEvents = "";
-										createSingleOrder(orderli, contract, prem - parseFloat(contract.tick));
-									}
+									stylizeCancel(orderli, data);
+									if (!data.detail) createSingleOrder(orderli, contract, orderPrem - parseFloat(contract.tick));
 								});
 							}
 							}
@@ -677,15 +657,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					col = addCol(Math.round(rate) + "%", "75px", li);
 					col.style.backgroundColor = "#dff";
 				}
-
 				
 				function createOrder(li, contract, orderPrem) {
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Proceed to buy this spread for collateral?")) {
-					if (orderPrem <= 0) orderPrem = parseFloat(contract.tick);
-					else orderPrem = Math.round(100*orderPrem)/100;
+					if (orderPrem <= 0) orderPrem = contract.tick;
 					let json = {
 						'account': accountURL,
 						'direction': 'debit',
@@ -693,7 +671,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						'legs': [{'position_effect': 'close', 'side': 'buy', 'ratio_quantity': 1, 'option': contract.url }],
 						'type': 'limit',
 						'trigger': 'immediate',
-						'price': orderPrem,
+						'price': Math.round(100*parseFloat(orderPrem))/100,
 						'quantity': 1,
 						'override_day_trade_checks': false,
 						'override_dtbp_checks': false,
@@ -701,66 +679,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					}
 					console.log(json);
 					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
-						console.log("The response to the order: ");
-						console.log(data);
-
-						let orderli = makeli(symbol, contract);
-						// orderli.style.marginBottom = "10px";
-						if (data.detail) addCol(data.detail, "calc(100% - 350px)", orderli);
-						else {
-							li.style.color = "#aaa";
-							li.firstChild.style.backgroundColor = "";
-							li.firstChild.style.pointerEvents = "none";
-							
-							let col = addCol(json.legs[0].side, "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							col = addCol(json.legs[0].position_effect, "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							col = addCol(orderPrem.toFixed(2), "75px", orderli);
-							col.style.backgroundColor = "#dff";
-							let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
-							let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
-
-							
-							function orderStatus(data) {
-								if (parseFloat(data.processed_quantity) > 0) {
-									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
-									msg.textContent = "Partially completed...";
-								}								
-								if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
-									msg.textContent = "Completed!";
-									msg.style.pointerEvents = "none";
-									msg.style.backgroundColor = "";	
-								}
-							}
-							orderStatus(data);
-							
-							orderli.onclick = function() {
-								fetchData('https://api.robinhood.com/options/orders/' + data.id, 'GET', { headers:authHeader }).then(function(data) {
-									console.log("Checking for update on status for order:");
-									console.log(data);
-									orderStatus(data);
-								});
-							}
-
-							msg.style.cursor = "pointer";
-							msg.style.backgroundColor = "#ddf";	
-							msg.onclick = function() {										
+						let orderli = makeOrderli(symbol, contract, data, li);
+						if (!data.detail) {							
+							orderli.lastElementChild.onclick = function() {										
 							if (confirm("Cancel buying this spread for collateral?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									console.log("The response to the cancel request: ");
-									console.log(data);
-									if (data.detail) msg.textContent = data.detail;
-									else {
-										processedCol.textContent = 'X';
-										msg.textContent = "Cancelled!";
-										msg.style.pointerEvents = "none";
-										msg.style.backgroundColor = "";
-										li.style.color = "";
-										li.firstChild.style.backgroundColor = "#ddf";
-										li.firstChild.style.pointerEvents = "";
-										createOrder(orderli, contract, orderPrem + parseFloat(contract.tick));
-									}
+									stylizeCancel(orderli, data, li);
+									if (!data.detail) createOrder(orderli, contract, orderPrem + parseFloat(contract.tick));
 								});
 							}
 							}

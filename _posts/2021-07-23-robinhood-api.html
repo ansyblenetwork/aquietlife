@@ -282,12 +282,13 @@ function makeOrderli(symbol, contract, data, origin) {
 			if (parseFloat(data.processed_quantity) > 0) {
 				processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 				msg.textContent = "Partially completed...";
-			}								
-			if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
-				msg.textContent = "Completed!";
-				msg.style.pointerEvents = "none";
-				msg.style.backgroundColor = "";	
-			}
+				if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+					msg.textContent = "Completed!";
+					orderli.onclick = "";
+					msg.style.pointerEvents = "none";
+					msg.style.backgroundColor = "";	
+				}
+			}			
 		}
 		orderStatus(data);
 
@@ -296,6 +297,8 @@ function makeOrderli(symbol, contract, data, origin) {
 				console.log("Checking for update on status for order:");
 				console.log(data);
 				orderStatus(data);
+				orderli.style.backgroundColor = "#dff";
+				setTimeout(function() {	orderli.style.backgroundColor = ""; }, 300);
 			});
 		}
 	}
@@ -313,6 +316,7 @@ function stylizeCancel(orderli, data, origin) {
 			origin.firstChild.style.pointerEvents = "";
 		}
 		orderli.lastElementChild.textContent = "Cancelled!";
+		orderli.onclick = "";
 		orderli.lastElementChild.style.pointerEvents = "none";
 		orderli.lastElementChild.style.backgroundColor = "";
 		if (orderli.lastElementChild.previousElementSibling.textContent == '0')

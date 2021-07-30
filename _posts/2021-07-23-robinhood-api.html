@@ -9,6 +9,11 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 
 <div style="margin-top:30px">
 	
+	<div style="position:fixed; z-index:10; bottom: 10px; background-color:white">
+		<button onclick="update(); updateAll();" >Refresh</button>
+		<span id="msg2" style="padding-left:10px; margin-right:10px;"></span>
+	</div>
+	
 	
 	<div id="monitorPage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:20px">	
 		<div style="padding-top:20px">Near or in the money:
@@ -1201,7 +1206,6 @@ function submitTicker(myQuery) {
 	}).catch(function(error) { 
 		console.log(error); 
 		var e = new Date();
-		D('msg').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
 		D('msg2').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
 	});	
 }

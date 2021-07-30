@@ -394,9 +394,9 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 				createAllOrders(data.results[i]);
 			}
 			if (urlMap[symbol]) handleExistingOrder(urlMap[symbol]);
-			else fetchData(data.results[i].legs[0].option, 'GET').then(function(publicData) {
-				urlMap[data.results[i].legs[0].option] = publicData;
-				handleExistingOrder(publicData);
+			else fetchData(data.results[i].legs[0].option, 'GET').then(function(getData) {
+				urlMap[data.results[i].legs[0].option] = getData;
+				handleExistingOrder(getData);
 			});
 		}
 	}
@@ -431,8 +431,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}
 		if (urlMap[accountOptions[i].option]) handleOptionPosition(urlMap[accountOptions[i].option]);
 		else {
-			let task = fetchData(accountOptions[i].option, 'GET').then(function(optionData) {
-				handleOptionPosition(optionData);
+			let task = fetchData(accountOptions[i].option, 'GET').then(function(getData) {
+				urlMap[accountOptions[i].option] = getData;
+				handleOptionPosition(getData);
 			});
 			promises.push(task);
 			taskBySymbol[accountOptions[i].chain_symbol].push(task);

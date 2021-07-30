@@ -271,7 +271,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 				col.style.backgroundColor = "#dff";
 				col = addCol(data.legs[0].position_effect, "75px", orderli);
 				col.style.backgroundColor = "#dff";
-				col = addCol(data.price.toFixed(2), "75px", orderli);
+				col = addCol(parseFloat(data.price).toFixed(2), "75px", orderli);
 				col.style.backgroundColor = "#dff";
 				let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 				let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
@@ -315,8 +315,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 							orderli.firstChild.style.backgroundColor = "#ddf";	
 							orderli.firstChild.onclick = function() {
 							if (confirm("Proceed to re-order?")) {
-								let price = data.price + parseFloat(optionData.min_ticks.below_tick);
-								if (data.legs[0].side == 'sell') price = data.price - parseFloat(optionData.min_ticks.below_tick);
+								let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
+								if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
 								let json = {
 									'account': accountURL,
 									'direction': data.direction,

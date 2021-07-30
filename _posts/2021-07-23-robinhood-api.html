@@ -10,10 +10,21 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 <div style="margin-top:30px">
 	
 	
-	<div id="monitorPage" style="text-align:center; display:none; padding-top:20px; margin-bottom:20px; border-bottom:solid;">	
+	<div id="monitorPage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:20px">	
 		<div style="padding-top:20px">Near or in the money:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
-		</div>		
+		</div>	
+		<div style="width:max-content; margin:auto">
+			<input id="defaultLower" style="width:60px" onblur="if (!this.value) this.value = 0; defaultLower = val(this);" type="text" autocomplete="off" value="2" placeholder="Margin..."> % 
+			<input onkeyup="if (event.keyCode == 27) this.value = '';
+					else if (event.keyCode == 13) {
+						event.preventDefault(); 
+						submitTicker();
+					}"
+			id="tickerInput" onfocus="this.select()" type="text" style="margin-left:10px; margin-right:10px" autocomplete="off" placeholder="Monitor stock..."> 
+			<input id="defaultUpper" style="width:60px" onblur="if (!this.value) this.value = 0; defaultUpper = val(this)" type="text" autocomplete="off" value="2" placeholder="Margin..."> % 
+		</div>
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px" id="stocklist"></ul>	
 	</div>
 	
 	<div id="profilePage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">
@@ -1015,6 +1026,178 @@ function condor(symbol, build) {
 					
 	return totalSaved + totalPuts + totalCalls;
 }
+
 	
+function submitTicker(myQuery) {
+	let query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + D('tickerInput').value.replaceAll(" ", ",");	
+	if (myQuery) query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + myQuery.replaceAll(" ", ",");	
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+	
+	if (data.quoteResponse.result.length > 0) {
+	for (let i = data.quoteResponse.result.length - 1; i > -1; i--) {
+		let buffer = data.quoteResponse.result[i];
+		let stock = buffer.symbol;
+	
+		if (!tickerList.includes(stock)) {			
+			tickerList.push(stock);
+
+			let newli = make("li");
+			newli.id = stock;
+			newli.style.textAlign = "center";
+			newli.style.position = "relative";
+	
+			let newTicker = make("a");
+			newTicker.id = stock + "-percent";
+			newTicker.style.marginTop = "10px";
+			newTicker.style.paddingLeft = "10px";
+			newTicker.style.paddingRight = "10px";
+			newTicker.textContent = stock + " " + round(buffer.regularMarketChange) + " (" + round(buffer.regularMarketChangePercent, true) + "%)";
+			if (buffer.regularMarketChangePercent > 0) newTicker.style.color = "#1a8";
+			else if (buffer.regularMarketChangePercent < 0) newTicker.style.color = "#FF0000";
+			newTicker.href = "https://finance.yahoo.com/quote/" + stock;
+			newTicker.target = "_blank";
+	
+			let newTickerX = make("button");
+			newTickerX.textContent = "X";
+			newTickerX.style.position = "absolute";
+			newTickerX.style.top = "15px";
+			newTickerX.style.right = "0px";
+			newTickerX.onclick = function() { 
+				tickerList.splice(tickerList.indexOf(stock), 1); 
+				remove(newli); 
+				delete volumes[stock];
+				delete prices[stock];
+			};	
+	
+			let lowerBound = make("input");
+			lowerBound.type = "text";							
+			lowerBound.id = stock + "-lower";
+			lowerBound.style.width = "80px";
+			setInput(lowerBound, stock);
+								       
+			let lowerMargin = make("input");
+			lowerMargin.type = "text";							
+			lowerMargin.id = stock + "-lowerMargin";
+			lowerMargin.style.width = "80px";
+			setInput(lowerMargin, stock);
+			lowerMargin.style.marginLeft = "10px";  	
+									      
+			let lowerPercent = make("input");
+			lowerPercent.type = "text";
+			lowerPercent.value = defaultLower;
+			lowerPercent.id = stock + "-lowerPercent";
+			lowerPercent.style.width = "60px";	
+			setInput(lowerPercent, stock);
+								       
+			let upperBound = make("input");
+			upperBound.type = "text";
+			upperBound.id = stock + "-upper";
+			upperBound.style.width = "80px";
+			setInput(upperBound, stock);		
+								       
+			let upperMargin = make("input");
+			upperMargin.type = "text";							     
+			upperMargin.id = stock + "-upperMargin";
+			upperMargin.style.width = "80px";
+			setInput(upperMargin, stock);
+			upperMargin.style.marginRight = "10px";  	
+								       
+			let upperPercent = make("input");
+			upperPercent.type = "text";
+			upperPercent.value = defaultUpper;
+			upperPercent.id = stock + "-upperPercent";
+			upperPercent.style.width = "60px";
+			setInput(upperPercent, stock);	
+	
+			let current = make("div");
+			current.textContent = round(buffer.regularMarketPrice * 1);
+			current.id = stock + "-current";
+			current.style.display = "inline-block";
+			current.style.paddingLeft = "10px";  	
+			current.style.paddingRight = "10px";  			      
+										      
+			let slider = make("input");
+			slider.id = stock + "-slider";
+			slider.autocomplete = "off";
+			slider.style.flexGrow = "1";							      
+			slider.type = "range";
+			slider.min = 0;
+			slider.max =100;
+			slider.step = 1;
+			slider.value = 50;
+			slider.style.marginLeft = "10px";
+			slider.style.marginRight = "10px";
+			slider.style.cursor = "pointer";
+			slider.style.touchAction = "none";
+			slider.oninput = function() {  updateDisplay(stock, slider); };
+								
+	
+			let li1 = make('div');	    
+			li1.appendChild(newTicker);
+			li1.appendChild(newTickerX);
+										      
+			let li2 = make('div');	
+			
+			let parenth1 = make("span");
+			parenth1.textContent = "(";
+			li2.appendChild(parenth1);	
+			li2.appendChild(lowerPercent);			      
+			let percentsign1 = make("span");
+			percentsign1.textContent = " %)";
+			li2.appendChild(percentsign1);
+							
+			li2.appendChild(lowerMargin);
+			li2.appendChild(current);
+			li2.appendChild(upperMargin);
+							
+			let parenth2 = make("span");
+			parenth2.textContent = "(";
+			li2.appendChild(parenth2);				      
+			li2.appendChild(upperPercent);									      
+			let percentsign2 = make("span");
+			percentsign2.textContent = " %)";	   
+			li2.appendChild(percentsign2);	      
+											      
+			let li3 = make('div');	
+			li3.style.display = "flex";
+			li3.appendChild(lowerBound);
+			li3.appendChild(slider);	
+			li3.appendChild(upperBound);			      
+										      
+			newli.appendChild(li1);		
+			newli.appendChild(li2);		
+			newli.appendChild(li3);	
+								
+			D('stocklist').insertBefore(newli, D('stocklist').firstChild);
+										       
+			updateDisplay(stock, upperPercent);
+			volumes[stock] = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+			prices[stock] = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+										       
+		} else D('stocklist').insertBefore(D(stock), D('stocklist').firstChild);
+		
+		let price = buffer.regularMarketPrice;
+		let dailyPercent = buffer.regularMarketChangePercent;
+		let daily = buffer.regularMarketChange;
+		D(stock + "-current").textContent = round(price);	
+		D(stock + "-percent").textContent = stock + " " + round(daily) + " (" + round(dailyPercent, true) + "%)";
+
+		if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+		else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
+		else D(stock + "-percent").style.color = "#333";
+	
+		D('tickerInput').value = "";
+	}
+	} else D('msg2').textContent = "Ticker not found.";
+	}).catch(function(error) { 
+		console.log(error); 
+		var e = new Date();
+		D('msg').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
+		D('msg2').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
+	});	
+}
 
 </script>

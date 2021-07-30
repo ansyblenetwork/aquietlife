@@ -379,10 +379,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 						if (data.legs[0].side == "buy") "Re-order, buying for more?";
 						if (confirm(confirmMsg)) {
 							let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
-							if (data.legs[0].side == 'sell') {
-								price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
-								if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
-							}
+							if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
+							if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
 							fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:orderForm(data, price) }).then(function(data) {
 								createAllOrders(data, orderli);
 							});

@@ -600,7 +600,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let col = addCol(prem.toFixed(2), "75px", li);
 						if (prem > 0) col.style.backgroundColor = "#dff";
 						col = addCol(vol, "75px", li);
-						if (vol > 10) col.style.backgroundColor = "#dff";
+						if (vol > 15) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
 						createSingleOrder(li, contract, prem + parseFloat(contract.tick));

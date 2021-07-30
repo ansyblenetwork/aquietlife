@@ -12,7 +12,7 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 	
 	<div id="orderPage" style="text-align:center; display:none; padding-top:20px; margin-bottom:20px; border-bottom:solid;">	
 		<div style="padding-top:20px">Orders:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
 		</div>		
 	</div>
 	
@@ -24,22 +24,22 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		</div>		
 		<div style="font-weight:bold; padding:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
 		<div style="padding-top:20px">Near or in the money:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>			
 		<div style="padding-top:20px">Incomplete spreads:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
 		</div>		
 		<div style="padding-top:20px">Incomplete condors:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="unpaired"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="unpaired"></ul>
 		</div>		
 		<div style="padding-top:20px">Spread buybacks:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="release"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="release"></ul>
 		</div>		
 		<div style="padding-top:20px">Condor buybacks:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="condorRelease"></ul>
 		</div>				
 		<div style="padding-top:20px; padding-bottom:20px;">Partial condor buybacks:
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
 		</div>		
 	</div>
 	
@@ -114,6 +114,7 @@ function logout() {
 	authData = {};
 	authHeader = {};	
 	optionsBySymbol = {};
+	urlMap = {};
 	
 	hide('profilePage');
 	hide('orderPage');

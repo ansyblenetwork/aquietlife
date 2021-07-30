@@ -100,6 +100,8 @@ var tickerList = [];
 var d = new Date();
 var volumes = {};
 var prices = {};
+var defaultUpper = 2;
+var defaultLower = 2;
 	
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };

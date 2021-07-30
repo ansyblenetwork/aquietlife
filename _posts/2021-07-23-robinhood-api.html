@@ -1214,5 +1214,95 @@ function submitTicker(myQuery) {
 		D('msg2').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
 	});	
 }
+	
+	
+function val(elt) { return parseFloat(elt.value); }
+						     
+function updateDisplay(stock, fixed) {			
+	let current = parseFloat(D(stock + "-current").textContent);
+	let upelt = D(stock + "-upperPercent");
+	let lpelt = D(stock + "-lowerPercent");	
+	let lower = D(stock + "-lower");
+	let upper = D(stock + "-upper");
+	let upperMargin = D(stock + "-upperMargin");
+	let lowerMargin = D(stock + "-lowerMargin");
+	let slider = D(stock + "-slider");
+						 
+	if (!upelt.value) upelt.value = 0;
+	if (!lpelt.value) lpelt.value = 0;
+	if (!upperMargin.value) upperMargin.value = 0;
+	if (!lowerMargin.value) lowerMargin.value = 0; 
+	if (!lower.value) lower.value = current;
+	if (!upper.value) upper.value = current;
+					     
+	if (fixed == lpelt || fixed == upelt) {				
+		lower.value = round( current * (1 - val(lpelt)/100));
+		upper.value = round( current * (1 + val(upelt)/100));
+	} else if (fixed == upperMargin || fixed == lowerMargin) {	
+		lower.value = round(current - val(lowerMargin));
+		upper.value = round(current + val(upperMargin));
+	} else if (fixed == slider) {
+		let oldLower = val(lower);
+		lower.value = round(current - (slider.value * (val(upper) - val(lower)) / 100));
+		upper.value = round(val(upper) - oldLower + val(lower));
+	}	 
+				 
+	if (lpelt != document.activeElement) lpelt.value = round(100*(current - val(lower))/current, true);
+	if (upelt != document.activeElement) upelt.value = round(100*(val(upper) - current)/current, true);
+	if (upperMargin != document.activeElement) upperMargin.value = round(val(upper) - current);
+	if (lowerMargin != document.activeElement) lowerMargin.value = round(current - val(lower));
+	if (val(upper) > val(lower)) {
+		slider.value = Math.round((current - val(lower))/(val(upper) - val(lower))*100);
+		if (slider.value > 100) slider.value = 100;
+		if (slider.value < 0) slider.value = 0;
+	} else { 
+		if (current > val(upper)) slider.value = 100;
+		else if (current < val(lower)) slider.value = 0;
+		else slider.value = 50;
+	}
+						 
+	if (val(lower) > current) {
+		if (lower.style.fontWeight != "bold") {
+			if (active(D('soundButton'))) D('audiodown').play();
+			if (active(D('notificationButton'))) new Notification(stock + " is down to $" + current);
+			lower.style.fontWeight = "bold";
+			lpelt.style.fontWeight = "bold";
+			lowerMargin.style.fontWeight = "bold";
+		}
+	} else {
+		lower.style.fontWeight = "initial";
+		lpelt.style.fontWeight = "initial";
+		lowerMargin.style.fontWeight = "initial";
+	}
+	if (val(upper) < current) {
+		if (upper.style.fontWeight != "bold") {
+			if (active(D('soundButton'))) D('audio').play();
+			if (active(D('notificationButton'))) new Notification(stock + " is up to $" + current);
+			upper.style.fontWeight = "bold";
+			upelt.style.fontWeight = "bold";
+			upperMargin.style.fontWeight = "bold";
+		}
+	} else {
+		upper.style.fontWeight = "initial";
+		upelt.style.fontWeight = "initial";
+		upperMargin.style.fontWeight = "initial";
+	}
+					      
+	if (lower.style.fontWeight == "bold") {
+		D(stock + "-current").style.fontWeight = "bold";
+		D(stock + "-current").style.color = "#F00";
+	} else if (upper.style.fontWeight == "bold") {
+		D(stock + "-current").style.fontWeight = "bold";
+		D(stock + "-current").style.color = "#3b7";
+	} else {	      
+		D(stock + "-current").style.fontWeight = "initial";
+		D(stock + "-current").style.color = "#333";
+	}
+}
+	
+function round(num, percent) { 
+	if (num < 1 && !percent) return Math.round(num*1000)/1000;
+	return Math.round(num*100)/100;
+}
 
 </script>

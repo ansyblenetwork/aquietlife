@@ -281,7 +281,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 						processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 						msg.textContent = "Partially completed...";
 					}								
-					if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+					if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
 						msg.textContent = "Completed!";
 						msg.style.pointerEvents = "none";
 						msg.style.backgroundColor = "";	
@@ -337,7 +337,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 								fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 									console.log("The response to the order: ");
 									console.log(data);
-									
+									createAllOrders(data);
 								});
 							}
 							}
@@ -553,7 +553,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 									msg.textContent = "Partially completed...";
 								}								
-								if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+								if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
 									msg.textContent = "Completed!";
 									msg.style.pointerEvents = "none";
 									msg.style.backgroundColor = "";	
@@ -727,7 +727,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 									msg.textContent = "Partially completed...";
 								}								
-								if (Math.round(parseFloat(data.pending_quantity)) == 0) {
+								if (Math.round(parseFloat(data.pending_quantity)) == 0 && Math.round(parseFloat(data.processed_quantity)) > 0) {
 									msg.textContent = "Completed!";
 									msg.style.pointerEvents = "none";
 									msg.style.backgroundColor = "";	

@@ -117,9 +117,6 @@ setInput(D('defaultUpper'));
 var fixedInterestRate = 10;
 var optionsQuotes = {};	
 var recData = {};
-var sortRecData = [];
-	
-	
 	
 if (Notification.permission === "granted") activate(D('notificationButton'), "Notifications On");
 	
@@ -200,42 +197,45 @@ function generateRec(symbol, data) {
 		
 		recData[symbol].expirationDates.push(defData.contract.daysToExpiration);
 		recData[symbol].expirations.push(candidateObj);	
-		buildRec(symbol, candidateObj, defData.contract.daysToExpiration);	
-		sortRecData.push({symbol:symbol, candidateObj:candidateObj, daysToExpiration: defData.contract.daysToExpiration });
+		buildRec(symbol, candidateObj, defData.contract.daysToExpiration);
+		
+		// add to DOM //////////////////////////////////////////////////
+		
+		let bag = make('li');	
+		let callrate = 0;
+		let putrate = 0;
+		////////////// build the table /////////////////////////////////						    
+
+			if (candidateObj.call) {
+				let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
+				bag.appendChild(calldefleg2);
+				bag.appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
+				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
+			}
+
+		/////////////////////// MIDDLE //////////////////////////////////
+
+			let referenceli = make('li');
+			referenceli.style.textAlign = "center";
+			referenceli.style.fontWeight = "bold";
+			addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
+			addCol(recData[symbol].data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			bag.appendChild(referenceli);	
+
+		/////////////////////// PUTS //////////////////////////////////
+
+			if (candidateObj.put) {
+				let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
+				bag.appendChild(putdefleg2);
+				putdefleg2.style.marginBottom = "30px";
+				bag.insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
+				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
+			} else referenceli.style.marginBottom = "30px";		
+
+		bag.title = putrate + callrate;
+		addOrdered(bag, D('recList'));
 	}
 }	
-	
-					    
-function buildRec(symbol, candidateObj, exp) {
-	let bag = make('li');						    
-	////////////// build the table /////////////////////////////////						    
-							    
-		if (candidateObj.call) {
-			let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
-			bag.appendChild(calldefleg2);
-			bag.appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
-		}
-
-	/////////////////////// MIDDLE //////////////////////////////////
-
-		let referenceli = make('li');
-		referenceli.style.textAlign = "center";
-		referenceli.style.fontWeight = "bold";
-		addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
-		addCol(recData[symbol].data.symbol + " " + exp + " DTE", "675px", referenceli);
-		bag.appendChild(referenceli);	
-
-	/////////////////////// PUTS //////////////////////////////////
-
-		if (candidateObj.put) {
-			let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
-			bag.appendChild(putdefleg2);
-			putdefleg2.style.marginBottom = "30px";
-			bag.insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);			    
-		} else referenceli.style.marginBottom = "30px";		
-	
-	D('recList').appendChild(bag);							    
-}
 	
 	
 function setDefLeg(defData, altData, data) {      
@@ -689,7 +689,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	console.log(data);
 	let optionsPositions = data.results;
 	wipeDOM();
-	sortRecData = [];
 	let promises = [];
 	optionsBySymbol = {};
 	taskBySymbol = {};
@@ -1085,25 +1084,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		});
 	}
 	
-	Promise.all(promises).then(function() {
-		
-		// sort recommendation list		
-		//clearDOM(D('recList'));
-		sortRecData.sort(function(x, y) {
-			let xcall = 0;
-			let xput = 0;
-			let ycall = 0;
-			let yput = 0;
-			if (x.candidateObj.call) xcall = returnRate(x.candidateObj.call.contract, x.candidateObj.call.altData);
-			if (x.candidateObj.put) xput = returnRate(x.candidateObj.put.contract, x.candidateObj.put.altData);
-			if (y.candidateObj.call) ycall = returnRate(y.candidateObj.call.contract, y.candidateObj.call.altData);
-			if (y.candidateObj.put) yput = returnRate(y.candidateObj.put.contract, y.candidateObj.put.altData);
-			return ycall + yput - xcall - xput;
-		});
-		//for (let i = 0; i < sortRecData.length; i++) {
-		//	buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
-		//}
-		
+	Promise.all(promises).then(function() {		
 		// query yahoo for ITM contracts
 		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {

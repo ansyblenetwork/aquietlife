@@ -1355,6 +1355,7 @@ function activate(but, str) {
 	but.classList.add("active");
 	but.textContent = str;
 }
+function active(but) { return but.classList.contains("active"); }
 	
 function toggleSound(elt) {
 	if (active(elt)) deactivate(elt, "Sound Off");

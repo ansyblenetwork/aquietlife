@@ -226,7 +226,7 @@ function generateRec(symbol, data) {
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 			} else referenceli.style.marginBottom = "30px";		
 
-		bag.title = putrate + callrate;
+		bag.title = 0 - putrate - callrate;
 		addOrdered(bag, D('recList'));
 	}
 }	

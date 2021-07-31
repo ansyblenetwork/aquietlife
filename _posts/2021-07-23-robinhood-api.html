@@ -691,6 +691,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	let promises = [];
 	optionsBySymbol = {};
 	taskBySymbol = {};
+	incompleteCondorList = {};
 	for (let i = 0; i < optionsPositions.length; i++) {			
 		if (!optionsBySymbol[optionsPositions[i].chain_symbol]) {
 			optionsBySymbol[optionsPositions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
@@ -767,7 +768,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				findCallPair(symbol, null, optionsBySymbol[symbol].shortCall[i]);
 			}
-			incompleteCondorList = {};
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
 			let totalCallCollateral = noCondorCalls(symbol);

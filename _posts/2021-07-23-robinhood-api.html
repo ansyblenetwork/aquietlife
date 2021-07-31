@@ -34,11 +34,17 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 	
 	<div id="profilePage" style="text-align:center; display:none; padding-top:20px; border-bottom:solid; margin-bottom:40px">		
 	
-		<div style="text-align:center;">
-		<span id="msg" style="padding-left:10px; margin-right:10px;"></span>
-		<button id="optionButton" onclick="getData(); getOptions();">Options Collateral</button>
-		<button id="optionButton" onclick="logout();">Log Out</button>
+		<div style="text-align:left">
+		<audio id="audiodown" src="{{ "case-closed-531.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="audio" src="{{ "that-was-quick.mp3" | relative_url }}" autostart="false"></audio>
+		<button onclick="toggleSound(this);" id="soundButton" class="active">Sound On</button>
+		<button onclick="toggleNotifications(this);" id="notificationButton">Notifications Off</button>
+		<div style="float:right">
+			<span id="msg" style="padding-left:10px; margin-right:10px;"></span>
+			<button id="optionButton" onclick="getData(); getOptions();">Options Collateral</button>
+			<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>
+		</div>	
 		
 		<div style="font-weight:bold; padding:20px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
 		<div style="padding-top:20px">Orders:

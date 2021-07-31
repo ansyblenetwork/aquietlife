@@ -207,13 +207,13 @@ function generateRec(symbol, data) {
 	
 					    
 function buildRec(symbol, candidateObj, exp) {
-						    
+	let bag = make('li');						    
 	////////////// build the table /////////////////////////////////						    
 							    
 		if (candidateObj.call) {
 			let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
-			D('recList').appendChild(calldefleg2);
-			D('recList').appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
+			bag.appendChild(calldefleg2);
+			bag.appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
 		}
 
 	/////////////////////// MIDDLE //////////////////////////////////
@@ -223,17 +223,18 @@ function buildRec(symbol, candidateObj, exp) {
 		referenceli.style.fontWeight = "bold";
 		addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
 		addCol(recData[symbol].data.symbol + " " + exp + " DTE", "675px", referenceli);
-		D('recList').appendChild(referenceli);	
+		bag.appendChild(referenceli);	
 
 	/////////////////////// PUTS //////////////////////////////////
 
 		if (candidateObj.put) {
 			let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
-			D('recList').appendChild(putdefleg2);
+			bag.appendChild(putdefleg2);
 			putdefleg2.style.marginBottom = "30px";
-			D('recList').insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);			    
-		} else referenceli.style.marginBottom = "30px";					    
-							    
+			bag.insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);			    
+		} else referenceli.style.marginBottom = "30px";		
+	
+	D('recList').appendChild(bag);							    
 }
 	
 	
@@ -1087,7 +1088,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	Promise.all(promises).then(function() {
 		
 		// sort recommendation list		
-		clearDOM(D('recList'));
+		//clearDOM(D('recList'));
 		sortRecData.sort(function(x, y) {
 			let xcall = 0;
 			let xput = 0;
@@ -1099,9 +1100,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			if (y.candidateObj.put) yput = returnRate(y.candidateObj.put.contract, y.candidateObj.put.altData);
 			return ycall + yput - xcall - xput;
 		});
-		for (let i = 0; i < sortRecData.length; i++) {
-			buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
-		}
+		//for (let i = 0; i < sortRecData.length; i++) {
+		//	buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
+		//}
 		
 		// query yahoo for ITM contracts
 		D('optionButton').disabled = false;

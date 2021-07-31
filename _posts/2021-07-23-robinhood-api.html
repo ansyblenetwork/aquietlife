@@ -101,6 +101,7 @@ var optionsBySymbol = {};
 	
 // map from Robinhood option URL to contract type
 var urlMap = {};
+var dteMap = {};
 	
 // monitoring variables
 var tickerList = [];
@@ -834,6 +835,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				for (let contractDate in data.putExpDateMap) {
 					let expiration = contractDate.substring(0, 10);
 					dateMapData[expiration] = contractDate;
+					for (let mystrike in data.putExpDateMap[contractDate]) {
+						dteMap[expiration] = data.putExpDateMap[contractDate][mystrike].daysToExpiration;
+						break;
+					}
 				}					
 				function dateMap(expiration) { return dateMapData[expiration]; }
 				function strikeMap(strike) { return (strike/100).toFixed(1).toString();	}
@@ -1351,7 +1356,7 @@ function makeli(symbol, contract) {
 	li.style.textAlign = "center";	
 	addCol(symbol, "75px", li);	
 	if (contract) {
-		addCol(contract.expire, "125px", li);	
+		addCol(dteMap[contract.expire] + "DTE", "125px", li);	
 		addCol(contract.type, "50px", li);
 		addCol("$" + contract.strike/100, "75px", li);
 	}

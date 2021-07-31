@@ -1347,6 +1347,15 @@ function setInput(elt, stock) {
 	if (stock) elt.onblur = function() { updateDisplay(stock, elt); };   
 } 
 	
+function deactivate(but, str) { 
+	but.classList.remove("active");
+	but.textContent = str;
+}										       
+function activate(but, str) { 
+	but.classList.add("active");
+	but.textContent = str;
+}
+	
 function toggleSound(elt) {
 	if (active(elt)) deactivate(elt, "Sound Off");
 	else {	

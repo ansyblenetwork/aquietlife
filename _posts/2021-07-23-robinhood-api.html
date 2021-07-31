@@ -1372,6 +1372,8 @@ function activate(but, str) {
 }
 function active(but) { return but.classList.contains("active"); }
 	
+function remove(element) { element.parentNode.removeChild(element);}
+	
 function toggleSound(elt) {
 	if (active(elt)) deactivate(elt, "Sound Off");
 	else {	

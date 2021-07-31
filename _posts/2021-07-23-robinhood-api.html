@@ -420,6 +420,7 @@ function clearDOM(myNode) {
 function wipeDOM() {	
 	//clearDOM(D('orders'));
 	
+	clearDOM(D('recList'));
 	clearDOM(D('singles'));
 	clearDOM(D('unpaired'));
 	
@@ -687,7 +688,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	console.log(data);
 	let optionsPositions = data.results;
 	wipeDOM();
-
+	sortRecData = [];
 	let promises = [];
 	optionsBySymbol = {};
 	taskBySymbol = {};
@@ -1071,7 +1072,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					addOrdered(li, D('condorRelease'));
 				}
 				
-				
 				fetch("https://ansyble.herokuapp.com/cors/", 
 					{cache:'no-cache', headers: {'Target-Ticker': symbol }}).then(function(response) {
 					return response.json();
@@ -1086,8 +1086,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	Promise.all(promises).then(function() {
 		
-		// sort recommendation list
-		D('recList').textContent = "";
+		// sort recommendation list		
+		clearDOM(D('recList'));
 		sortRecData.sort(function(x, y) {
 			let xcall = 0;
 			let xput = 0;

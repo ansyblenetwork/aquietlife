@@ -144,6 +144,9 @@ function logout() {
 	urlMap = {};
 	tickerList = [];
 	
+	clearDOM(D('orders'));
+	clearDOM(D('itm'));
+	clearDOM(D('stocklist'));
 	hide('profilePage');
 	hide('monitorPage');
 	
@@ -155,13 +158,16 @@ function clearDOM(myNode) {
 }
 	
 function wipeDOM() {	
-	clearDOM(D('orders'));
+	//clearDOM(D('orders'));
+	
 	clearDOM(D('singles'));
 	clearDOM(D('unpaired'));
+	
 	clearDOM(D('release'));
 	clearDOM(D('condorRelease'));
 	clearDOM(D('ncRelease'));
-	clearDOM(D('itm'));
+	
+	// clearDOM(D('itm'));
 	// clearDOM(D('stocklist'));
 }
 	
@@ -377,10 +383,10 @@ function getData() {
 	
 function getOptions() {	
 D('optionButton').disabled = true;
-wipeDOM();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	console.log("All open orders:");
 	console.log(data);
+	clearDOM(D('orders'));
 	
 	for (let i = 0; i < data.results.length; i++) {	
 		let symbol = data.results[i].chain_symbol;
@@ -434,39 +440,40 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 	
 fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
 	console.log(data);
-	let accountOptions = data.results;
+	let optionsPositions = data.results;
+	wipeDOM();
 
 	let promises = [];
 	optionsBySymbol = {};
 	taskBySymbol = {};
-	for (let i = 0; i < accountOptions.length; i++) {			
-		if (!optionsBySymbol[accountOptions[i].chain_symbol]) {
-			optionsBySymbol[accountOptions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
-			taskBySymbol[accountOptions[i].chain_symbol] = [];
+	for (let i = 0; i < optionsPositions.length; i++) {			
+		if (!optionsBySymbol[optionsPositions[i].chain_symbol]) {
+			optionsBySymbol[optionsPositions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
+			taskBySymbol[optionsPositions[i].chain_symbol] = [];
 		}
 		
 		function handleOptionPosition(optionData) {
-			let quantity = parseInt(accountOptions[i].quantity);
+			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {tick:optionData.min_ticks.below_tick, url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
-				if (accountOptions[i].type == "short") {
+				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
 				}
-				if (accountOptions[i].type == "long") {
+				if (optionsPositions[i].type == "long") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].defCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].defPut.push(dat);
 				}
 			}
 		}
-		if (urlMap[accountOptions[i].option]) handleOptionPosition(urlMap[accountOptions[i].option]);
+		if (urlMap[optionsPositions[i].option]) handleOptionPosition(urlMap[optionsPositions[i].option]);
 		else {
-			let task = fetchData(accountOptions[i].option, 'GET').then(function(getData) {
-				urlMap[accountOptions[i].option] = getData;
+			let task = fetchData(optionsPositions[i].option, 'GET').then(function(getData) {
+				urlMap[optionsPositions[i].option] = getData;
 				handleOptionPosition(getData);
 			});
 			promises.push(task);
-			taskBySymbol[accountOptions[i].chain_symbol].push(task);
+			taskBySymbol[optionsPositions[i].chain_symbol].push(task);
 		}
 	}
 	
@@ -802,6 +809,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
 		let monitorQuery = [];
+		clearDOM(D('itm'));
 		for (let i = 0; i < data.quoteResponse.result.length; i++) {
 			optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut.forEach(function(contract) {
 				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
@@ -824,7 +832,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}			
 		console.log(monitorQuery);
 		submitTicker(monitorQuery.join());			
-		var e = new Date();
+		d = new Date();
 		D('msg2').textContent = d.toLocaleTimeString();
 		});
 	});

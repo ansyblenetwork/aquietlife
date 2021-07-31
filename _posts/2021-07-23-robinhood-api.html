@@ -769,7 +769,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
 				if (confirm("Close this spread to free up collateral?")) {					
-					function orderProceed(li, contract, orderPrem) {
+					function orderProceed(li, contract, orderPrem, count) {
 					orderPrem = orderPrem - (Math.round(100*orderPrem) % Math.round(contract.tick*100))/100;
 					if (Math.round(100*orderPrem) <= 0) orderPrem = contract.tick;
 					let json = {
@@ -797,17 +797,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							}
 							}
 							
-							if (active(D('autoButton')) && orderPrem + contract.tick < 0.11) {								
-							if (confirm("Auto order! Current premium is going to be " + (orderPrem + contract.tick))) {
+							if (active(D('autoButton')) && count < 3) {							
 							fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-								if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + contract.tick);
+								if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + contract.tick, count + 1);
 							});
-							}
 							}
 						}
 					});
 					}
-					orderProceed(li, contract, orderPrem);
+					orderProceed(li, contract, orderPrem, 1);
 				}
 				}
 				}

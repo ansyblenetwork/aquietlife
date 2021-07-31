@@ -33,7 +33,7 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 		<button onclick="toggleSound(this);" id="soundButton" class="active">Sound On</button>
 		<button onclick="toggleNotifications(this);" id="notificationButton">Notifications Off</button>
 		<div style="float:right">
-			<span id="msg" style="margin-right:10px; border-radius:5px; background-color:white; padding: 5px 10px;"></span>
+			<span id="msg" onclick="getData(); getOptions();" style="border-radius:5px; background-color:white; padding: 5px 10px;"></span>
 			<button id="optionButton" onclick="getData(); getOptions();">Analyze Positions</button>
 			<button id="optionButton" onclick="logout();">Log Out</button>
 		</div>

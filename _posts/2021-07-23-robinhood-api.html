@@ -198,6 +198,7 @@ function generateRec(symbol, data) {
 		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
 		
 		// add to DOM //////////////////////////////////////////////////
+		if (incompleteCondorList[symbol][contractDate.substring(0, 10)] && (incompleteCondorList[symbol][contractDate.substring(0, 10)].call || incompleteCondorList[symbol][contractDate.substring(0, 10)].put)) {
 		
 		let bag = make('li');	
 		let callrate = 0;
@@ -232,6 +233,8 @@ function generateRec(symbol, data) {
 
 		bag.title = 0 - putrate - callrate;
 		addOrdered(bag, D('recList'));
+	
+		}
 	}
 }	
 	
@@ -1332,7 +1335,7 @@ function condor(symbol, build) {
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
-			incompleteCondorList[symbol][expiration] = {put: true};
+			incompleteCondorList[symbol][expiration] = {call: true};
 		}
 		totalPuts += expirePuts;
 		
@@ -1351,7 +1354,7 @@ function condor(symbol, build) {
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
 			if (!incompleteCondorList[symbol][expiration]) incompleteCondorList[symbol][expiration] = {};
-			incompleteCondorList[symbol][expiration].call = true;
+			incompleteCondorList[symbol][expiration].put = true;
 		}
 		totalCalls += expireCalls;
 	}

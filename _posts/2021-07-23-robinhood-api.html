@@ -1329,7 +1329,7 @@ function condor(symbol, build) {
 			let li = makeli(symbol);
 			li.title = 0 - expirePuts;	
 			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
-			else addCol(expiration.subString(5, 10), "75px", li);	
+			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("call", "50px", li);
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
@@ -1347,7 +1347,7 @@ function condor(symbol, build) {
 			let li = makeli(symbol);
 			li.title = 0 - expireCalls;
 			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
-			else addCol(expiration.subString(5, 10), "75px", li);	
+			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("put", "50px", li);
 			let col = addCol("$" + expireCalls, "100px", li);
 			col.style.backgroundColor = "#dff";
@@ -1369,7 +1369,7 @@ function makeli(symbol, contract) {
 	addCol(symbol, "75px", li);	
 	if (contract) {
 		if (dteMap[contract.expire]) addCol(dteMap[contract.expire] + " DTE", "75px", li);	
-		else addCol(contract.expire.subString(5, 10), "75px", li);	
+		else addCol(contract.expire.substring(5, 10), "75px", li);	
 		addCol(contract.type, "50px", li);
 		addCol("$" + contract.strike/100, "75px", li);
 	}

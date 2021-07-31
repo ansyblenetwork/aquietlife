@@ -1357,7 +1357,7 @@ function makeli(symbol, contract) {
 	addCol(symbol, "75px", li);	
 	if (contract) {
 		if (dteMap[contract.expire]) addCol(dteMap[contract.expire] + " DTE", "75px", li);	
-		else addCol(contract.expire.subString(5, 10) , "75px", li);	
+		else addCol(contract.expire.subString(5, 10), "75px", li);	
 		addCol(contract.type, "50px", li);
 		addCol("$" + contract.strike/100, "75px", li);
 	}

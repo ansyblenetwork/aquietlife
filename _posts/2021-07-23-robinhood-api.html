@@ -797,10 +797,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							}
 							}
 							
-							if (active(D('autoButton')) && orderPrem + contract.tick < 0.11) {
+							if (active(D('autoButton')) && orderPrem + contract.tick < 0.11) {								
+							if (confirm("Auto order! Current premium is going to be " + (orderPrem + contract.tick))) {
 							fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 								if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + contract.tick);
 							});
+							}
 							}
 						}
 					});

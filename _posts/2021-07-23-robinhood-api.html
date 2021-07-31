@@ -699,6 +699,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let tdastrikes = data.putExpDateMap[dateMap(contract.expire)];
 				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {
 					contract.premium = tdastrikes[strikeMap(contract.strike)][0].ask;
+					if (tdastrikes[strikeMap(contract.strike)][0].last < contract.premium) 
+						contract.premium = tdastrikes[strikeMap(contract.strike)][0].last;
 					let expirationM = tdastrikes[strikeMap(contract.strike)][0].expirationDate;
 					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
 					if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
@@ -715,6 +717,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let tdastrikes = data.callExpDateMap[dateMap(contract.expire)];
 				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {
 					contract.premium = tdastrikes[strikeMap(contract.strike)][0].ask;
+					if (tdastrikes[strikeMap(contract.strike)][0].ask < contract.premium)
+						contract.premium = tdastrikes[strikeMap(contract.strike)][0].last;
 					let expirationM = tdastrikes[strikeMap(contract.strike)][0].expirationDate;
 					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
 					if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
@@ -725,6 +729,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					contract.condorPair.forEach(function(pair) {
 						let contract2 = pair.condorPair;
 						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].ask;
+						if (data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last < contract2.premium)
+							contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last;
 						let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + expirationM-Date.now()));
 						if (condorRate < bestCondor.rate) 
 							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
@@ -734,9 +740,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 				function addColCost(li, elt, rate, collateral) {
 					li.title = rate;
-					let col = addCol(elt.premium.toFixed(2), "75px", li);
+					let col = addCol("$" + collateral, "75px", li);
 					col.style.backgroundColor = "#dff";
-					col = addCol("$" + collateral, "75px", li);
+					col = addCol(elt.premium.toFixed(2), "75px", li);
 					col.style.backgroundColor = "#dff";
 					col = addCol(Math.round(rate) + "%", "75px", li);
 					col.style.backgroundColor = "#dff";

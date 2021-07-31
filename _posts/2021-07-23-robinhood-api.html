@@ -150,9 +150,7 @@ function D(str) { return document.getElementById(str); }
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 	
-mergeAll();
 function mergeAll() {
-	merge = ['AMC'];
 	recData = {};
 	sortRecData = [];
 	optionsData = {};
@@ -1362,6 +1360,8 @@ function condor(symbol, build) {
 	
 	let totalPuts = 0;
 	let totalCalls = 0;
+	
+	if (build) merge = [];
 	for (let expiration in putExpireTypes) {
 		let expirePuts = 0;
 		for (let strike in putExpireTypes[expiration]) {
@@ -1376,6 +1376,7 @@ function condor(symbol, build) {
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
+			if (!merge.includes(symbol)) merge.push(symbol);
 		}
 		totalPuts += expirePuts;
 		
@@ -1392,9 +1393,11 @@ function condor(symbol, build) {
 			let col = addCol("$" + expireCalls, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
+			if (!merge.includes(symbol)) merge.push(symbol);
 		}
 		totalCalls += expireCalls;
 	}
+	if (build) mergeAll();
 					
 	return totalSaved + totalPuts + totalCalls;
 }

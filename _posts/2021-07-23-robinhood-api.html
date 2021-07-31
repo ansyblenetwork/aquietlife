@@ -115,8 +115,6 @@ setInput(D('defaultUpper'));
 	
 // recommendation variables	
 var fixedInterestRate = 10;
-var merge = [];	
-var optionsData = {};
 var optionsQuotes = {};	
 var recData = {};
 var sortRecData = [];
@@ -149,64 +147,8 @@ function D(str) { return document.getElementById(str); }
 	
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
-	
-function mergeAll() {
-	recData = {};
-	sortRecData = [];
-	optionsData = {};
-	optionsQuotes = {};
-	let promises = [];
-	
-	D('recList').textContent = "";
-	for (let i = 0; i < merge.length; i++) {
-		promises.push(
-			fetch("https://ansyble.herokuapp.com/cors/", 
-				{cache:'no-cache', headers: {'Target-Ticker': merge[i] }}).then(function(response) {
-				return response.json();
-			}).then(function(data) {
-				optionsQuotes[merge[i]] = data;
-				if (optionsData[merge[i]]) generateRec(merge[i]);
-			})
-		);
 
-		let e = new Date(Date.now() + 1000*60*60*24*12).toISOString();
-		promises.push(
-			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol="
-								+ merge[i]
-								+ "&range=OTM&toDate="
-								+ e).then(function(response) {
-				return response.json();
-			}).then(function(data) {
-				console.log(data);
-				if (data.status == "SUCCESS") {
-					optionsData[merge[i]] = data;
-					if (optionsQuotes[merge[i]]) generateRec(merge[i]);
-				}					       	       
-			})
-		);
-	}
-	
-	Promise.all(promises).then(function() {
-		D('recList').textContent = "";
-		sortRecData.sort(function(x, y) {
-			let xcall = 0;
-			let xput = 0;
-			let ycall = 0;
-			let yput = 0;
-			if (x.candidateObj.call) xcall = returnRate(x.candidateObj.call.contract, x.candidateObj.call.altData);
-			if (x.candidateObj.put) xput = returnRate(x.candidateObj.put.contract, x.candidateObj.put.altData);
-			if (y.candidateObj.call) ycall = returnRate(y.candidateObj.call.contract, y.candidateObj.call.altData);
-			if (y.candidateObj.put) yput = returnRate(y.candidateObj.put.contract, y.candidateObj.put.altData);
-			return ycall + yput - xcall - xput;
-		});
-		for (let i = 0; i < sortRecData.length; i++) {
-			buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
-		}
-	});	
-}	
-
-function generateRec(symbol) {
-	let data = optionsData[symbol];	
+function generateRec(symbol, data) {
 	recData[symbol] = {data: data, expirations:[], expirationDates:[]};	
 	for (let contractDate in data.callExpDateMap) {
 		
@@ -1128,12 +1070,40 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					addColCost(li, bestCondor, bestCondor.rate, bestCondor.release);					
 					addOrdered(li, D('condorRelease'));
 				}
+				
+				
+				fetch("https://ansyble.herokuapp.com/cors/", 
+					{cache:'no-cache', headers: {'Target-Ticker': symbol }}).then(function(response) {
+					return response.json();
+				}).then(function(quotedata) {
+					optionsQuotes[symbol] = quotedata;
+					generateRec(symbol, data);
+				})
 			} 			       	       
 			});
 		});
 	}
 	
 	Promise.all(promises).then(function() {
+		
+		// sort recommendation list
+		D('recList').textContent = "";
+		sortRecData.sort(function(x, y) {
+			let xcall = 0;
+			let xput = 0;
+			let ycall = 0;
+			let yput = 0;
+			if (x.candidateObj.call) xcall = returnRate(x.candidateObj.call.contract, x.candidateObj.call.altData);
+			if (x.candidateObj.put) xput = returnRate(x.candidateObj.put.contract, x.candidateObj.put.altData);
+			if (y.candidateObj.call) ycall = returnRate(y.candidateObj.call.contract, y.candidateObj.call.altData);
+			if (y.candidateObj.put) yput = returnRate(y.candidateObj.put.contract, y.candidateObj.put.altData);
+			return ycall + yput - xcall - xput;
+		});
+		for (let i = 0; i < sortRecData.length; i++) {
+			buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
+		}
+		
+		// query yahoo for ITM contracts
 		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
 		let monitorQuery = [];
@@ -1361,7 +1331,6 @@ function condor(symbol, build) {
 	let totalPuts = 0;
 	let totalCalls = 0;
 	
-	if (build) merge = [];
 	for (let expiration in putExpireTypes) {
 		let expirePuts = 0;
 		for (let strike in putExpireTypes[expiration]) {
@@ -1376,7 +1345,6 @@ function condor(symbol, build) {
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
-			if (!merge.includes(symbol)) merge.push(symbol);
 		}
 		totalPuts += expirePuts;
 		
@@ -1393,11 +1361,9 @@ function condor(symbol, build) {
 			let col = addCol("$" + expireCalls, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
-			if (!merge.includes(symbol)) merge.push(symbol);
 		}
 		totalCalls += expireCalls;
 	}
-	if (build) mergeAll();
 					
 	return totalSaved + totalPuts + totalCalls;
 }

@@ -854,6 +854,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		submitTicker(monitorQuery.join(), monitorMargin);			
 		d = new Date();
 		D('msg').textContent = d.toLocaleTimeString();
+		D('msg').style.backgroundColor = "#dff";
+		setTimeout(function() {	D('msg').style.backgroundColor = "white"; }, 300);
 		});
 	});
 });

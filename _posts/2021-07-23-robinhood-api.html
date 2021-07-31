@@ -198,14 +198,13 @@ function generateRec(symbol, data) {
 		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
 		
 		// add to DOM //////////////////////////////////////////////////
-		if (incompleteCondorList[symbol][contractDate.substring(0, 10)] && (incompleteCondorList[symbol][contractDate.substring(0, 10)].call || incompleteCondorList[symbol][contractDate.substring(0, 10)].put)) {
-		
+		if (incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
 		let bag = make('li');	
 		let callrate = 0;
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////						    
 
-			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)] && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
+			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
 				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
@@ -223,7 +222,7 @@ function generateRec(symbol, data) {
 
 		/////////////////////// PUTS //////////////////////////////////
 
-			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)] && incompleteCondorList[symbol][contractDate.substring(0, 10)].put) {
+			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)].put) {
 				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 				bag.appendChild(putdefleg2);
 				putdefleg2.style.marginBottom = "30px";

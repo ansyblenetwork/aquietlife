@@ -301,7 +301,7 @@ function makeOrderli(symbol, contract, data, origin) {
 		col.style.backgroundColor = "#dff";
 		col = addCol(data.legs[0].position_effect, "75px", orderli);
 		col.style.backgroundColor = "#dff";
-		col = addCol(data.price.toFixed(2), "75px", orderli);
+		col = addCol(parseFloat(data.price).toFixed(2), "75px", orderli);
 		col.style.backgroundColor = "#dff";
 		let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 		let msg = addCol("Pending...", "calc(100% - 650px)", orderli);

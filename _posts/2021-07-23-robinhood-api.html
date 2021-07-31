@@ -116,7 +116,6 @@ setInput(D('defaultUpper'));
 // recommendation variables	
 var fixedInterestRate = 10;
 var optionsQuotes = {};	
-var recData = {};
 	
 if (Notification.permission === "granted") activate(D('notificationButton'), "Notifications On");
 	
@@ -145,8 +144,7 @@ function D(str) { return document.getElementById(str); }
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
-function generateRec(symbol, data) {
-	recData[symbol] = {data: data, expirations:[], expirationDates:[]};	
+function generateRec(symbol, data) {	
 	for (let contractDate in data.callExpDateMap) {
 		
 		let candidateObj = {};	
@@ -195,9 +193,6 @@ function generateRec(symbol, data) {
 		});	
 		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
 		
-		recData[symbol].expirationDates.push(defData.contract.daysToExpiration);
-		recData[symbol].expirations.push(candidateObj);	
-		
 		// add to DOM //////////////////////////////////////////////////
 		
 		let bag = make('li');	
@@ -206,9 +201,9 @@ function generateRec(symbol, data) {
 		////////////// build the table /////////////////////////////////						    
 
 			if (candidateObj.call) {
-				let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
+				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
-				bag.appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
+				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 			}
 
@@ -217,17 +212,17 @@ function generateRec(symbol, data) {
 			let referenceli = make('li');
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
-			addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
-			addCol(recData[symbol].data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+			addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 			bag.appendChild(referenceli);	
 
 		/////////////////////// PUTS //////////////////////////////////
 
 			if (candidateObj.put) {
-				let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
+				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 				bag.appendChild(putdefleg2);
 				putdefleg2.style.marginBottom = "30px";
-				bag.insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
+				bag.insertBefore(buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 			} else referenceli.style.marginBottom = "30px";		
 

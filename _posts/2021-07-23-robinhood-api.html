@@ -308,8 +308,7 @@ function setDefLeg(defData, altData, data, symbol) {
 		for (let contractStrike in data) {
         		let contract = data[contractStrike][0];
 			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
-				if (contract.totalVolume > 15 && inDollars(contract.bid) < i)
-					orders.push({ strike: contract.strikePrice,  premium: i });
+				if (inDollars(contract.bid) < i) orders.push({ strike: contract.strikePrice,  premium: i });
 			}
 		}
 	}

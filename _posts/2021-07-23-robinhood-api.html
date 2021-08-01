@@ -953,13 +953,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					}
 				});
 				
+				function rateCalc(premium, collateral, time) { return 100*100*premium*365*1000*60*60*24/(collateral*(1000*60*60*66 + time - Date.now())); }
+				
 				let bestPut = null;
 				let ncPut = null;
-				function rateCalc(premium, collateral, time) { return 100*100*premium*365*1000*60*60*24/(collateral*(1000*60*60*66 + time - Date.now())); }
 				optionsBySymbol[symbol].shortPut.forEach(function(contract) {
-				let tdastrikes = data.putExpDateMap[dateMap(contract.expire)];
-				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {
-					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
+				if (data.putExpDateMap[dateMap(contract.expire)] && data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {
+					let tdaContract = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0];
 					contract.premium = tdaContract.ask;
 					if (tdaContract.last < contract.premium) contract.premium = tdaContract.last;
 					contract.rate = rateCalc(contract.premium, contract.closeRelease, tdaContract.expirationDate);
@@ -974,9 +974,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let bestCall = null;
 				let ncCall = null;
 				optionsBySymbol[symbol].shortCall.forEach(function(contract) {
-				let tdastrikes = data.callExpDateMap[dateMap(contract.expire)];
-				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {					
-					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
+				if (data.callExpDateMap[dateMap(contract.expire)] && data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)]) {					
+					let tdaContract = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0];
 					contract.premium = tdaContract.ask;
 					if (tdaContract.ask < contract.premium)	contract.premium = tdaContract.last;
 					contract.rate = rateCalc(contract.premium, contract.closeRelease, tdaContract.expirationDate);

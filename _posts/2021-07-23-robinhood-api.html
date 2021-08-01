@@ -1280,6 +1280,7 @@ function condor(symbol, build) {
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	let putExpireTypes = {};
+	let pcsOnly = 0;
 	data.shortCall.forEach(function(contract) {
 		if (!callExpireTypes[contract.expire]) {
 					callExpireTypes[contract.expire] = {};
@@ -1298,8 +1299,9 @@ function condor(symbol, build) {
 			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		}
 		else {
-			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
-			else putExpireTypes[contract.expire][contract.strike] += contract.strike;
+		//	if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
+		//	else putExpireTypes[contract.expire][contract.strike] += contract.strike;
+			pcsOnly++;
 		}
 	});	
 	
@@ -1366,7 +1368,7 @@ function condor(symbol, build) {
 		totalCalls += expireCalls;
 	}
 					
-	return totalSaved + totalPuts + totalCalls;
+	return totalSaved + totalPuts + totalCalls + pcsOnly;
 }
 	
 function makeli(symbol, contract) {

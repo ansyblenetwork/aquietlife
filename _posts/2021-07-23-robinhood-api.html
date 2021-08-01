@@ -216,6 +216,74 @@ function generateRec(symbol, data) {
 		altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
 		let putOrders = setOrders(data.putExpDateMap[contractDate]);
+		
+		function createBuyOrder(li, type, count) {
+		let orders = putOrders;
+		if (type == "call") orders = callOrders;
+		li.firstChild.style.cursor = "pointer";	
+		li.firstChild.style.backgroundColor = "#ddf";	
+		li.firstChild.onclick = function() {
+		if (confirm("Buy this defensive leg?")) {	
+			D('orders').scrollIntoView({behavior: "smooth"});				
+			function orderProceed(li, type, count) {
+
+				fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+					let optionForm = {
+						'chain_id': data.results[0].tradable_chain_id,
+						'expiration_dates': orders[count].expiration,
+						'strike_price': orders[count].strike,
+						'type': type,
+						'state': 'active'
+					};
+					let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+					fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+						console.log("First URL"); 
+						console.log(data.results[0].url);
+
+						let orderPrem = orders[count].premium/100;
+						let json = {
+							'account': accountURL,
+							'direction': 'debit',
+							'time_in_force': 'gfd',
+							'legs': [{'position_effect': 'open', 'side': 'buy', 'ratio_quantity': 1, 'option': data.results[0].url }],
+							'type': 'limit',
+							'trigger': 'immediate',
+							'price': roundTwo(orderPrem),
+							'quantity': 1,
+							'override_day_trade_checks': false,
+							'override_dtbp_checks': false,
+							'ref_id': generate_device_token()
+						}
+						console.log(json);
+						let contract = {type: type, expire:orders[count].expiration, strike:orders[count].strike };
+						fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+							let orderli = makeOrderli(symbol, contract, data, li);
+							if (orderli) {							
+								orderli.lastElementChild.onclick = function() {										
+								if (confirm("Cancel buying this defensive leg?")) {
+									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+										if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, count + 1);
+									});
+								}
+								}
+
+								if (active(D('autoButton'))) {
+									setTimeout(function() {
+									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+										if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, type, count + 1);
+									});
+									}, 500);
+								}
+							}
+						});
+					});
+				});
+			}
+
+			orderProceed(li, type, count);
+		}
+		}
+		}
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -246,71 +314,6 @@ function generateRec(symbol, data) {
 				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 				
-				function createBuyOrder(li, count) {
-				li.firstChild.style.cursor = "pointer";	
-				li.firstChild.style.backgroundColor = "#ddf";	
-				li.firstChild.onclick = function() {
-				if (confirm("Buy this defensive leg?")) {	
-					D('orders').scrollIntoView({behavior: "smooth"});				
-					function orderProceed(li, count) {
-						
-						fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
-							let optionForm = {
-								'chain_id': data.results[0].tradable_chain_id,
-								'expiration_dates': callOrders[count].expiration,
-								'strike_price': callOrders[count].strike,
-								'type': 'call',
-								'state': 'active'
-							};
-							let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-							fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-								console.log("First call URL"); 
-								console.log(data.results[0].url);
-
-								let orderPrem = callOrders[count].premium/100;
-								let json = {
-									'account': accountURL,
-									'direction': 'debit',
-									'time_in_force': 'gfd',
-									'legs': [{'position_effect': 'open', 'side': 'buy', 'ratio_quantity': 1, 'option': data.results[0].url }],
-									'type': 'limit',
-									'trigger': 'immediate',
-									'price': roundTwo(orderPrem),
-									'quantity': 1,
-									'override_day_trade_checks': false,
-									'override_dtbp_checks': false,
-									'ref_id': generate_device_token()
-								}
-								console.log(json);
-								let contract = {type: 'call', expire:callOrders[count].expiration, strike:callOrders[count].strike };
-								fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
-									let orderli = makeOrderli(symbol, contract, data, li);
-									if (orderli) {							
-										orderli.lastElementChild.onclick = function() {										
-										if (confirm("Cancel buying this defensive leg?")) {
-											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) createBuyOrder(orderli, count + 1);
-											});
-										}
-										}
-
-										if (active(D('autoButton'))) {
-											setTimeout(function() {
-											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) orderProceed(orderli, count + 1);
-											});
-											}, 500);
-										}
-									}
-								});
-							});
-						});
-					}
-				
-					orderProceed(li, count);
-				}
-				}
-				}
 				createBuyOrder(calldefleg2, 0);
 			}
 
@@ -331,47 +334,11 @@ function generateRec(symbol, data) {
 				putdefleg2.style.marginBottom = "30px";
 				bag.insertBefore(buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
+				
+				createBuyOrder(putdefleg2, 0);
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
-		bag.onclick = function() { 
-			console.log("Call orders:");
-			console.log(callOrders);
-			console.log("Put orders:");
-			console.log(putOrders);
-			fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
-				console.log(data);
-				let optionForm = {
-					'chain_id': data.results[0].tradable_chain_id,
-					'expiration_dates': callOrders[0].expiration,
-					'strike_price': callOrders[0].strike,
-					'type': 'call',
-					'state': 'active'
-				};
-				let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-					console.log("First call URL"); 
-					console.log(data.results[0].url);
-				});
-			});
-			
-			
-			fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
-				console.log(data);
-				let optionForm = {
-					'chain_id': data.results[0].tradable_chain_id,
-					'expiration_dates': putOrders[0].expiration,
-					'strike_price': putOrders[0].strike,
-					'type': 'put',
-					'state': 'active'
-				};
-				let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-					console.log("First put URL"); 
-					console.log(data.results[0].url);
-				});
-			});
-		};
 		addOrdered(bag, D('recList'));	
 		}
 	}

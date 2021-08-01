@@ -222,13 +222,11 @@ function generateRec(symbol, data) {
 		function createBuyOrder(li, type, count) {
 		let orders = putOrders;
 		if (type == "call") orders = callOrders;
-		li.firstChild.style.cursor = "pointer";	
-		li.firstChild.style.backgroundColor = "#ddf";	
+		clickable(li.firstChild);
 		li.firstChild.onclick = function() {
 		if (confirm("Buy this defensive leg?")) {	
 			D('orders').scrollIntoView({behavior: "smooth"});				
 			function orderProceed(li, type, count) {
-
 				fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 					let optionForm = {
 						'chain_id': data.results[0].tradable_chain_id,
@@ -239,26 +237,11 @@ function generateRec(symbol, data) {
 					};
 					let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 					fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-						console.log("First URL"); 
-						console.log(data.results[0].url);
-
 						let orderPrem = orders[count].premium/100;
-						let json = {
-							'account': accountURL,
-							'direction': 'debit',
-							'time_in_force': 'gfd',
-							'legs': [{'position_effect': 'open', 'side': 'buy', 'ratio_quantity': 1, 'option': data.results[0].url }],
-							'type': 'limit',
-							'trigger': 'immediate',
-							'price': roundTwo(orderPrem),
-							'quantity': 1,
-							'override_day_trade_checks': false,
-							'override_dtbp_checks': false,
-							'ref_id': generate_device_token()
-						}
-						console.log(json);
 						let contract = {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) };
-						fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+						fetchData('https://api.robinhood.com/options/orders/', 
+							  'POST', 
+							  { headers:authHeader, json:makeOrderForm('open', 'buy', data.results[0].url, orderPrem) }).then(function(data) {
 							let orderli = makeOrderli(symbol, contract, data, li);
 							if (orderli) {							
 								orderli.lastElementChild.onclick = function() {										
@@ -639,8 +622,7 @@ function makeOrderli(symbol, contract, data, origin) {
 		col.style.backgroundColor = "#dff";
 		let processedCol = addCol(parseFloat(data.processed_quantity), "75px", orderli);
 		let msg = addCol("Pending...", "calc(100% - 650px)", orderli);
-		msg.style.cursor = "pointer";
-		msg.style.backgroundColor = "#ddf";	
+		clickable(msg);		
 
 		function orderStatus(data) {
 			if (!data.cancel_url) return false;
@@ -696,15 +678,14 @@ function stylizeCancel(orderli, data, origin) {
 	}
 }
 	
-function orderForm(data, price) {
+function makeOrderForm(effect, side, url, price) {
+	let dbcd = "credit";
+	if (side == "buy") dbcd = "debit";
 	let json = {
 		'account': accountURL,
-		'direction': data.direction,
+		'direction': dbcd,
 		'time_in_force': 'gfd',
-		'legs': [{'position_effect': data.legs[0].position_effect,
-			  'side': data.legs[0].side,
-			  'ratio_quantity': 1, 
-			  'option': data.legs[0].option }],
+		'legs': [{'position_effect': effect, 'side': side, 'ratio_quantity': 1, 'option': url }],
 		'type': 'limit',
 		'trigger': 'immediate',
 		'price': roundTwo(price),
@@ -712,7 +693,7 @@ function orderForm(data, price) {
 		'override_day_trade_checks': false,
 		'override_dtbp_checks': false,
 		'ref_id': generate_device_token()
-	};
+	}	
 	console.log(json);
 	return json;
 }
@@ -765,8 +746,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 						if (confirm(myMsg)) {
 						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(cancelData) {
 							if (stylizeCancel(orderli, cancelData, origin)) {
-								orderli.firstChild.style.cursor = "pointer";	
-								orderli.firstChild.style.backgroundColor = "#ddf";
+								clickable(orderli.firstChild);
 								orderli.firstChild.onclick = function() {
 									let confirmMsg = "Re-order, selling for less?";
 									if (data.legs[0].side == "buy") confirmMsg = "Re-order, buying for more?";
@@ -774,7 +754,10 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 										let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
 										if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
 										if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
-										fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:orderForm(data, price) }).then(function(data) {
+										
+										fetchData('https://api.robinhood.com/options/orders/', 
+											  'POST', 
+											  { headers:authHeader,	json:makeOrderForm(data.legs[0].position_effect, data.legs[0].side, data.legs[0].option, price) }).then(function(data) {
 											createGenericOrder(data, orderli);
 										});
 									}
@@ -972,28 +955,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function strikeMap(strike) { return (strike/100).toFixed(1).toString();	}
 					
 				function createSingleOrder(li, contract, orderPrem) {
-				li.firstChild.style.cursor = "pointer";	
-				li.firstChild.style.backgroundColor = "#ddf";	
+				clickable(li.firstChild);
 				li.firstChild.onclick = function() {
 				if (confirm("Sell this orphan defensive leg, for a dollar or two?")) {
 					D('orders').scrollIntoView({behavior: "smooth"});
 					function singleOrderProceed(li, contract, orderPrem) {
 						if (orderPrem <= 0) orderPrem = tick;
-						let json = {
-							'account': accountURL,
-							'direction': 'credit',
-							'time_in_force': 'gfd',
-							'legs': [{'position_effect': 'close', 'side': 'sell', 'ratio_quantity': 1, 'option': contract.url }],
-							'type': 'limit',
-							'trigger': 'immediate',
-							'price': roundTwo(orderPrem),
-							'quantity': 1,
-							'override_day_trade_checks': false,
-							'override_dtbp_checks': false,
-							'ref_id': generate_device_token()
-						}
-						console.log(json);
-						fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+						fetchData('https://api.robinhood.com/options/orders/', 
+							  'POST', 
+							  { headers:authHeader, json:makeOrderForm('close','sell', contract.url, orderPrem) }).then(function(data) {
 							let orderli = makeOrderli(symbol, contract, data, li);						
 							if (orderli) {
 								orderli.lastElementChild.onclick = function() {										
@@ -1117,29 +1087,16 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 				
 				function createOrder(li, contract, orderPrem) {
-				li.firstChild.style.cursor = "pointer";	
-				li.firstChild.style.backgroundColor = "#ddf";	
+				clickable(li.firstChild);
 				li.firstChild.onclick = function() {
 				if (confirm("Close this spread to free up collateral?")) {	
 					D('orders').scrollIntoView({behavior: "smooth"});				
 					function orderProceed(li, contract, orderPrem, count) {
 					orderPrem = orderPrem - (inDollars(orderPrem) % inDollars(tick))/100;
 					if (inDollars(orderPrem) <= 0) orderPrem = tick;
-					let json = {
-						'account': accountURL,
-						'direction': 'debit',
-						'time_in_force': 'gfd',
-						'legs': [{'position_effect': 'close', 'side': 'buy', 'ratio_quantity': 1, 'option': contract.url }],
-						'type': 'limit',
-						'trigger': 'immediate',
-						'price': roundTwo(orderPrem),
-						'quantity': 1,
-						'override_day_trade_checks': false,
-						'override_dtbp_checks': false,
-						'ref_id': generate_device_token()
-					}
-					console.log(json);
-					fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+					fetchData('https://api.robinhood.com/options/orders/', 
+						  'POST', 
+						  { headers:authHeader, json:makeOrderForm('close','buy', contract.url, orderPrem) }).then(function(data) {
 						let orderli = makeOrderli(symbol, contract, data, li);
 						if (orderli) {							
 							orderli.lastElementChild.onclick = function() {										
@@ -1916,6 +1873,10 @@ function setInput(elt, stock) {
 	if (stock) elt.onblur = function() { updateDisplay(stock, elt); };   
 } 
 	
+function clickable(elt) {
+	elt.style.cursor = "pointer";
+	elt.style.backgroundColor = "#ddf";	
+}
 function deactivate(but, str) { 
 	but.classList.remove("active");
 	but.textContent = str;

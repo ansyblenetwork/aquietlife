@@ -157,7 +157,7 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.callExpDateMap[contractDate], symbol);
+		let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], symbol);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -179,7 +179,7 @@ function generateRec(symbol, data) {
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		let orders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], symbol);	
+		let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], symbol);	
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -231,7 +231,12 @@ function generateRec(symbol, data) {
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
-		bag.onclick = function() {console.log(orders)};
+		bag.onclick = function() { 
+			console.log("Call orders:");
+			console.log(callOrders);
+			console.log("Put orders:");
+			console.log(putOrders);
+		};
 		addOrdered(bag, D('recList'));
 	
 		}

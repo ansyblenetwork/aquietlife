@@ -245,6 +245,71 @@ function generateRec(symbol, data) {
 				bag.appendChild(calldefleg2);
 				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
+				
+				function createBuyOrder(li, count) {
+				li.firstChild.style.cursor = "pointer";	
+				li.firstChild.style.backgroundColor = "#ddf";	
+				li.firstChild.onclick = function() {
+				if (confirm("Buy this defensive leg?")) {	
+					D('orders').scrollIntoView({behavior: "smooth"});				
+					function orderProceed(li, count) {
+						
+						fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+							let optionForm = {
+								'chain_id': data.results[0].tradable_chain_id,
+								'expiration_dates': callOrders[count].expiration,
+								'strike_price': callOrders[count].strike,
+								'type': 'call',
+								'state': 'active'
+							};
+							let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+							fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+								console.log("First call URL"); 
+								console.log(data.results[0].url);
+
+								let orderPrem = callOrder[count].premium/100;
+								let json = {
+									'account': accountURL,
+									'direction': 'debit',
+									'time_in_force': 'gfd',
+									'legs': [{'position_effect': 'open', 'side': 'buy', 'ratio_quantity': 1, 'option': data.results[0].url }],
+									'type': 'limit',
+									'trigger': 'immediate',
+									'price': roundTwo(orderPrem),
+									'quantity': 1,
+									'override_day_trade_checks': false,
+									'override_dtbp_checks': false,
+									'ref_id': generate_device_token()
+								}
+								console.log(json);
+								fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
+									let orderli = makeOrderli(symbol, contract, data, li);
+									if (orderli) {							
+										orderli.lastElementChild.onclick = function() {										
+										if (confirm("Cancel buying this defensive leg?")) {
+											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) createBuyOrder(orderli, contract, orderPrem + tick, count + 1);
+											});
+										}
+										}
+
+										if (active(D('autoButton'))) {
+											setTimeout(function() {
+											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) orderProceed(orderli, contract, orderPrem + tick, count + 1);
+											});
+											}, 500);
+										}
+									}
+								});
+							});
+						});
+					}
+				
+					orderProceed(li, count);
+				}
+				}
+				}
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////

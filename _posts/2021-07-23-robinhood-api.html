@@ -158,7 +158,7 @@ function generateRec(symbol, data) {
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
-		function setOrders() {
+		function setOrders(data) {
 			let orders = [];
 			let ask = inDollars(altData.premium);
 			let bid = inDollars(altData.contract.bid);
@@ -166,8 +166,8 @@ function generateRec(symbol, data) {
 			let strike = altData.strike;
 
 			for (let i = bid + tick; i <= ask; i += tick) {
-				for (let contractStrike in data.callExpDateMap[contractDate]) {
-					let contract = data.callExpDateMap[contractDate][contractStrike][0];
+				for (let contractStrike in data) {
+					let contract = data[contractStrike][0];
 					if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
 						if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 					}
@@ -192,7 +192,7 @@ function generateRec(symbol, data) {
 			}
 			return orders;
 		}		
-		let callOrders = setOrders();
+		let callOrders = setOrders(data.callExpDateMap[contractDate]);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -215,7 +215,7 @@ function generateRec(symbol, data) {
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
-		let putOrders = setOrders();
+		let putOrders = setOrders(data.putExpDateMap[contractDate]);
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {

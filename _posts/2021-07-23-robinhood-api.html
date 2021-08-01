@@ -272,7 +272,7 @@ function generateRec(symbol, data) {
 			console.log(callOrders);
 			console.log("Put orders:");
 			console.log(putOrders);
-			fetchData('https://api.robinhood.com/options/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+			fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 				console.log(data);
 				let optionForm = {
 					'chain_id': data.results[0].tradable_chain_id,

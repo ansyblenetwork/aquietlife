@@ -308,7 +308,8 @@ function generateRec(symbol, data) {
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////						    
 
-			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
+		//	if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
+			if (candidateObj.call) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
 				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));

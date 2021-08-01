@@ -862,6 +862,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
+				D('orders').scrollIntoView();
 				if (confirm("Sell this orphan defensive leg, for a dollar or two?")) {
 					function singleOrderProceed(li, contract, orderPrem) {
 						if (orderPrem <= 0) orderPrem = contract.tick;
@@ -1008,6 +1009,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
+				D('orders').scrollIntoView();
 				if (confirm("Close this spread to free up collateral?")) {					
 					function orderProceed(li, contract, orderPrem, count) {
 					orderPrem = orderPrem - (Math.round(100*orderPrem) % Math.round(contract.tick*100))/100;

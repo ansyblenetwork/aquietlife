@@ -296,12 +296,15 @@ function setDefLeg(defData, altData, data, symbol) {
 	let ask = inDollars(altData.premium);
 	let bid = inDollars(altData.contract.bid);
 	let tick = inDollars(optionsBySymbol[symbol]);
+	let strike = altData.strike;
 	
 	for (let i = bid + tick; i <= ask; i += tick) {
 		for (let contractStrike in data) {
-        		let contract = data.callExpDateMap[expiration][contractStrike][0];
-       			if (contract.totalVolume > 15 && contract.strikePrice <= strike && inDollars(contract.bid) < i)
-				orders.push({ strike: contract.strikePrice,  premium: i });
+        		let contract = data[contractStrike][0];
+			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
+				if (contract.totalVolume > 15 && inDollars(contract.bid) < i)
+					orders.push({ strike: contract.strikePrice,  premium: i });
+			}
 		}
 	}
 
@@ -312,6 +315,7 @@ function setDefLeg(defData, altData, data, symbol) {
 	function rate(order) {
 		let cost = order.premium - bid;
 		let collateral = strike - order.strike;
+		if (collateral < 0) collateral = 0 - collateral;
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}

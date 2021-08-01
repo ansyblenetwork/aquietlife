@@ -100,6 +100,7 @@ if (baseURL.slice(0, 3) != "/20") {
 var accountName = window.location.host.split('.')[0];
 var filename = window.location.pathname.split('/').slice(2).join('-');
 D('repoLink').href = `https://github.com/${accountName}${baseURL}/blob/main/_posts/${filename}.md`;
+	console.log({{page.path}});
 
 // adjust display for mobile vs desktop
 var mobile = false;

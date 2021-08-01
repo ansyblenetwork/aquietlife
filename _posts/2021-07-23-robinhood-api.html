@@ -157,7 +157,7 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+		setDefLeg(defData, altData, data.callExpDateMap[contractDate], symbol);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -179,7 +179,7 @@ function generateRec(symbol, data) {
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
+		let orders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], symbol);	
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -231,6 +231,7 @@ function generateRec(symbol, data) {
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
+		bag.onclick = function() {console.log(orders)};
 		addOrdered(bag, D('recList'));
 	
 		}
@@ -238,7 +239,7 @@ function generateRec(symbol, data) {
 }	
 	
 	
-function setDefLeg(defData, altData, data) {      
+function setDefLeg(defData, altData, data, symbol) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 
@@ -285,6 +286,31 @@ function setDefLeg(defData, altData, data) {
 		
 		if (!currentContract || altData.strike == candData.strike || interestRate(currentContract, altData) > fixedInterestRate) break;
 	}
+	
+	let orders = [];
+	let ask = inDollars(altData.premium);
+	let bid = inDollars(altData.contract.bid);
+	let tick = inDollars(optionsBySymbol[symbol]);
+	
+	for (let i = bid + tick; i <= ask; i += tick) {
+		for (let contractStrike in data) {
+        		let contract = data.callExpDateMap[expiration][contractStrike][0];
+       			if (contract.totalVolume > 15 && contract.strikePrice <= strike && inDollars(contract.bid) < i)
+				orders.push({ strike: contract.strikePrice,  premium: i });
+		}
+	}
+
+	orders.sort(function(y, x) {
+		return rate(x) - rate(y);
+	});
+	
+	function rate(order) {
+		let cost = order.premium - bid;
+		let collateral = strike - order.strike;
+		if (collateral == 0) collateral = 0.0001;
+		return collateral / cost;
+	}
+	return orders;
 }	
 	
 

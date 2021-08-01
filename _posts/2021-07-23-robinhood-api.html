@@ -703,7 +703,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		function handleOptionPosition(optionData) {
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
-				let dat = {tick:parseFloat(optionData.min_ticks.below_tick), url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:Math.round(parseFloat(optionData.strike_price)*100)};
+				let dat = {tick:parseFloat(optionData.min_ticks.below_tick), url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -1692,9 +1692,9 @@ function round(num, percent) {
 	return roundTwo(num);
 }
 	
-roundTwo(num) {	return Math.round(num*100)/100; }
+function roundTwo(num) { return Math.round(num*100)/100; }
 	
-inDollars(num) { return Math.round(num*100); }
+function inDollars(num) { return Math.round(num*100); }
 	
 function setInput(elt, stock) {
 	elt.style.textAlign = "center";	

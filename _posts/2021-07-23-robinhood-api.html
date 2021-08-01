@@ -272,16 +272,17 @@ function generateRec(symbol, data) {
 			console.log(callOrders);
 			console.log("Put orders:");
 			console.log(putOrders);
-			fetchData('https://api.robinhood.com/options/instruments/', 'GET', { json:{symbol:symbol} }).then(function(data) {
+			fetchData('https://api.robinhood.com/options/instruments/?symbol=' + symbol, 'GET'}).then(function(data) {
 				console.log(data);
 				let optionForm = {
-					'chain_id': data.chain_id,
+					'chain_id': data.results[0].tradable_chain_id,
 					'expiration_dates': callOrders[0].expiration,
 					'strike_price': callOrders[0].strike,
 					'type': 'call',
 					'state': 'active'
 				};
-				fetchData('https://api.robinhood.com/options/instruments/', 'GET', { json:optionForm }).then(function(data) {
+				let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
 					console.log(data);
 				});
 			});

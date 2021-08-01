@@ -283,7 +283,25 @@ function generateRec(symbol, data) {
 				};
 				let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-					console.log(data);
+					console.log("First call URL"); 
+					console.log(data.results[0].url);
+				});
+			});
+			
+			
+			fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+				console.log(data);
+				let optionForm = {
+					'chain_id': data.results[0].tradable_chain_id,
+					'expiration_dates': putOrders[0].expiration,
+					'strike_price': putOrders[0].strike,
+					'type': 'put',
+					'state': 'active'
+				};
+				let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+					console.log("First put URL"); 
+					console.log(data.results[0].url);
 				});
 			});
 		};

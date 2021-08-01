@@ -786,6 +786,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
+					if (symbol == "WISH") {
+						console.log("Total put collateral for wish: ");
+						console.log(totalPutCollateral);
+						console.log(noCondorPuts(symbol));
+					}
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);

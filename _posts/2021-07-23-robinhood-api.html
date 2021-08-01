@@ -701,9 +701,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}
 		
 		function handleOptionPosition(optionData) {
+			optionsBySymbol[optionData.chain_symbol].tick = parseFloat(optionData.min_ticks.below_tick);
+			
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
-				let dat = {tick:parseFloat(optionData.min_ticks.below_tick), url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
+				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -727,6 +729,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	let queryString = "";
 	for (let symbol in taskBySymbol) {
+		let tick = optionsBySymbol[symbol].tick;
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
@@ -865,7 +868,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (confirm("Sell this orphan defensive leg, for a dollar or two?")) {
 					D('orders').scrollIntoView({behavior: "smooth"});
 					function singleOrderProceed(li, contract, orderPrem) {
-						if (orderPrem <= 0) orderPrem = contract.tick;
+						if (orderPrem <= 0) orderPrem = tick;
 						let json = {
 							'account': accountURL,
 							'direction': 'credit',
@@ -886,15 +889,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								orderli.lastElementChild.onclick = function() {										
 								if (confirm("Keep this orphan defensive leg, and perhaps put it to use?")) {
 									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-										if (stylizeCancel(orderli, data, li)) createSingleOrder(orderli, contract, orderPrem - contract.tick);
+										if (stylizeCancel(orderli, data, li)) createSingleOrder(orderli, contract, orderPrem - tick);
 									});
 								}
 								}
 								
-								if (active(D('autoButton')) && inDollars((orderPrem - contract.tick)) > 0) {									
+								if (active(D('autoButton')) && inDollars((orderPrem - tick)) > 0) {									
 									setTimeout(function() {
 									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-										if (stylizeCancel(orderli, data, li)) singleOrderProceed(orderli, contract, orderPrem - contract.tick);
+										if (stylizeCancel(orderli, data, li)) singleOrderProceed(orderli, contract, orderPrem - tick);
 									});
 									}, 500);
 								}
@@ -924,7 +927,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (vol > 15) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
-						createSingleOrder(li, contract, prem + contract.tick);
+						createSingleOrder(li, contract, prem + tick);
 					}
 				});
 
@@ -946,23 +949,26 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (vol > 15) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
-						createSingleOrder(li, contract, prem + contract.tick);
+						createSingleOrder(li, contract, prem + tick);
 					}
 				});
 				
 				let bestPut = null;
 				let ncPut = null;
+				function rateCalc(premium, collateral, time) {
+					100*100*premium*365*1000*60*60*24/(collateral*(1000*60*60*66 + time - Date.now()));
+				}
 				optionsBySymbol[symbol].shortPut.forEach(function(contract) {
 				let tdastrikes = data.putExpDateMap[dateMap(contract.expire)];
 				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {
-					contract.premium = tdastrikes[strikeMap(contract.strike)][0].ask;
-					if (tdastrikes[strikeMap(contract.strike)][0].last < contract.premium) 
-						contract.premium = tdastrikes[strikeMap(contract.strike)][0].last;
-					let expirationM = tdastrikes[strikeMap(contract.strike)][0].expirationDate;
-					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
+					contract.premium = tdaContract.ask;
+					if (tdaContract.last < contract.premium) contract.premium = tdaContract.last;
+					let expirationM = tdaContract.expirationDate;
+					contract.rate = rateCalc(contract.premium, contract.closeRelease, expirationM);
 					if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
 
-					contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, expirationM);
 					if ((!ncPut && contract.ncRelease > 0) || (ncPut && contract.ncRate < ncPut.ncRate)) ncPut = contract;
 				}
 				});
@@ -972,15 +978,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let ncCall = null;
 				optionsBySymbol[symbol].shortCall.forEach(function(contract) {
 				let tdastrikes = data.callExpDateMap[dateMap(contract.expire)];
-				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {
-					contract.premium = tdastrikes[strikeMap(contract.strike)][0].ask;
-					if (tdastrikes[strikeMap(contract.strike)][0].ask < contract.premium)
-						contract.premium = tdastrikes[strikeMap(contract.strike)][0].last;
-					let expirationM = tdastrikes[strikeMap(contract.strike)][0].expirationDate;
-					contract.rate = 100*100*contract.premium*365*1000*60*60*24/(contract.closeRelease*(1000*60*60*66 + expirationM-Date.now()));
+				if (tdastrikes && tdastrikes[strikeMap(contract.strike)]) {					
+					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
+					contract.premium = tdaContract.ask;
+					if (tdaContract.ask < contract.premium)	contract.premium = tdaContract.last;
+					let expirationM = tdaContract.expirationDate;
+					contract.rate = rateCalc(contract.premium, contract.closeRelease, expirationM);
 					if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
 
-					contract.ncRate = 100*100*contract.premium*365*1000*60*60*24/(contract.ncRelease*(1000*60*60*66 + expirationM-Date.now()));
+					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, expirationM);
 					if ((!ncCall && contract.ncRelease > 0) || (ncCall && contract.ncRate < ncCall.ncRate)) ncCall = contract;
 
 					contract.condorPair.forEach(function(pair) {
@@ -988,7 +994,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].ask;
 						if (data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last < contract2.premium)
 							contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last;
-						let condorRate = 100*100*(contract2.premium + contract.premium)*365*1000*60*60*24/(pair.condorRelease*(1000*60*60*66 + expirationM-Date.now()));
+						let condorRate = rateCalc(contract2.premium + contract.premium, pair.condorRelease, expirationM);
 						if (condorRate < bestCondor.rate) 
 							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
 					});
@@ -1012,8 +1018,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (confirm("Close this spread to free up collateral?")) {	
 					D('orders').scrollIntoView({behavior: "smooth"});				
 					function orderProceed(li, contract, orderPrem, count) {
-					orderPrem = orderPrem - (inDollars(orderPrem) % inDollars(contract.tick))/100;
-					if (inDollars(orderPrem) <= 0) orderPrem = contract.tick;
+					orderPrem = orderPrem - (inDollars(orderPrem) % inDollars(tick))/100;
+					if (inDollars(orderPrem) <= 0) orderPrem = tick;
 					let json = {
 						'account': accountURL,
 						'direction': 'debit',
@@ -1034,7 +1040,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							orderli.lastElementChild.onclick = function() {										
 							if (confirm("Leave this collateral frozen?")) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li)) createOrder(orderli, contract, orderPrem + contract.tick);
+									if (stylizeCancel(orderli, data, li)) createOrder(orderli, contract, orderPrem + tick);
 								});
 							}
 							}
@@ -1042,7 +1048,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							if (active(D('autoButton')) && count < 3) {
 								setTimeout(function() {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + contract.tick, count + 1);
+									if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + tick, count + 1);
 								});
 								}, 500);
 							}
@@ -1058,25 +1064,25 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let li = makeli(symbol, ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
-					createOrder(li, ncPut, ncPut.premium - ncPut.tick);
+					createOrder(li, ncPut, ncPut.premium - tick);
 				}
 				if (bestPut) {						
 					let li = makeli(symbol, bestPut);
 					addColCost(li, bestPut, bestPut.rate, bestPut.closeRelease);
 					addOrdered(li, D('release'));
-					createOrder(li, bestPut, bestPut.premium - bestPut.tick);
+					createOrder(li, bestPut, bestPut.premium - tick);
 				}
 				if (ncCall) {					
 					let li = makeli(symbol, ncCall);
 					addColCost(li, ncCall, ncCall.ncRate, ncCall.ncRelease);
 					addOrdered(li, D('ncRelease'));
-					createOrder(li, ncCall, ncCall.premium - ncCall.tick);
+					createOrder(li, ncCall, ncCall.premium - tick);
 				}
 				if (bestCall) {					
 					let li = makeli(symbol, bestCall);
 					addColCost(li, bestCall, bestCall.rate, bestCall.closeRelease);
 					addOrdered(li, D('release'));
-					createOrder(li, bestCall, bestCall.premium - bestCall.tick);
+					createOrder(li, bestCall, bestCall.premium - tick);
 				}
 				if (bestCondor.release) {
 					let li = makeli(symbol, bestCondor.call);
@@ -1107,27 +1113,28 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		let monitorQuery = [];
 		let monitorMargin = [];
 		clearDOM(D('itm'));
-		for (let i = 0; i < data.quoteResponse.result.length; i++) {
-			optionsBySymbol[data.quoteResponse.result[i].symbol].shortPut.forEach(function(contract) {
-				if (contract.strike > 100*0.97*data.quoteResponse.result[i].regularMarketPrice) {
-					let li = makeli(data.quoteResponse.result[i].symbol, contract);
-					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
+		let buffer = data.quoteResponse.result;
+		for (let i = 0; i < buffer.length; i++) {
+			optionsBySymbol[buffer[i].symbol].shortPut.forEach(function(contract) {
+				if (contract.strike > 100*0.97*buffer[i].regularMarketPrice) {
+					let li = makeli(buffer[i].symbol, contract);
+					let col = addCol(buffer[i].regularMarketPrice, "75px", li);
 					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
-					if (!monitorQuery.includes(data.quoteResponse.result[i].symbol)) {
-						monitorQuery.push(data.quoteResponse.result[i].symbol);
+					if (!monitorQuery.includes(buffer[i].symbol)) {
+						monitorQuery.push(buffer[i].symbol);
 						monitorMargin.push([contract.strike/100, (contract.strike/100) + 0.1*contract.strike/100]);
 					}
 				}
 			});
-			optionsBySymbol[data.quoteResponse.result[i].symbol].shortCall.forEach(function(contract) {
-				if (contract.strike < 100*1.03*data.quoteResponse.result[i].regularMarketPrice) {
-					let li = makeli(data.quoteResponse.result[i].symbol, contract);
-					let col = addCol(data.quoteResponse.result[i].regularMarketPrice, "75px", li);
+			optionsBySymbol[buffer[i].symbol].shortCall.forEach(function(contract) {
+				if (contract.strike < 100*1.03*buffer[i].regularMarketPrice) {
+					let li = makeli(buffer[i].symbol, contract);
+					let col = addCol(buffer[i].regularMarketPrice, "75px", li);
 					col.style.backgroundColor = "#dff";
 					D('itm').appendChild(li);
-					if (!monitorQuery.includes(data.quoteResponse.result[i].symbol)) {
-						monitorQuery.push(data.quoteResponse.result[i].symbol);	
+					if (!monitorQuery.includes(buffer[i].symbol)) {
+						monitorQuery.push(buffer[i].symbol);	
 						monitorMargin.push([(contract.strike/100) - 0.1*contract.strike/00, contract.strike/100]);
 					}
 				}

@@ -1089,7 +1089,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (confirm("Close this spread to free up collateral?")) {	
 					D('orders').scrollIntoView({behavior: "smooth"});				
 					function orderProceed(li, contract, orderPrem, count) {
-					orderPrem = orderPrem - (inDollars(orderPrem) % inDollars(tick))/100;
+					orderPrem -= (inDollars(orderPrem) % inDollars(tick))/100;
 					if (inDollars(orderPrem) <= 0) orderPrem = tick;
 					fetchData('https://api.robinhood.com/options/orders/', 
 						  'POST', 

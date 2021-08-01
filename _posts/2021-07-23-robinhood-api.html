@@ -282,6 +282,7 @@ function generateRec(symbol, data) {
 									'ref_id': generate_device_token()
 								}
 								console.log(json);
+								let contract = {type: 'call', expire:callOrders[count].expirationl, strike:callOrders[count].strike };
 								fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:json }).then(function(data) {
 									let orderli = makeOrderli(symbol, contract, data, li);
 									if (orderli) {							
@@ -310,6 +311,7 @@ function generateRec(symbol, data) {
 				}
 				}
 				}
+				createBuyOrder(calldefleg2, 0);
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////

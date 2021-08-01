@@ -157,7 +157,42 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], symbol);
+		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+		function setOrders() {
+			let orders = [];
+			let ask = inDollars(altData.premium);
+			let bid = inDollars(altData.contract.bid);
+			let tick = inDollars(optionsBySymbol[symbol].tick);
+			let strike = altData.strike;
+
+			for (let i = bid + tick; i <= ask; i += tick) {
+				for (let contractStrike in data) {
+					let contract = data[contractStrike][0];
+					if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
+						if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+					}
+				}
+			}
+
+			orders.sort(function(y, x) {return rate(x) - rate(y);});
+			function rate(order) {
+				let cost = order.premium - bid;
+				let collateral = strike - order.strike;
+				if (collateral < 0) collateral = 0 - collateral;
+				if (collateral == 0) collateral = 0.0001;
+				return collateral / cost;
+			}
+			if (orders.length > 4) {
+				let sparseOrders = [];
+				for (let i = 0; i < 4; i++) {
+					sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+				}
+				if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+				return sparseOrders;
+			}
+			return orders;
+		}		
+		let callOrders = setOrders();
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -179,7 +214,8 @@ function generateRec(symbol, data) {
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], symbol);	
+		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
+		let putOrders = setOrders();
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -236,15 +272,27 @@ function generateRec(symbol, data) {
 			console.log(callOrders);
 			console.log("Put orders:");
 			console.log(putOrders);
+			fetchData('https://api.robinhood.com/options/instruments/', 'GET', { form:{symbol:symbol} }).then(function(data) {
+				console.log(data);
+				let optionForm = {
+					'chain_id': data.chain_id,
+					'expiration_dates': callOrders[0].expiration,
+					'strike_price': callOrders[0].strike,
+					'type': 'call',
+					'state': 'active'
+				};
+				fetchData('https://api.robinhood.com/options/instruments/', 'GET', { form:optionForm }).then(function(data) {
+					console.log(data);
+				});
+			});
 		};
-		addOrdered(bag, D('recList'));
-	
+		addOrdered(bag, D('recList'));	
 		}
 	}
 }	
 	
 	
-function setDefLeg(defData, altData, data, symbol) {      
+function setDefLeg(defData, altData, data) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 
@@ -291,41 +339,6 @@ function setDefLeg(defData, altData, data, symbol) {
 		
 		if (!currentContract || altData.strike == candData.strike || interestRate(currentContract, altData) > fixedInterestRate) break;
 	}
-	
-	let orders = [];
-	let ask = inDollars(altData.premium);
-	let bid = inDollars(altData.contract.bid);
-	let tick = inDollars(optionsBySymbol[symbol].tick);
-	let strike = altData.strike;
-	
-	for (let i = bid + tick; i <= ask; i += tick) {
-		for (let contractStrike in data) {
-        		let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
-				if (inDollars(contract.bid) < i) orders.push({ strike: contract.strikePrice,  premium: i });
-			}
-		}
-	}
-
-	orders.sort(function(y, x) {return rate(x) - rate(y);});
-	
-	function rate(order) {
-		let cost = order.premium - bid;
-		let collateral = strike - order.strike;
-		if (collateral < 0) collateral = 0 - collateral;
-		if (collateral == 0) collateral = 0.0001;
-		return collateral / cost;
-	}
-	
-	if (orders.length > 4) {
-		let sparseOrders = [];
-		for (let i = 0; i < 4; i++) {
-			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
-		}
-		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-		return sparseOrders;
-	}
-	return orders;
 }	
 	
 

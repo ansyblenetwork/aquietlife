@@ -1280,11 +1280,12 @@ function condor(symbol, build) {
 	let data = optionsBySymbol[symbol];
 	let callExpireTypes = {};
 	let putExpireTypes = {};
-	let pcsOnly = 0;
+	let pcsOnly = {};
 	data.shortCall.forEach(function(contract) {
 		if (!callExpireTypes[contract.expire]) {
 					callExpireTypes[contract.expire] = {};
 					putExpireTypes[contract.expire] = {};
+					pcsOnly[contract.expire] = 0;
 		}
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
@@ -1293,7 +1294,10 @@ function condor(symbol, build) {
 	});
 	
 	data.shortPut.forEach(function(contract) {
-		if (!putExpireTypes[contract.expire]) putExpireTypes[contract.expire] = {};
+		if (!putExpireTypes[contract.expire]) {
+			putExpireTypes[contract.expire] = {};
+			pcsOnly[contract.expire] = 0;
+		}
 		if (contract.collateral) {
 			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
@@ -1301,7 +1305,7 @@ function condor(symbol, build) {
 		else {
 		//	if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;
 		//	else putExpireTypes[contract.expire][contract.strike] += contract.strike;
-			pcsOnly++;
+			pcsOnlypcontract.expire] += contract.strike;
 		}
 	});	
 	
@@ -1328,9 +1332,24 @@ function condor(symbol, build) {
 	
 	let totalPuts = 0;
 	let totalCalls = 0;
+	let totalPCS = 0;
 	
 	if (build) incompleteCondorList[symbol] = {};
-	for (let expiration in putExpireTypes) {
+	for (let expiration in putExpireTypes) {		
+		if (build && pcsOnly[expiration] > 0) {
+			let li = makeli(symbol);
+			li.title = 0 - pcsOnly[expiration];	
+			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
+			else addCol(expiration.substring(5, 10), "75px", li);	
+			addCol("PCS", "50px", li);
+			let col = addCol("$" + pcsOnly[expiration], "100px", li);
+			col.style.backgroundColor = "#dff";
+			addOrdered(li, D('unpaired'));
+			incompleteCondorList[symbol][expiration] = {call: true};
+		}
+		totalPCS += pcsOnly[expiration];
+		
+		
 		let expirePuts = 0;
 		for (let strike in putExpireTypes[expiration]) {
 			expirePuts += putExpireTypes[expiration][strike];
@@ -1368,7 +1387,7 @@ function condor(symbol, build) {
 		totalCalls += expireCalls;
 	}
 					
-	return totalSaved + totalPuts + totalCalls + pcsOnly;
+	return totalSaved + totalPuts + totalCalls + totalPCS;
 }
 	
 function makeli(symbol, contract) {

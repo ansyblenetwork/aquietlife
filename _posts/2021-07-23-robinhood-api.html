@@ -272,7 +272,7 @@ function generateRec(symbol, data) {
 			console.log(callOrders);
 			console.log("Put orders:");
 			console.log(putOrders);
-			fetchData('https://api.robinhood.com/options/instruments/', 'GET', { form:{symbol:symbol} }).then(function(data) {
+			fetchData('https://api.robinhood.com/options/instruments/', 'GET', { json:{symbol:symbol} }).then(function(data) {
 				console.log(data);
 				let optionForm = {
 					'chain_id': data.chain_id,
@@ -281,7 +281,7 @@ function generateRec(symbol, data) {
 					'type': 'call',
 					'state': 'active'
 				};
-				fetchData('https://api.robinhood.com/options/instruments/', 'GET', { form:optionForm }).then(function(data) {
+				fetchData('https://api.robinhood.com/options/instruments/', 'GET', { json:optionForm }).then(function(data) {
 					console.log(data);
 				});
 			});

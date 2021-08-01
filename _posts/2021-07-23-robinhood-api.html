@@ -23,6 +23,7 @@ A Robinhood API applet to analyze your options collateral. Login is persistent v
 			<input id="defaultUpper" style="width:60px" onblur="if (!this.value) this.value = 0; defaultUpper = val(this)" type="text" autocomplete="off" value="2" placeholder="Margin..."> % 
 		</div>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px" id="stocklist"></ul>	
+		<button onclick="toggleAlerts(this);" style="float:right">Auto-Refresh Off</button>
 	</div>
 	
 	<div id="profilePage" style="text-align:center; display:none; border-bottom:solid; margin-bottom:40px">		
@@ -111,6 +112,7 @@ var volumes = {};
 var prices = {};
 var defaultUpper = 2;
 var defaultLower = 2;
+let yahootimer;
 var d = new Date();
 D('msg').textContent = d.toLocaleTimeString();
 setInput(D('defaultLower')); 
@@ -1714,6 +1716,99 @@ function submitTicker(myQuery, monitorMargin) {
 		D('msg').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
 	});	
 }
+	
+function update() {
+	if (tickerList.length > 0) {
+	let query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + tickerList.join();
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) { 
+	
+	if (data.quoteResponse.result) {	
+		data.quoteResponse.result.forEach(function(stockData) {
+			let stock = stockData.symbol;
+			let price = stockData.regularMarketPrice;
+			let volume = stockData.regularMarketVolume;
+			let dailyPercent = stockData.regularMarketChangePercent;
+			let daily = stockData.regularMarketChange;
+			D(stock + "-current").textContent = round(price);	
+			D(stock + "-percent").textContent = stock + " " + round(daily) + " (" + round(dailyPercent, true) + "%)";
+	
+			if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+			else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
+			else D(stock + "-percent").style.color = "#333";
+			updateDisplay(stock);
+						  
+			if (volumes[stock][volumes[stock].length - 1] != volume ||
+			    prices[stock][prices[stock].length - 1] != price) {
+				volumes[stock].shift();			  
+				volumes[stock].push(volume);
+				prices[stock].shift();			  
+				prices[stock].push(price);
+									  
+				function avgVariation(arr) {
+					let diffarr = [];
+					for (let i = 0; i < arr.length - 1; i++) {
+						if (arr[i + 1] > 0 && arr[i] > 0) {
+							if (arr[i + 1] > arr[i]) diffarr.push(arr[i + 1] - arr[i]);
+							else diffarr.push(arr[i] - arr[i + 1]);
+						}
+					}
+					if (diffarr.length < arr.length - 2) return -1;
+
+					var total = 0;
+					for(var i = 0; i < diffarr.length; i++) {
+					    total += diffarr[i];
+					}
+					return avg = total / diffarr.length;
+				}
+
+				function currentVariation(arr) {
+					if (arr[arr.length - 1] > 0 && arr[arr.length - 2] > 0) return arr[arr.length - 1] - arr[arr.length - 2];
+					else return -1;
+				}
+
+				let avgVol = avgVariation(volumes[stock]);
+				let avgPrice = avgVariation(prices[stock]);
+				let curVol = currentVariation(volumes[stock]);
+				let curPrice = currentVariation(prices[stock]);
+	
+				let notify = false;
+				function activityNotification(str) {
+					if (D(stock + "-percent").style.backgroundColor == "") {
+						if (active(D('soundButton'))) {
+							if (curPrice > 0) D('audio').play();
+							else D('audiodown').play();
+						}
+						if (active(D('notificationButton'))) new Notification(stock + "'s " + str + " activity is elevated.");
+					}
+					notify = true;
+				}
+
+				if (avgPrice > 0 && curPrice > 0 && (curPrice > 4*avgPrice || curPrice + 4*avgPrice < 0)) activityNotification("price");
+				if (avgVol > 0 && curVol > 0  && (curVol > 4*avgVol || curVol + 4*avgVol < 0)) activityNotification("volume");
+				if (notify) {
+					if (curPrice > 0) D(stock + "-percent").style.backgroundColor = "#dfd";
+					else D(stock + "-percent").style.backgroundColor = "#fdd";   
+					console.log(stock + " activity:");
+					if (curVol > avgVol) console.log(curVol + " > " + avgVol);
+					if (curPrice > avgPrice) console.log(curPrice + " > " + avgPrice);
+				} else D(stock + "-percent").style.backgroundColor = "";
+			}
+		});	
+	} else {
+		var e = new Date();
+		D('msg').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
+	}
+	}).catch(function(error) { 
+		console.log(error); 	
+		var e = new Date();
+		D('msg').textContent = d.toLocaleTimeString() + " (Refresh failed: " +  e.toLocaleTimeString() + ")";
+	});	
+	}
+}
 						     
 function updateDisplay(stock, fixed) {			
 	let current = parseFloat(D(stock + "-current").textContent);
@@ -1843,6 +1938,21 @@ function toggleSound(elt) {
 	else {	
 		activate(elt, "Sound On");
 		D('audio').play();
+	}
+}
+function toggleAlerts(elt) {
+	if (yahootimer) {
+		deactivate(elt, "Auto-Refresh Off");
+		clearInterval(yahootimer);=
+		yahootimer = "";
+		for (let x in prices) {
+			prices[x] = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+			volumes[x] = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+		}
+	} else {	
+		activate(elt, "Auto-Refresh On");
+		update(); 
+		yahootimer = setInterval(function() { update(); }, 10000);
 	}
 }
 	

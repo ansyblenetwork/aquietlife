@@ -690,9 +690,6 @@ function stylizeCancel(orderli, data, origin) {
 		orderli.lastElementChild.style.backgroundColor = "";
 		if (orderli.lastElementChild.previousElementSibling.textContent == '0')
 			orderli.lastElementChild.previousElementSibling.textContent = 'X';
-
-		orderli.firstChild.style.cursor = "pointer";	
-		orderli.firstChild.style.backgroundColor = "#ddf";
 		return true;
 	}
 }
@@ -765,16 +762,20 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 
 						if (confirm(myMsg)) {
 						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(cancelData) {
-							if (stylizeCancel(orderli, cancelData, origin)) orderli.firstChild.onclick = function() {
-								let confirmMsg = "Re-order, selling for less?";
-								if (data.legs[0].side == "buy") confirmMsg = "Re-order, buying for more?";
-								if (confirm(confirmMsg)) {
-									let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
-									if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
-									if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
-									fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:orderForm(data, price) }).then(function(data) {
-										createGenericOrder(data, orderli);
-									});
+							if (stylizeCancel(orderli, cancelData, origin)) {
+								orderli.firstChild.style.cursor = "pointer";	
+								orderli.firstChild.style.backgroundColor = "#ddf";
+								orderli.firstChild.onclick = function() {
+									let confirmMsg = "Re-order, selling for less?";
+									if (data.legs[0].side == "buy") confirmMsg = "Re-order, buying for more?";
+									if (confirm(confirmMsg)) {
+										let price = parseFloat(data.price) + parseFloat(optionData.min_ticks.below_tick);
+										if (data.legs[0].side == 'sell') price = parseFloat(data.price) - parseFloat(optionData.min_ticks.below_tick);
+										if (price <= 0) price = parseFloat(optionData.min_ticks.below_tick);
+										fetchData('https://api.robinhood.com/options/orders/', 'POST', { headers:authHeader, json:orderForm(data, price) }).then(function(data) {
+											createGenericOrder(data, orderli);
+										});
+									}
 								}
 							}
 						});

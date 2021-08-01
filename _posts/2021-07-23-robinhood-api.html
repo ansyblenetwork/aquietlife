@@ -166,8 +166,8 @@ function generateRec(symbol, data) {
 			let strike = altData.strike;
 
 			for (let i = bid + tick; i <= ask; i += tick) {
-				for (let contractStrike in data) {
-					let contract = data[contractStrike][0];
+				for (let contractStrike in data.callExpDateMap[contractDate]) {
+					let contract = data.callExpDateMap[contractDate][contractStrike][0];
 					if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
 						if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 					}

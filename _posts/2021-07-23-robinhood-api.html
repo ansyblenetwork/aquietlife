@@ -862,8 +862,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
-				D('orders').scrollIntoView({behavior: "smooth"});
 				if (confirm("Sell this orphan defensive leg, for a dollar or two?")) {
+					D('orders').scrollIntoView({behavior: "smooth"});
 					function singleOrderProceed(li, contract, orderPrem) {
 						if (orderPrem <= 0) orderPrem = contract.tick;
 						let json = {
@@ -1009,8 +1009,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				li.firstChild.style.cursor = "pointer";	
 				li.firstChild.style.backgroundColor = "#ddf";	
 				li.firstChild.onclick = function() {
-				D('orders').scrollIntoView({behavior: "smooth"});
-				if (confirm("Close this spread to free up collateral?")) {					
+				if (confirm("Close this spread to free up collateral?")) {	
+					D('orders').scrollIntoView({behavior: "smooth"});				
 					function orderProceed(li, contract, orderPrem, count) {
 					orderPrem = orderPrem - (inDollars(orderPrem) % inDollars(contract.tick))/100;
 					if (inDollars(orderPrem) <= 0) orderPrem = contract.tick;

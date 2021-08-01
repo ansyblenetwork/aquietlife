@@ -314,7 +314,7 @@ function generateRec(symbol, data) {
 				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 				
-				createBuyOrder(calldefleg2, 0);
+				createBuyOrder(calldefleg2, 'call', 0);
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////
@@ -335,7 +335,7 @@ function generateRec(symbol, data) {
 				bag.insertBefore(buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 				
-				createBuyOrder(putdefleg2, 0);
+				createBuyOrder(putdefleg2, 'put', 0);
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;

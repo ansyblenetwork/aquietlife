@@ -289,7 +289,7 @@ function generateRec(symbol, data) {
 										orderli.lastElementChild.onclick = function() {										
 										if (confirm("Cancel buying this defensive leg?")) {
 											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) createBuyOrder(orderli, contract, orderPrem + tick, count + 1);
+												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) createBuyOrder(orderli, count + 1);
 											});
 										}
 										}
@@ -297,7 +297,7 @@ function generateRec(symbol, data) {
 										if (active(D('autoButton'))) {
 											setTimeout(function() {
 											fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) orderProceed(orderli, contract, orderPrem + tick, count + 1);
+												if (stylizeCancel(orderli, data, li) && count + 1 < callOrders.length) orderProceed(orderli, count + 1);
 											});
 											}, 500);
 										}

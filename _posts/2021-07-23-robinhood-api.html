@@ -324,6 +324,15 @@ function setDefLeg(defData, altData, data, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
+	
+	if (orders.length > 4) {
+		let sparseOrders = [];
+		for (let i = 0; i < 4; i++) {
+			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+		}
+		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+		return sparseOrders;
+	}
 	return orders;
 }	
 	

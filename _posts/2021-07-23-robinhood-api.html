@@ -295,7 +295,7 @@ function setDefLeg(defData, altData, data, symbol) {
 	let orders = [];
 	let ask = inDollars(altData.premium);
 	let bid = inDollars(altData.contract.bid);
-	let tick = inDollars(optionsBySymbol[symbol]);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = altData.strike;
 	
 	console.log(symbol);

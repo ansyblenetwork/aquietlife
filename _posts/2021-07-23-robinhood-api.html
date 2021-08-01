@@ -298,6 +298,12 @@ function setDefLeg(defData, altData, data, symbol) {
 	let tick = inDollars(optionsBySymbol[symbol]);
 	let strike = altData.strike;
 	
+	console.log(symbol);
+	console.log(ask);
+	console.log(bid);
+	console.log(tick);
+	console.log(strike);
+	
 	for (let i = bid + tick; i <= ask; i += tick) {
 		for (let contractStrike in data) {
         		let contract = data[contractStrike][0];

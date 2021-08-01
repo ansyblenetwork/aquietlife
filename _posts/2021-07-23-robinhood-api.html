@@ -610,8 +610,7 @@ function makeOrderli(symbol, contract, data, origin) {
 	else {
 		if (origin) {
 			origin.style.color = "#aaa";
-			origin.firstChild.style.backgroundColor = "";
-			origin.firstChild.style.pointerEvents = "none";
+			declickable(origin.firstChild);
 		}
 		orderli = makeli(symbol, contract);
 		let col = addCol(data.legs[0].side, "75px", orderli);
@@ -1876,6 +1875,10 @@ function setInput(elt, stock) {
 function clickable(elt) {
 	elt.style.cursor = "pointer";
 	elt.style.backgroundColor = "#ddf";	
+}
+function declickable(elt) {
+	elt.style.pointerEvents = "none";
+	elt.style.backgroundColor = "";	
 }
 function deactivate(but, str) { 
 	but.classList.remove("active");

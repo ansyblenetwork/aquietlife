@@ -794,7 +794,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);
-				} else me.closeRelease = myStrike;
+				} else {
+					me.closeRelease = myStrike;
+					me.ncRelease = myStrike;
+				}
 			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {

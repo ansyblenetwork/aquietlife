@@ -2,11 +2,13 @@
 title: "Stock alert applet"
 ---
 
-A three-part stock alert applet:
+<p>A three-part stock alert applet:</p>
 
-1. Discovers active stocks from screeners and social media sites.
-2. Analyzes options chains to select volatility-adjusted OTM contracts.
-3. Monitors recently viewed stocks for price movements beyond a specified range and elevated price/volume activity.
+<ol>
+	<li>Discovers active stocks from screeners and social media sites.</li>
+	<li>Analyzes options chains to select volatility-adjusted OTM contracts.</li>
+	<li>Monitors recently viewed stocks for price movements beyond a specified range and elevated price/volume activity.</li>
+</ol>
 
 
 
@@ -1318,9 +1320,11 @@ var monthlys = ["A","AAIC","AAN","AAON","AAP","AAT","AAU","AAWW","AB","ABB","ABC
     
 
 	
-Some notes: 
+<p>Some notes: </p>
 
-1. Alerts are tuned for events on the intra-day scale.
-2. Quote data comes from Yahoo Finance, options data is from TD Ameritrade, and both are real-time. Auto-refresh is per 10 seconds.
-3. "Elevated price/volume activity" is measured on the scale of minutes. Precisely, a notification occurs when a quote has four times the average volume or price over roughly the last two minutes of data.
-4. This is currently designed for desktop use. Mobile is basically unusable, both from the interface point of view, and from the fact that mobile browsers sleep.
+<ol>
+<li>Alerts are tuned for events on the intra-day scale.</li>
+<li>Quote data comes from Yahoo Finance, options data is from TD Ameritrade, and both are real-time. Auto-refresh is per 10 seconds.</li>
+<li>"Elevated price/volume activity" is measured on the scale of minutes. Precisely, a notification occurs when a quote has four times the average volume or price over roughly the last two minutes of data.</li>
+<li>This is currently designed for desktop use. Mobile is basically unusable, both from the interface point of view, and from the fact that mobile browsers sleep.</li>
+</ol>

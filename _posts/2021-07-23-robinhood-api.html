@@ -962,11 +962,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
 					contract.premium = tdaContract.ask;
 					if (tdaContract.last < contract.premium) contract.premium = tdaContract.last;
-					let expirationM = tdaContract.expirationDate;
-					contract.rate = rateCalc(contract.premium, contract.closeRelease, expirationM);
+					contract.rate = rateCalc(contract.premium, contract.closeRelease, tdaContract.expirationDate);
 					if ((!bestPut && contract.closeRelease > 0) || (bestPut && contract.rate < bestPut.rate)) bestPut = contract;
 
-					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, expirationM);
+					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, tdaContract.expirationDate);
 					if ((!ncPut && contract.ncRelease > 0) || (ncPut && contract.ncRate < ncPut.ncRate)) ncPut = contract;
 				}
 				});
@@ -980,11 +979,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let tdaContract = tdastrikes[strikeMap(contract.strike)][0];
 					contract.premium = tdaContract.ask;
 					if (tdaContract.ask < contract.premium)	contract.premium = tdaContract.last;
-					let expirationM = tdaContract.expirationDate;
-					contract.rate = rateCalc(contract.premium, contract.closeRelease, expirationM);
+					contract.rate = rateCalc(contract.premium, contract.closeRelease, tdaContract.expirationDate);
 					if ((!bestCall && contract.closeRelease > 0) || (bestCall && contract.rate < bestCall.rate)) bestCall = contract;
 
-					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, expirationM);
+					contract.ncRate = rateCalc(contract.premium, contract.ncRelease, tdaContract.expirationDate);
 					if ((!ncCall && contract.ncRelease > 0) || (ncCall && contract.ncRate < ncCall.ncRate)) ncCall = contract;
 
 					contract.condorPair.forEach(function(pair) {
@@ -992,7 +990,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].ask;
 						if (data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last < contract2.premium)
 							contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last;
-						let condorRate = rateCalc(contract2.premium + contract.premium, pair.condorRelease, expirationM);
+						let condorRate = rateCalc(contract2.premium + contract.premium, pair.condorRelease, tdaContract.expirationDate);
 						if (condorRate < bestCondor.rate) 
 							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
 					});

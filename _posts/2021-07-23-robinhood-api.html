@@ -249,7 +249,7 @@ function generateRec(symbol, data) {
 		let sellCallOrders;
 		if (candidate) {
 			candidateObj.call = {contract:candidate, altData:altData};
-			setCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract);
+			sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract);
 		}
 
 	/////////////////////// PUTS //////////////////////////////////

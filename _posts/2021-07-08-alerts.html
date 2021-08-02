@@ -1270,7 +1270,7 @@ function addAll(dataset) {
 	
 
 window.addEventListener('keydown', function() {
-	if (evt.keyCode == 85 && evt.ctrlKey) {
+	if (evt.keyCode == 85 && evt.ctrlKey && evt.shiftKey) {
 		evt.preventDefault();
 		updateAll();
 		update();

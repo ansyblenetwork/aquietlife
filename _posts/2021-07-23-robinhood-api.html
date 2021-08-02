@@ -299,10 +299,9 @@ function preCreateOpenOrder(li, type, side, count, maindata, thecontract, contra
 		};
 		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 	fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-		let orders;
-		if (side == "sell")
 		let tick = parseFloat(data.results[0].min_ticks.below_tick);
-		orders = setSellOrders(maindata, thecontract, contractDate, tick);
+		let orders;
+		if (side == "sell") orders = setSellOrders(maindata, thecontract, contractDate, tick);
 		else orders = setOrders(maindata, thecontract, contractDate, tick);
 		
 		

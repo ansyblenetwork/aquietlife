@@ -527,7 +527,8 @@ function setDefLeg(defData, altData, data, contractDate, symbol) {
 	let orders = [];
 	let ask = inDollars(altData.premium);
 	let bid = inDollars(altData.contract.bid);
-	let tick = inDollars(optionsBySymbol[symbol].tick);
+	let tick = 1;
+	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = altData.strike;
 
 	for (let i = bid + tick; i <= ask; i += tick) {

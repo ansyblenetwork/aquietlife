@@ -43,7 +43,7 @@ title: "Options collateral analysis via the Robinhood API"
 		
 		<div style="font-weight:bold; padding:10px">Total value: <span id="accountValue">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cash available: <span id="cash"></span></div>	
 		<div style="padding-top:20px">Orders:
-		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="orders"></ul>
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="orders"></ul>
 		</div>
 		<div style="padding-top:20px; width:50%; display:inline-block; vertical-align:top">Incomplete spreads:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="singles"></ul>
@@ -64,7 +64,7 @@ title: "Options collateral analysis via the Robinhood API"
 				}"
 		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="optionsChain()">Fetch</button>
 		</div>
-		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="optionslist"></ul>
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="optionslist"></ul>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:
@@ -532,6 +532,7 @@ function generateRec(symbol, data) {
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
 				optionsChain();
+				D('optionsInput').scrollIntoView({behavior: "smooth"});
 			}
 			bag.appendChild(referenceli);	
 

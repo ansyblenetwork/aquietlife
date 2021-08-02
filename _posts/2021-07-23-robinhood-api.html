@@ -213,7 +213,7 @@ function updateOptions(newOption) {
 				
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+				let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], contractDate, query);
 	
 				let calldefleg = buildli(defData.contract, data);
 				D('optionslist').appendChild(calldefleg);
@@ -221,7 +221,7 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(calldefleg2);
 				let referenceli = calldefleg2;
 				
-				preCreateOpenOrder(calldefleg2, 'call', 'buy', 0, data.callExpDateMap[contractDate], altData, contractDate, query);
+				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
 				       
 				let callArray = [];
 				for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -236,7 +236,8 @@ function updateOptions(newOption) {
 						let contractli = buildli(contract, data, calldefleg2, altData);
 						D('optionslist').appendChild(contractli);
 						
-						preCreateOpenOrder(contractli, 'call', 'sell', 0, data.callExpDateMap[contractDate], contract, contractDate, query);
+						let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
+						createBuyOrder(contractli, 'call', 'sell', 0, sellCallOrders, query);
 					}
 				});
 	
@@ -253,7 +254,7 @@ function updateOptions(newOption) {
 	
 				defData = {strike:0, premium:0, contract:""};
 				altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+				let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], contractDate, query);
 				
 				let putdefleg2 = buildli(altData.contract, data);
 				D('optionslist').appendChild(putdefleg2);
@@ -261,7 +262,7 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";
 				
-				preCreateOpenOrder(putdefleg2, 'put', 'buy', 0, data.putExpDateMap[contractDate], putdefleg2, contractDate, query);
+				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
 	
 				let putArray = [];
 				for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -276,7 +277,8 @@ function updateOptions(newOption) {
 						let contractli = buildli(contract, data, putdefleg2, altData);
 						D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 						
-						preCreateOpenOrder(contractli, 'put', 'sell', 0, data.putExpDateMap[contractDate], contract, contractDate, query);
+						let sellPutOrders = setSellOrders(data.put[contractDate], contract, contractDate, query);
+						createBuyOrder(contractli, 'put', 'sell', 0, sellPutOrders, query);
 					}
 				});
 			}
@@ -288,105 +290,62 @@ function updateOptions(newOption) {
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
 	
-function preCreateOpenOrder(li, type, side, count, maindata, thecontract, contractDate, symbol) {	
-	fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
-		let optionForm = {
-			'chain_id': data.results[0].tradable_chain_id,
-			'expiration_dates': orders[count].expiration,
-			'strike_price': orders[count].strike,
-			'type': type,
-			'state': 'active'
-		};
-		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-	fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-		let tick = parseFloat(data.results[0].min_ticks.below_tick);
-		let orders;
-		if (side == "sell") orders = setSellOrders(maindata, thecontract, contractDate, tick);
-		else orders = setOrders(maindata, thecontract, contractDate, tick);
-		
-	function createOpenOrder(li, type, side, count, orders, symbol) {
-	clickable(li.firstChild);
-	li.firstChild.onclick = function() {
-		let confMsg = "Buy this defensive leg?";
-		if (side == "sell") confMsg = "Open this " + type + "?";
-	if (confirm(confMsg)) {	
-		D('orders').scrollIntoView({behavior: "smooth"});				
-		function orderProceed(li, count) {			
-		fetchData('https://api.robinhood.com/options/orders/', 
-			  'POST', 
-			  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, tick) }).then(function(data) {
 
-			let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
-			if (orderli) {							
-				orderli.lastElementChild.onclick = function() {		
-					confMsg = "Cancel buying this defensive leg?";
-					if (side == "sell") confMsg = "Cancel this opening order?";
-				if (confirm(confMsg)) {
-					fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-						if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createOpenOrder(orderli, type, side, count + 1, orders);
-					});
+function createBuyOrder(li, type, side, count, orders, symbol) {
+clickable(li.firstChild);
+li.firstChild.onclick = function() {
+	let confMsg = "Buy this defensive leg?";
+	if (side == "sell") confMsg = "Open this " + type + "?";
+if (confirm(confMsg)) {	
+	D('orders').scrollIntoView({behavior: "smooth"});				
+	function orderProceed(li, count) {
+		fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+			let optionForm = {
+				'chain_id': data.results[0].tradable_chain_id,
+				'expiration_dates': orders[count].expiration,
+				'strike_price': orders[count].strike,
+				'type': type,
+				'state': 'active'
+			};
+			let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+		fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+			fetchData('https://api.robinhood.com/options/orders/', 
+				  'POST', 
+				  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+				let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
+				if (orderli) {							
+					orderli.lastElementChild.onclick = function() {		
+						confMsg = "Cancel buying this defensive leg?";
+						if (side == "sell") confMsg = "Cancel this opening order?";
+					if (confirm(confMsg)) {
+						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1, orders);
+						});
+					}
+					}
+					if (active(D('autoButton'))) {
+						setTimeout(function() {
+						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, count + 1);
+						});
+						}, 1000);
+					}
 				}
-				}
-				if (active(D('autoButton'))) {
-					setTimeout(function() {
-					fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-						if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, count + 1);
-					});
-					}, 1000);
-				}
-			}
+			});
 		});
-		}
-		orderProceed(li, count);
+		});
 	}
-	}
-	}
-	createOpenOrder(li, type, side, count, orders, symbol);	
 
-	});
-	});
+	orderProceed(li, count);
+}
+}
 }
 	
-	
-	
-function setOrders(data, altData, contractDate, tick) {
-	let orders = [];
-	let ask = inDollars(altData.premium);
-	let bid = inDollars(altData.contract.bid);
-	let strike = altData.strike;
-
-	for (let i = bid + tick; i <= ask; i += tick) {
-		for (let contractStrike in data) {
-			let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
-				if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
-		}
-	}
-
-	orders.sort(function(y, x) {return rate(x) - rate(y);});
-	function rate(order) {
-		let cost = order.premium - bid;
-		let collateral = strike - order.strike;
-		if (collateral < 0) collateral = 0 - collateral;
-		if (collateral == 0) collateral = 0.0001;
-		return collateral / cost;
-	}
-	if (orders.length > 4) {
-		let sparseOrders = [];
-		for (let i = 0; i < 4; i++) {
-			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
-		}
-		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-		return sparseOrders;
-	}
-	return orders;
-}
-	
-function setSellOrders(data, mainContract, contractDate, tick) {
+function setSellOrders(data, mainContract, contractDate, symbol) {
 	let orders = [];
 	let ask = inDollars(mainContract.ask);
 	let bid = inDollars(mainContract.bid);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = mainContract.strikePrice;
 
 	for (let i = bid; i <= ask - tick; i += tick) {
@@ -426,7 +385,7 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+		let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], contractDate, symbol);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -449,7 +408,7 @@ function generateRec(symbol, data) {
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+		let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], contractDate, symbol);
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -481,8 +440,9 @@ function generateRec(symbol, data) {
 				bag.appendChild(calloffleg);
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 				
-				preCreateOpenOrder(calldefleg2, 'call', 'buy', 0, data.callExpDateMap[contractDate], altData, contractDate, symbol);
-				preCreateOpenOrder(calloffleg, 'call', 'sell', 0, data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol);
+				let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol);
+				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, symbol);
+				createBuyOrder(calloffleg, 'call', 'sell', 0, sellCallOrders, symbol);
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////
@@ -504,8 +464,9 @@ function generateRec(symbol, data) {
 				bag.insertBefore(putoffleg, referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 				
-				preCreateOpenOrder(putdefleg2, 'put', 'buy', 0, data.putExpDateMap[contractDate], altData, contractDate, symbol);
-				preCreateOpenOrder(putoffleg, 'put', 'sell', 0, data.putExpDateMap[contractDate], candidateObj.put.contract, contractDate, symbol);
+				let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract, contractDate, symbol);
+				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, symbol);
+				createBuyOrder(putoffleg, 'put', 'sell', 0, sellPutOrders, symbol);
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
@@ -514,7 +475,7 @@ function generateRec(symbol, data) {
 	}
 }	
 	
-function setDefLeg(defData, altData, data) {      
+function setDefLeg(defData, altData, data, contractDate, symbol) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 
@@ -561,6 +522,39 @@ function setDefLeg(defData, altData, data) {
 		
 		if (!currentContract || altData.strike == candData.strike || interestRate(currentContract, altData) > fixedInterestRate) break;
 	}
+	
+	let orders = [];
+	let ask = inDollars(altData.premium);
+	let bid = inDollars(altData.contract.bid);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
+	let strike = altData.strike;
+
+	for (let i = bid + tick; i <= ask; i += tick) {
+		for (let contractStrike in data) {
+			let contract = data[contractStrike][0];
+			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
+				if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
+		}
+	}
+
+	orders.sort(function(y, x) {return rate(x) - rate(y);});
+	function rate(order) {
+		let cost = order.premium - bid;
+		let collateral = strike - order.strike;
+		if (collateral < 0) collateral = 0 - collateral;
+		if (collateral == 0) collateral = 0.0001;
+		return collateral / cost;
+	}
+	if (orders.length > 4) {
+		let sparseOrders = [];
+		for (let i = 0; i < 4; i++) {
+			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+		}
+		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+		return sparseOrders;
+	}
+	return orders;
 }	
 	
 

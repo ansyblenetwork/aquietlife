@@ -385,6 +385,8 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
+	console.log(symbol + " orders: ");
+	console.log(orders);
 	if (orders.length > 4) {
 		let sparseOrders = [];
 		for (let i = 0; i < 4; i++) {

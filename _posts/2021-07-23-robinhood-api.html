@@ -277,7 +277,7 @@ function updateOptions(newOption) {
 						let contractli = buildli(contract, data, putdefleg2, altData);
 						D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 						
-						let sellPutOrders = setSellOrders(data.put[contractDate], contract, contractDate, query);
+						let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], contract, contractDate, query);
 						createBuyOrder(contractli, 'put', 'sell', 0, sellPutOrders, query);
 					}
 				});

@@ -819,6 +819,7 @@ function makeOrderli(symbol, contract, data, origin) {
 		orderli = makeli(symbol, contract);
 		addCol(data.detail, "calc(100% - 350px)", orderli);
 		D('orders').appendChild(orderli);
+		D('orders').scrollTo(0, D('orders').scrollHeight); 
 		return false;
 	}
 	else {
@@ -849,6 +850,7 @@ function makeOrderli(symbol, contract, data, origin) {
 			});
 		}		
 		D('orders').appendChild(orderli);
+		D('orders').scrollTo(0, D('orders').scrollHeight); 
 		return orderli;
 	}
 }

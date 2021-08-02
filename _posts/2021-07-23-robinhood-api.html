@@ -879,6 +879,10 @@ function stylizeCancel(orderli, data, origin) {
 		orderli.lastElementChild.textContent = data.detail;
 		orderli.click();
 		return false;
+	} else if (data.processed_quantity === undefined) {
+		orderli.lastElementChild.textContent = "Status unknown.";
+		orderli.click();
+		return false;
 	} else return !orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
 }
 	

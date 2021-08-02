@@ -286,12 +286,18 @@ function generateRec(symbol, data) {
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////				
 			
-		function createBuyOrder(li, type, count) {
+		function createBuyOrder(li, type, side, count) {
 		let orders = putOrders;
 		if (type == "call") orders = callOrders;
+		if (side == 'sell') {
+			orders = sellPutOrders;
+			if (type == "call") orders = callOrders;
+		}
 		clickable(li.firstChild);
 		li.firstChild.onclick = function() {
-		if (confirm("Buy this defensive leg?")) {	
+			let confMsg = "Buy this defensive leg?";
+			if (side == "sell") confMsg = "Open this " + type + "?";
+		if (confirm(confMsg)) {	
 			D('orders').scrollIntoView({behavior: "smooth"});				
 			function orderProceed(li, type, count) {
 				fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
@@ -306,20 +312,22 @@ function generateRec(symbol, data) {
 				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
 					fetchData('https://api.robinhood.com/options/orders/', 
 						  'POST', 
-						  { headers:authHeader, json:makeOrderForm('open', 'buy', data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+						  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
 						let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
 						if (orderli) {							
-							orderli.lastElementChild.onclick = function() {										
-							if (confirm("Cancel buying this defensive leg?")) {
+							orderli.lastElementChild.onclick = function() {		
+								confMsg = "Cancel buying this defensive leg?";
+								if (side == "sell") confMsg = "Cancel this opening order?";
+							if (confirm(confMsg)) {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, count + 1);
+									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1);
 								});
 							}
 							}
 							if (active(D('autoButton'))) {
 								setTimeout(function() {
 								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, type, count + 1);
+									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, type, side, count + 1);
 								});
 								}, 1000);
 							}
@@ -337,10 +345,12 @@ function generateRec(symbol, data) {
 			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
-				bag.appendChild(buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData));
+				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
+				bag.appendChild(calloffleg);
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 				
-				createBuyOrder(calldefleg2, 'call', 0);
+				createBuyOrder(calldefleg2, 'call', 'buy', 0);
+				createBuyOrder(calloffleg, 'call', 'sell', 0);
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////
@@ -358,10 +368,12 @@ function generateRec(symbol, data) {
 				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 				bag.appendChild(putdefleg2);
 				putdefleg2.style.marginBottom = "30px";
-				bag.insertBefore(buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);
+				let putoffleg = buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData);
+				bag.insertBefore(putoffleg, referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 				
-				createBuyOrder(putdefleg2, 'put', 0);
+				createBuyOrder(putdefleg2, 'put', 'buy', 0);
+				createBuyOrder(putoffleg, 'put', 'sell', 0);
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;

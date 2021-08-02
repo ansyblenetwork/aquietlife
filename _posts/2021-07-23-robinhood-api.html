@@ -874,7 +874,7 @@ function cancelSequence(url, id, orderli, origin) {
 		console.log(data);
 		
 		function cancelLoop(data) {
-			if (data.canceled_quantity === undefined) {
+			if (data.pending_quantity === undefined || data.pending_quantity > 0) {
 				if (data.detail) orderli.lastElementChild.textContent = data.detail;
 				else orderli.lastElementChild.textContent = "Status unknown.";
 

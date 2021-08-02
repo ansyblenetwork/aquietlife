@@ -224,7 +224,7 @@ function updateOptions(newOption) {
 				rhOption(query, contractDate.substring(0, 10), 'call', altData.strike).then(function() {
 				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altData, contractDate, query);
 				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
-				}
+				});
 				       
 				let callArray = [];
 				for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -268,7 +268,7 @@ function updateOptions(newOption) {
 				rhOption(query, contractDate.substring(0, 10), 'put', altData.strike).then(function() {
 				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altData, contractDate, query);
 				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
-				}
+				});
 	
 				let putArray = [];
 				for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -350,7 +350,6 @@ if (confirm(confMsg)) {
 					}
 				}
 			});
-		});
 		});
 	}
 

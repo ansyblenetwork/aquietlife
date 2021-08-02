@@ -299,7 +299,7 @@ function generateRec(symbol, data) {
 			if (side == "sell") confMsg = "Open this " + type + "?";
 		if (confirm(confMsg)) {	
 			D('orders').scrollIntoView({behavior: "smooth"});				
-			function orderProceed(li, type, count) {
+			function orderProceed(li, type, side, count) {
 				fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 					let optionForm = {
 						'chain_id': data.results[0].tradable_chain_id,

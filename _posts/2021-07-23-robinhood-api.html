@@ -213,7 +213,7 @@ function updateOptions(newOption) {
 				
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
-				let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
 	
 				let calldefleg = buildli(defData.contract, data);
 				D('optionslist').appendChild(calldefleg);
@@ -253,7 +253,7 @@ function updateOptions(newOption) {
 	
 				defData = {strike:0, premium:0, contract:""};
 				altData = {strike:0, premium:0, contract:""};
-				let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
 				
 				let putdefleg2 = buildli(altData.contract, data);
 				D('optionslist').appendChild(putdefleg2);
@@ -261,7 +261,7 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";
 				
-				preCreateOpenOrder(putdefleg2, 'put', 'buy', 0, data.put[contractDate], putdefleg2, contractDate, query);
+				preCreateOpenOrder(putdefleg2, 'put', 'buy', 0, data.putExpDateMap[contractDate], putdefleg2, contractDate, query);
 	
 				let putArray = [];
 				for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -426,7 +426,7 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -449,7 +449,7 @@ function generateRec(symbol, data) {
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {

@@ -874,7 +874,7 @@ function cancelSequence(url, id, orderli, origin) {
 		console.log(data);
 		
 		function cancelLoop(data) {
-			if (data.processed_quantity === undefined) {
+			if (data.canceled_quantity === undefined) {
 				if (data.detail) orderli.lastElementChild.textContent = data.detail;
 				else orderli.lastElementChild.textContent = "Status unknown.";
 
@@ -889,8 +889,7 @@ function cancelSequence(url, id, orderli, origin) {
 				});
 			} else {
 				orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
-				if (data.canceled_quantity > 0) return true;
-				else return false;
+				return (data.canceled_quantity > 0);
 			}	
 		}
 		return cancelLoop(data);

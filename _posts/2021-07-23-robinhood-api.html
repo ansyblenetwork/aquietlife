@@ -221,7 +221,9 @@ function updateOptions(newOption) {
 				let referenceli = calldefleg2;
 				
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
-				rhOption(query, contractDate.substring(0, 10), 'call', altData.strike).then(function() {
+				let rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike)
+				
+				rhfetch.then(function() {
 				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
 				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
 				});
@@ -239,8 +241,10 @@ function updateOptions(newOption) {
 						let contractli = buildli(contract, data, calldefleg2, altData);
 						D('optionslist').appendChild(contractli);
 						
+						rhfetch.then(function() {
 						let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
 						createBuyOrder(contractli, 'call', 'sell', 0, sellCallOrders, query);
+						});
 					}
 				});
 	
@@ -265,7 +269,7 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";
 				
-				rhOption(query, contractDate.substring(0, 10), 'put', altData.strike).then(function() {
+				rhfetch.then(function() {
 				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altData, contractDate, query);
 				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
 				});
@@ -283,8 +287,10 @@ function updateOptions(newOption) {
 						let contractli = buildli(contract, data, putdefleg2, altData);
 						D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 						
+						rhfetch.then(function() {
 						let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], contract, contractDate, query);
 						createBuyOrder(contractli, 'put', 'sell', 0, sellPutOrders, query);
+						});
 					}
 				});
 			}
@@ -306,9 +312,9 @@ function rhOption(symbol, expiration, type, strike) {
 		};
 		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 	return fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {		
-		if (!optionsBySymbol[symbol]) {
+		if (!optionsBySymbol[symbol])
 			optionsBySymbol[symbol] = {tick: parseFloat(data.results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
-		}		
+				
 		return data;
 	});	
 	});

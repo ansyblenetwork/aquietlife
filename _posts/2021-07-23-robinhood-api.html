@@ -566,6 +566,9 @@ function logout() {
 	// if (typeof(Storage) !== "undefined") localStorage.setItem("authString", "");
 }	
 	
+function show(id) { DE(id).style.display = 'inline';}	
+function hide(id) { DE(id).style.display = 'none';}
+	
 function clearDOM(myNode) {
 	while (myNode.firstChild) { myNode.removeChild(myNode.lastChild); }
 }

@@ -123,6 +123,7 @@ var urlMap = {};
 var dteMap = {};
 	
 // monitoring variables
+var currentOption = "";
 var tickerList = [];
 var volumes = {};
 var prices = {};
@@ -172,12 +173,6 @@ function showDiv(id) { DE(id).style.display = 'block';}
 function hide(id) { DE(id).style.display = 'none';}
 	
 
-	
-	
-	
-	
-	
-	
 	
 function optionsChain() {	
 	if (D('optionsInput').value.toUpperCase()) updateOptions(true);
@@ -282,9 +277,6 @@ function updateOptions(newOption) {
 		} else D('msg').textContent = "No options data found.";				       	       
 	});								       
 }
-	
-	
-	
 	
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////

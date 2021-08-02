@@ -377,13 +377,6 @@ function generateRec(symbol, data) {
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
-			bag.onclick = function() {
-				console.log("Sell call orders:");
-				console.log(sellCallOrders);
-				console.log("Sell put orders:");
-				console.log(sellPutOrders);
-				
-			};
 		addOrdered(bag, D('recList'));	
 		}
 	}

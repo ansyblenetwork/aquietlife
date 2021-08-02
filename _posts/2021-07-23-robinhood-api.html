@@ -65,6 +65,7 @@ title: "Options collateral analysis via the Robinhood API"
 		</div>		
 	</div>
 	
+	<div id="loginPage" style="display:none; border-bottom:solid; margin-bottom:40px">	
 	
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
 		Username:<br>
@@ -88,6 +89,8 @@ title: "Options collateral analysis via the Robinhood API"
 			<button type="button" style="margin-right:10px; margin-bottom:10px;" onclick="D('MFAForm').reset()">Cancel</button>
     		</div>
 	</form> 
+		
+	</div>
 </div>
 
 <script>/////////////////////////////////////////////////////////
@@ -140,9 +143,10 @@ if (!(screen.width <= 550 || screen.height <= 550)) {
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) {
-		D('profilePage').style.display = "block";
-		D('monitorPage').style.display = "block";
+		show('profilePage');
+		show('monitorPage');
 	}
+	else show('loginPage');
 } 	
 	
 function D(str) { return document.getElementById(str); }
@@ -556,6 +560,8 @@ function logout() {
 	clearDOM(D('stocklist'));
 	hide('profilePage');
 	hide('monitorPage');
+	show('loginPage');
+	D('loginPage').style.display = "block";
 	
 	// if (typeof(Storage) !== "undefined") localStorage.setItem("authString", "");
 }	
@@ -633,6 +639,7 @@ function submitMFAForm() {
 			hide('MFAForm');
 			show('profilePage');
 			show('monitorPage');
+			hide('loginPage');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};
 	

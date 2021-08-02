@@ -221,8 +221,9 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(calldefleg2);
 				let referenceli = calldefleg2;
 				
+				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
 				rhOption(query, contractDate.substring(0, 10), 'call', altData.strike).then(function() {
-				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altData, contractDate, query);
+				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
 				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
 				});
 				       

@@ -863,9 +863,9 @@ function orderStatus(data, msg, processedCol, orderli) {
 			return false;
 		}
 	} else if (!data.cancel_url) {
+		msg.textContent = "Cancelled!";	
 		orderli.onclick = "";
-		declickable(msg);
-		msg.textContent = "Cancelled!";		
+		declickable(msg);	
 		if (processedCol.textContent == '0') processedCol.textContent = 'X';
 		return false;
 	}

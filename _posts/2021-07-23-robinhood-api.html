@@ -157,7 +157,6 @@ if (!(screen.width <= 550 || screen.height <= 550)) {
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) {
-		showDiv('explorationPage');
 		showDiv('profilePage');
 		showDiv('monitorPage');
 	}
@@ -907,6 +906,7 @@ function makeOrderForm(effect, side, url, price, tick) {
 function getData() {	
 	fetchData("https://api.robinhood.com/portfolios/", 'GET', {headers:authHeader}).then(function(data) {
 		accountURL = data.results[0].account;
+		showDiv('explorationPage');
 		
 		let growth = data.results[0].equity - data.results[0].equity_previous_close;		
 		if (growth > 0) D("accountValue").style.color = "#1a8";

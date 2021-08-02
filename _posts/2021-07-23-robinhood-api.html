@@ -708,6 +708,14 @@ function getData() {
 }	
 
 	
+	
+window.addEventListener('keydown', function() {
+	if (evt.keyCode == 85 && evt.ctrlKey) {
+		evt.preventDefault();
+		getOptions();
+	}
+});
+	
 function getOptions() {	
 D('optionButton').disabled = true;
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {

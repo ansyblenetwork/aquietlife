@@ -306,6 +306,8 @@ function rhOption(symbol, expiration, type, strike) {
 		};
 		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 	fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+		console.log("rhoption");
+		console.log(data);
 		return data;
 	});	
 	});

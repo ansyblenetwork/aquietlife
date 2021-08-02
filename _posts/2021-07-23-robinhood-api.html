@@ -326,7 +326,7 @@ function rhOption(symbol, expiration, type, strike) {
 function createBuyOrder(li, type, side, count, orders, symbol) {
 clickable(li.firstChild);
 li.firstChild.onclick = function() {
-	let confMsg = "Buy this defensive leg?";
+	let confMsg = "Buy this defensive " + type + "?";
 	if (side == "sell") confMsg = "Open this " + type + "?";
 if (confirm(confMsg)) {	
 	D('orders').scrollIntoView({behavior: "smooth"});				
@@ -338,7 +338,7 @@ if (confirm(confMsg)) {
 				let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
 				if (orderli) {							
 					orderli.lastElementChild.onclick = function() {		
-						confMsg = "Cancel buying this defensive leg?";
+						confMsg = "Cancel buying this defensive " + type + "?";
 						if (side == "sell") confMsg = "Cancel opening this " + type + "?";
 					if (confirm(confMsg)) {
 						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {

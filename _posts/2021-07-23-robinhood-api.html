@@ -149,7 +149,13 @@ if (typeof(Storage) !== "undefined") {
 	else show('loginPage');
 } 	
 	
-function D(str) { return document.getElementById(str); }
+function D(string) { return document.getElementById(string); }	
+function DE(id) {
+	if (typeof id === 'string' || id instanceof String) return D(id);
+	else return id;	
+}	
+function show(id) { DE(id).style.display = 'inline';}	
+function hide(id) { DE(id).style.display = 'none';}
 	
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
@@ -565,9 +571,6 @@ function logout() {
 	
 	// if (typeof(Storage) !== "undefined") localStorage.setItem("authString", "");
 }	
-	
-function show(id) { DE(id).style.display = 'inline';}	
-function hide(id) { DE(id).style.display = 'none';}
 	
 function clearDOM(myNode) {
 	while (myNode.firstChild) { myNode.removeChild(myNode.lastChild); }

@@ -213,13 +213,15 @@ function updateOptions(newOption) {
 				
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+				let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], contractDate, query);
 	
 				let calldefleg = buildli(defData.contract, data);
 				D('optionslist').appendChild(calldefleg);
 				let calldefleg2 = buildli(altData.contract, data);
 				D('optionslist').appendChild(calldefleg2);
 				let referenceli = calldefleg2;
+				
+				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
 				       
 				let callArray = [];
 				for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -231,7 +233,11 @@ function updateOptions(newOption) {
 				callArray.forEach(function(contract) {				
 					if (maxReturn < returnRate(contract, altData)) {
 						maxReturn = returnRate(contract, altData);
-						D('optionslist').appendChild(buildli(contract, data, calldefleg2, altData));
+						let contractli = buildli(contract, data, calldefleg2, altData);
+						D('optionslist').appendChild(contractli);
+						
+						let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
+						createBuyOrder(contractli, 'call', 'sell', 0, sellCallOrders, query);
 					}
 				});
 	
@@ -248,13 +254,15 @@ function updateOptions(newOption) {
 	
 				defData = {strike:0, premium:0, contract:""};
 				altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+				let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], contractDate, query);
 				
 				let putdefleg2 = buildli(altData.contract, data);
 				D('optionslist').appendChild(putdefleg2);
 				let putdefleg = buildli(defData.contract, data);
 				D('optionslist').appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";
+				
+				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
 	
 				let putArray = [];
 				for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -266,7 +274,11 @@ function updateOptions(newOption) {
 				putArray.forEach(function(contract) {				
 					if (maxReturn < returnRate(contract, altData)) {
 						maxReturn = returnRate(contract, altData);
-						D('optionslist').insertBefore(buildli(contract, data, putdefleg2, altData), referenceli.nextElementSibling);
+						let contractli = buildli(contract, data, putdefleg2, altData);
+						D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
+						
+						let sellPutOrders = setSellOrders(data.put[contractDate], contract, contractDate, query);
+						createBuyOrder(contractli, 'put', 'sell', 0, sellPutOrders, query);
 					}
 				});
 			}
@@ -277,6 +289,93 @@ function updateOptions(newOption) {
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
+	
+
+function createBuyOrder(li, type, side, count, orders, symbol) {
+clickable(li.firstChild);
+li.firstChild.onclick = function() {
+	let confMsg = "Buy this defensive leg?";
+	if (side == "sell") confMsg = "Open this " + type + "?";
+if (confirm(confMsg)) {	
+	D('orders').scrollIntoView({behavior: "smooth"});				
+	function orderProceed(li, count) {
+		fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
+			let optionForm = {
+				'chain_id': data.results[0].tradable_chain_id,
+				'expiration_dates': orders[count].expiration,
+				'strike_price': orders[count].strike,
+				'type': type,
+				'state': 'active'
+			};
+			let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+		fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+			fetchData('https://api.robinhood.com/options/orders/', 
+				  'POST', 
+				  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+				let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
+				if (orderli) {							
+					orderli.lastElementChild.onclick = function() {		
+						confMsg = "Cancel buying this defensive leg?";
+						if (side == "sell") confMsg = "Cancel this opening order?";
+					if (confirm(confMsg)) {
+						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1, orders);
+						});
+					}
+					}
+					if (active(D('autoButton'))) {
+						setTimeout(function() {
+						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
+							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, count + 1);
+						});
+						}, 1000);
+					}
+				}
+			});
+		});
+		});
+	}
+
+	orderProceed(li, count);
+}
+}
+}
+	
+function setSellOrders(data, mainContract, contractDate, symbol) {
+	let orders = [];
+	let ask = inDollars(mainContract.ask);
+	let bid = inDollars(mainContract.bid);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
+	let strike = mainContract.strikePrice;
+
+	for (let i = bid; i <= ask - tick; i += tick) {
+		for (let contractStrike in data) {
+			let contract = data[contractStrike][0];
+			if ((contract.putCall == "CALL" && contract.strikePrice >= strike) || (contract.putCall == "PUT" && contract.strikePrice <= strike)) {
+				if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
+		}
+	}
+
+	orders.sort(function(y, x) {return rate(x) - rate(y);});
+	function rate(order) {
+		let cost = ask - order.premium;
+		let collateral = strike - order.strike;
+		if (collateral < 0) collateral = 0 - collateral;
+		if (collateral == 0) collateral = 0.0001;
+		return collateral / cost;
+	}
+	if (orders.length > 4) {
+		let sparseOrders = [];
+		for (let i = 0; i < 4; i++) {
+			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+		}
+		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+		return sparseOrders;
+	}
+	return orders;
+}	
+	
 function generateRec(symbol, data) {	
 	for (let contractDate in data.callExpDateMap) {
 		
@@ -286,42 +385,7 @@ function generateRec(symbol, data) {
 
 		let defData = {strike:0, premium:0, contract:""};
 		let altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
-		function setOrders(data) {
-			let orders = [];
-			let ask = inDollars(altData.premium);
-			let bid = inDollars(altData.contract.bid);
-			let tick = inDollars(optionsBySymbol[symbol].tick);
-			let strike = altData.strike;
-
-			for (let i = bid + tick; i <= ask; i += tick) {
-				for (let contractStrike in data) {
-					let contract = data[contractStrike][0];
-					if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
-						if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-					}
-				}
-			}
-
-			orders.sort(function(y, x) {return rate(x) - rate(y);});
-			function rate(order) {
-				let cost = order.premium - bid;
-				let collateral = strike - order.strike;
-				if (collateral < 0) collateral = 0 - collateral;
-				if (collateral == 0) collateral = 0.0001;
-				return collateral / cost;
-			}
-			if (orders.length > 4) {
-				let sparseOrders = [];
-				for (let i = 0; i < 4; i++) {
-					sparseOrders.push(orders[Math.round(i*orders.length/4)]);
-				}
-				if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-				return sparseOrders;
-			}
-			return orders;
-		}		
-		let callOrders = setOrders(data.callExpDateMap[contractDate]);
+		let callOrders = setDefLeg(defData, altData, data.callExpDateMap[contractDate], contractDate, symbol);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -338,53 +402,13 @@ function generateRec(symbol, data) {
 			}
 		});
 		
-		
-		function setSellOrders(data, mainContract) {
-			let orders = [];
-			let ask = inDollars(mainContract.ask);
-			let bid = inDollars(mainContract.bid);
-			let tick = inDollars(optionsBySymbol[symbol].tick);
-			let strike = mainContract.strikePrice;
-
-			for (let i = bid; i <= ask - tick; i += tick) {
-				for (let contractStrike in data) {
-					let contract = data[contractStrike][0];
-					if ((contract.putCall == "CALL" && contract.strikePrice >= strike) || (contract.putCall == "PUT" && contract.strikePrice <= strike)) {
-						if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-					}
-				}
-			}
-
-			orders.sort(function(y, x) {return rate(x) - rate(y);});
-			function rate(order) {
-				let cost = ask - order.premium;
-				let collateral = strike - order.strike;
-				if (collateral < 0) collateral = 0 - collateral;
-				if (collateral == 0) collateral = 0.0001;
-				return collateral / cost;
-			}
-			if (orders.length > 4) {
-				let sparseOrders = [];
-				for (let i = 0; i < 4; i++) {
-					sparseOrders.push(orders[Math.round(i*orders.length/4)]);
-				}
-				if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-				return sparseOrders;
-			}
-			return orders;
-		}	
-		let sellCallOrders;
-		if (candidate) {
-			candidateObj.call = {contract:candidate, altData:altData};
-			sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract);
-		}
+		if (candidate) candidateObj.call = {contract:candidate, altData:altData};
 
 	/////////////////////// PUTS //////////////////////////////////
 
 		defData = {strike:0, premium:0, contract:""};
 		altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
-		let putOrders = setOrders(data.putExpDateMap[contractDate]);
+		let putOrders = setDefLeg(defData, altData, data.putExpDateMap[contractDate], contractDate, symbol);
 	
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
@@ -400,11 +424,7 @@ function generateRec(symbol, data) {
 				maxReturn = returnRate(contract, altData);
 			}
 		});	
-		let sellPutOrders;
-		if (candidate) {
-			candidateObj.put = {contract:candidate, altData:altData};
-			sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract);
-		}
+		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
 		
 		// add to DOM //////////////////////////////////////////////////
 		if (incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
@@ -412,62 +432,6 @@ function generateRec(symbol, data) {
 		let callrate = 0;
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////				
-			
-		function createBuyOrder(li, type, side, count) {
-		let orders = putOrders;
-		if (type == "call") orders = callOrders;
-		if (side == 'sell') {
-			orders = sellPutOrders;
-			if (type == "call") orders = sellCallOrders;
-		}
-		clickable(li.firstChild);
-		li.firstChild.onclick = function() {
-			let confMsg = "Buy this defensive leg?";
-			if (side == "sell") confMsg = "Open this " + type + "?";
-		if (confirm(confMsg)) {	
-			D('orders').scrollIntoView({behavior: "smooth"});				
-			function orderProceed(li, type, side, count) {
-				fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
-					let optionForm = {
-						'chain_id': data.results[0].tradable_chain_id,
-						'expiration_dates': orders[count].expiration,
-						'strike_price': orders[count].strike,
-						'type': type,
-						'state': 'active'
-					};
-					let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-				fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-					fetchData('https://api.robinhood.com/options/orders/', 
-						  'POST', 
-						  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
-						let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
-						if (orderli) {							
-							orderli.lastElementChild.onclick = function() {		
-								confMsg = "Cancel buying this defensive leg?";
-								if (side == "sell") confMsg = "Cancel this opening order?";
-							if (confirm(confMsg)) {
-								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1);
-								});
-							}
-							}
-							if (active(D('autoButton'))) {
-								setTimeout(function() {
-								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, type, side, count + 1);
-								});
-								}, 1000);
-							}
-						}
-					});
-				});
-				});
-			}
-
-			orderProceed(li, type, side, count);
-		}
-		}
-		}
 
 			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
@@ -476,8 +440,9 @@ function generateRec(symbol, data) {
 				bag.appendChild(calloffleg);
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 				
-				createBuyOrder(calldefleg2, 'call', 'buy', 0);
-				createBuyOrder(calloffleg, 'call', 'sell', 0);
+				let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol);
+				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, symbol);
+				createBuyOrder(calloffleg, 'call', 'sell', 0, sellCallOrders, symbol);
 			}
 
 		/////////////////////// MIDDLE //////////////////////////////////
@@ -499,8 +464,9 @@ function generateRec(symbol, data) {
 				bag.insertBefore(putoffleg, referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 				
-				createBuyOrder(putdefleg2, 'put', 'buy', 0);
-				createBuyOrder(putoffleg, 'put', 'sell', 0);
+				let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract, contractDate, symbol);
+				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, symbol);
+				createBuyOrder(putoffleg, 'put', 'sell', 0, sellPutOrders, symbol);
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
@@ -509,8 +475,7 @@ function generateRec(symbol, data) {
 	}
 }	
 	
-	
-function setDefLeg(defData, altData, data) {      
+function setDefLeg(defData, altData, data, contractDate, symbol) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 
@@ -557,6 +522,39 @@ function setDefLeg(defData, altData, data) {
 		
 		if (!currentContract || altData.strike == candData.strike || interestRate(currentContract, altData) > fixedInterestRate) break;
 	}
+	
+	let orders = [];
+	let ask = inDollars(altData.premium);
+	let bid = inDollars(altData.contract.bid);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
+	let strike = altData.strike;
+
+	for (let i = bid + tick; i <= ask; i += tick) {
+		for (let contractStrike in data) {
+			let contract = data[contractStrike][0];
+			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
+				if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
+		}
+	}
+
+	orders.sort(function(y, x) {return rate(x) - rate(y);});
+	function rate(order) {
+		let cost = order.premium - bid;
+		let collateral = strike - order.strike;
+		if (collateral < 0) collateral = 0 - collateral;
+		if (collateral == 0) collateral = 0.0001;
+		return collateral / cost;
+	}
+	if (orders.length > 4) {
+		let sparseOrders = [];
+		for (let i = 0; i < 4; i++) {
+			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+		}
+		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+		return sparseOrders;
+	}
+	return orders;
 }	
 	
 

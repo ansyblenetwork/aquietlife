@@ -987,6 +987,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (vol > 15) col.style.backgroundColor = "#dff";
 						D('singles').appendChild(li);
 						
+						if (prem > 0 || vol > 15) {
+							if (!incompleteCondorList[symbol]) incompleteCondorList[symbol] = {};
+							if (!incompleteCondorList[symbol][contract.expire]) incompleteCondorList[symbol][contract.expire] = {};
+							if (type == "call") incompleteCondorList[symbol][contract.expire].call = true;
+							else incompleteCondorList[symbol][contract.expire].put = true;
+						}
+						
 						createSingleOrder(li, contract, prem + tick);
 					}
 				}

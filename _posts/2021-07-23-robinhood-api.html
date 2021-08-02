@@ -967,48 +967,34 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 				}
 				
+				function checkOrphanDef(contract, type) {					
+					if (!contract.friend) {
+						let li = makeli(symbol, contract);
+						let prem = 0;
+						let vol = 0;
+						let strikeList = data.putExpDateMap[dateMap(contract.expire)];
+						if (type == "call") strikeList = data.callExpDateMap[dateMap(contract.expire)];
+						if (strikeList) {
+							if (!(strikeList[strikeMap(contract.strike)])) prem = -1; // this is in the money
+							else {
+								prem = strikeList[strikeMap(contract.strike)][0].bid;
+								vol =  strikeList[strikeMap(contract.strike)][0].totalVolume;
+							}
+						}
+						let col = addCol(prem.toFixed(2), "75px", li);
+						if (prem > 0) col.style.backgroundColor = "#dff";
+						col = addCol(vol, "75px", li);
+						if (vol > 15) col.style.backgroundColor = "#dff";
+						D('singles').appendChild(li);
+						
+						createSingleOrder(li, contract, prem + tick);
+					}
+				}
 				optionsBySymbol[symbol].defPut.forEach(function(contract) {
-					if (!contract.friend) {
-						let li = makeli(symbol, contract);
-						let prem = 0;
-						let vol = 0;
-						if (data.putExpDateMap[dateMap(contract.expire)]) {
-							if (!(data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1; // this is in the money
-							else {
-								prem = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
-								vol =  data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].totalVolume;
-							}
-						}
-						let col = addCol(prem.toFixed(2), "75px", li);
-						if (prem > 0) col.style.backgroundColor = "#dff";
-						col = addCol(vol, "75px", li);
-						if (vol > 15) col.style.backgroundColor = "#dff";
-						D('singles').appendChild(li);
-						
-						createSingleOrder(li, contract, prem + tick);
-					}
+					checkOrphanDef(contract, "put");
 				});
-
 				optionsBySymbol[symbol].defCall.forEach(function(contract) {
-					if (!contract.friend) {
-						let li = makeli(symbol, contract);
-						let prem = 0;
-						let vol = 0;
-						if (data.callExpDateMap[dateMap(contract.expire)]) {
-							if (!(data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)])) prem = -1;
-							else {
-								prem = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].bid;
-								vol = data.callExpDateMap[dateMap(contract.expire)][strikeMap(contract.strike)][0].totalVolume;
-							}
-						}
-						let col = addCol(prem.toFixed(2), "75px", li);
-						if (prem > 0) col.style.backgroundColor = "#dff";
-						col = addCol(vol, "75px", li);
-						if (vol > 15) col.style.backgroundColor = "#dff";
-						D('singles').appendChild(li);
-						
-						createSingleOrder(li, contract, prem + tick);
-					}
+					checkOrphanDef(contract, "call");
 				});
 				
 				function rateCalc(premium, collateral, time) { return 100*100*premium*365*1000*60*60*24/(collateral*(1000*60*60*66 + time - Date.now())); }

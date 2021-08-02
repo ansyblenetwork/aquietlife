@@ -516,6 +516,7 @@ function generateRec(symbol, data) {
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
 			let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			col.style.cursor = "pointer";
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
 				optionsChain();

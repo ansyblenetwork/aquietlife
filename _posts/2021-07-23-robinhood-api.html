@@ -210,7 +210,47 @@ function generateRec(symbol, data) {
 				maxReturn = returnRate(contract, altData);
 			}
 		});
-		if (candidate) candidateObj.call = {contract:candidate, altData:altData};
+		
+		
+		function setSellOrders(data, mainContract) {
+			let orders = [];
+			let ask = inDollars(mainContract.ask);
+			let bid = inDollars(mainContract.bid);
+			let tick = inDollars(optionsBySymbol[symbol].tick);
+			let strike = mainContract.strikePrice;
+
+			for (let i = bid; i <= ask - tick; i += tick) {
+				for (let contractStrike in data) {
+					let contract = data[contractStrike][0];
+					if ((contract.putCall == "CALL" && contract.strikePrice >= strike) || (contract.putCall == "PUT" && contract.strikePrice <= strike)) {
+						if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+					}
+				}
+			}
+
+			orders.sort(function(y, x) {return rate(x) - rate(y);});
+			function rate(order) {
+				let cost = ask - order.premium;
+				let collateral = strike - order.strike;
+				if (collateral < 0) collateral = 0 - collateral;
+				if (collateral == 0) collateral = 0.0001;
+				return collateral / cost;
+			}
+			if (orders.length > 4) {
+				let sparseOrders = [];
+				for (let i = 0; i < 4; i++) {
+					sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+				}
+				if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+				return sparseOrders;
+			}
+			return orders;
+		}	
+		let sellCallOrders;
+		if (candidate) {
+			candidateObj.call = {contract:candidate, altData:altData};
+			setCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract);
+		}
 
 	/////////////////////// PUTS //////////////////////////////////
 
@@ -218,7 +258,34 @@ function generateRec(symbol, data) {
 		altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
 		let putOrders = setOrders(data.putExpDateMap[contractDate]);
+	
+		let putArray = [];
+		for (let contractStrike in data.putExpDateMap[contractDate]) {
+			let contract = data.putExpDateMap[contractDate][contractStrike][0];
+			if (evalContract(contract, data, altData) && contractAboveVolatility(contract, data)) putArray.push(contract);
+		}
+
+		maxReturn = 0;
+		candidate = null;
+		putArray.forEach(function(contract) {
+			if (maxReturn < returnRate(contract, altData)) {
+				candidate = contract;
+				maxReturn = returnRate(contract, altData);
+			}
+		});	
+		let sellPutOrders;
+		if (candidate) {
+			candidateObj.put = {contract:candidate, altData:altData};
+			sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract);
+		}
 		
+		// add to DOM //////////////////////////////////////////////////
+		if (incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
+		let bag = make('li');	
+		let callrate = 0;
+		let putrate = 0;
+		////////////// build the table /////////////////////////////////				
+			
 		function createBuyOrder(li, type, count) {
 		let orders = putOrders;
 		if (type == "call") orders = callOrders;
@@ -266,29 +333,6 @@ function generateRec(symbol, data) {
 		}
 		}
 		}
-	
-		let putArray = [];
-		for (let contractStrike in data.putExpDateMap[contractDate]) {
-			let contract = data.putExpDateMap[contractDate][contractStrike][0];
-			if (evalContract(contract, data, altData) && contractAboveVolatility(contract, data)) putArray.push(contract);
-		}
-
-		maxReturn = 0;
-		candidate = null;
-		putArray.forEach(function(contract) {
-			if (maxReturn < returnRate(contract, altData)) {
-				candidate = contract;
-				maxReturn = returnRate(contract, altData);
-			}
-		});	
-		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
-		
-		// add to DOM //////////////////////////////////////////////////
-		if (incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
-		let bag = make('li');	
-		let callrate = 0;
-		let putrate = 0;
-		////////////// build the table /////////////////////////////////						    
 
 			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
@@ -321,6 +365,13 @@ function generateRec(symbol, data) {
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
+			bag.onclick = function() {
+				console.log("Sell call orders:");
+				console.log(sellCallOrders);
+				console.log("Sell put orders:");
+				console.log(sellPutOrders);
+				
+			};
 		addOrdered(bag, D('recList'));	
 		}
 	}

@@ -305,14 +305,10 @@ function rhOption(symbol, expiration, type, strike) {
 			'state': 'active'
 		};
 		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-	return fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
-		console.log("rhoption");
-		console.log(data);
-		
+	return fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {		
 		if (!optionsBySymbol[symbol]) {
 			optionsBySymbol[symbol] = {tick: parseFloat(data.results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
-		}
-		
+		}		
 		return data;
 	});	
 	});
@@ -334,7 +330,7 @@ if (confirm(confMsg)) {
 				if (orderli) {							
 					orderli.lastElementChild.onclick = function() {		
 						confMsg = "Cancel buying this defensive leg?";
-						if (side == "sell") confMsg = "Cancel this opening order?";
+						if (side == "sell") confMsg = "Cancel opening this " + type + "?";
 					if (confirm(confMsg)) {
 						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
 							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1, orders);

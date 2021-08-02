@@ -65,6 +65,19 @@ title: "Options collateral analysis via the Robinhood API"
 		</div>		
 	</div>
 	
+	
+	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid">	
+		<div style="width:max-content; margin:auto; margin-bottom:10px">
+		<input onkeyup="if (event.keyCode == 27) this.value = '';
+				else if (event.keyCode == 13) {
+					event.preventDefault(); 
+					optionsChain();
+				}"
+		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="optionsChain()">Fetch</button>
+		</div>
+		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="optionslist"></ul>
+	</div>
+	
 	<div id="loginPage" style="display:none;">	
 	
 	<form id="loginForm" onsubmit="submitLoginForm(); return false;">	
@@ -143,6 +156,7 @@ if (!(screen.width <= 550 || screen.height <= 550)) {
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) {
+		showDiv('explorationPage');
 		showDiv('profilePage');
 		showDiv('monitorPage');
 	}
@@ -156,6 +170,121 @@ function DE(id) {
 }	
 function showDiv(id) { DE(id).style.display = 'block';}	
 function hide(id) { DE(id).style.display = 'none';}
+	
+
+	
+	
+	
+	
+	
+	
+	
+function optionsChain() {	
+	if (D('optionsInput').value.toUpperCase()) updateOptions(true);
+}
+							       
+function updateOptions(newOption) {	
+	let query = currentOption;
+	if (newOption) query = D('optionsInput').value.toUpperCase();
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-Ticker': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+		optionsQuotes[query] = data;
+		if (currentOption == query) {
+			for (let i = 0; i < D('optionslist').children.length; i++) {
+				if (Math.sqrt(parseFloat(D('optionslist').children[i].children[0].title)) * (1 + parseFloat(optionsQuotes[query].volatility.split('% ')[0])) * 2 < 										parseFloat(D('optionslist').children[i].children[1].title)) {
+				D('optionslist').children[i].children[1].style.backgroundColor = "#ddf";
+				D('optionslist').children[i].children[2].style.backgroundColor = "#ddf";
+				}
+			}
+		}
+	});
+	
+	let d = new Date(Date.now() + 1000*60*60*24*12).toISOString();								       
+	fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+		+ query + "&range=OTM&toDate=" + d).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+		console.log(data);
+		if (data.status == "SUCCESS") {	
+			optionsData[query] = data;
+			// if (currentOption && query != currentOption && D('optionsPrice').children.length > 0) D('stocklist').appendChild(D('optionsPrice').firstChild);
+			currentOption = query;
+			submitTicker(currentOption);
+	
+			D('optionslist').textContent = "";
+					
+			for (let contractDate in data.callExpDateMap) {
+						   
+			/////////////////////// CALLS //////////////////////////////////
+				
+				let defData = {strike:0, premium:0, contract:""};
+				let altData = {strike:0, premium:0, contract:""};
+				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+	
+				let calldefleg = buildli(defData.contract, data);
+				D('optionslist').appendChild(calldefleg);
+				let calldefleg2 = buildli(altData.contract, data);
+				D('optionslist').appendChild(calldefleg2);
+				let referenceli = calldefleg2;
+				       
+				let callArray = [];
+				for (let contractStrike in data.callExpDateMap[contractDate]) {
+					let contract = data.callExpDateMap[contractDate][contractStrike][0];
+					if (evalContract(contract, data, altData)) callArray.unshift(contract);
+				}	       
+	
+				let maxReturn = 0;
+				callArray.forEach(function(contract) {				
+					if (maxReturn < returnRate(contract, altData)) {
+						maxReturn = returnRate(contract, altData);
+						D('optionslist').appendChild(buildli(contract, data, calldefleg2, altData));
+					}
+				});
+	
+			/////////////////////// MIDDLE //////////////////////////////////
+	
+				referenceli = make('li');
+				referenceli.style.textAlign = "center";
+				referenceli.style.fontWeight = "bold";
+				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+				addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+				D('optionslist').appendChild(referenceli);	
+	
+			/////////////////////// PUTS //////////////////////////////////
+	
+				defData = {strike:0, premium:0, contract:""};
+				altData = {strike:0, premium:0, contract:""};
+				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
+				
+				let putdefleg2 = buildli(altData.contract, data);
+				D('optionslist').appendChild(putdefleg2);
+				let putdefleg = buildli(defData.contract, data);
+				D('optionslist').appendChild(putdefleg);
+				putdefleg.style.marginBottom = "30px";
+	
+				let putArray = [];
+				for (let contractStrike in data.putExpDateMap[contractDate]) {
+					let contract = data.putExpDateMap[contractDate][contractStrike][0];
+					if (evalContract(contract, data, altData)) putArray.push(contract);
+				}
+	
+				maxReturn = 0;
+				putArray.forEach(function(contract) {				
+					if (maxReturn < returnRate(contract, altData)) {
+						maxReturn = returnRate(contract, altData);
+						D('optionslist').insertBefore(buildli(contract, data, putdefleg2, altData), referenceli.nextElementSibling);
+					}
+				});
+			}
+		} else D('msg').textContent = "No options data found.";				       	       
+	});								       
+}
+	
+	
+	
 	
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
@@ -564,6 +693,7 @@ function logout() {
 	clearDOM(D('orders'));
 	clearDOM(D('itm'));
 	clearDOM(D('stocklist'));
+	hide('explorationPage');
 	hide('profilePage');
 	hide('monitorPage');
 	showDiv('loginPage');
@@ -643,6 +773,7 @@ function submitMFAForm() {
 	fetchData('https://api.robinhood.com/challenge/' + currentID + '/respond/', 'POST', { form:{ 'response': D('loginMFA').value }}).then(function(data){
 		fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
 			hide('MFAForm');
+			showDiv('explorationPage');
 			showDiv('profilePage');
 			showDiv('monitorPage');
 			hide('loginPage');

@@ -206,6 +206,13 @@ function updateOptions(newOption) {
 			currentOption = query;	
 			clearDOM(D('optionslist'));
 			
+			
+			let rhfetch;
+			for (let contractDate in data.callExpDateMap) {
+				rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike);
+				break;
+			}
+			
 			for (let contractDate in data.callExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
@@ -221,7 +228,6 @@ function updateOptions(newOption) {
 				let referenceli = calldefleg2;
 				
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
-				let rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike)
 				
 				rhfetch.then(function() {
 				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);

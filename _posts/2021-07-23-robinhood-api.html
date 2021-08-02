@@ -143,10 +143,10 @@ if (!(screen.width <= 550 || screen.height <= 550)) {
 if (typeof(Storage) !== "undefined") {
 	authHeader = {'Authorization': localStorage.getItem("authString") };
 	if (localStorage.getItem("authString")) {
-		show('profilePage');
-		show('monitorPage');
+		showDiv('profilePage');
+		showDiv('monitorPage');
 	}
-	else show('loginPage');
+	else showDiv('loginPage');
 } 	
 	
 function D(string) { return document.getElementById(string); }	
@@ -154,7 +154,7 @@ function DE(id) {
 	if (typeof id === 'string' || id instanceof String) return D(id);
 	else return id;	
 }	
-function show(id) { DE(id).style.display = 'inline';}	
+function showDiv(id) { DE(id).style.display = 'block';}	
 function hide(id) { DE(id).style.display = 'none';}
 	
 	
@@ -566,7 +566,7 @@ function logout() {
 	clearDOM(D('stocklist'));
 	hide('profilePage');
 	hide('monitorPage');
-	show('loginPage');
+	showDiv('loginPage');
 	D('loginPage').style.display = "block";
 	
 	// if (typeof(Storage) !== "undefined") localStorage.setItem("authString", "");
@@ -643,8 +643,8 @@ function submitMFAForm() {
 	fetchData('https://api.robinhood.com/challenge/' + currentID + '/respond/', 'POST', { form:{ 'response': D('loginMFA').value }}).then(function(data){
 		fetchData("https://api.robinhood.com/oauth2/token/", 'POST', {form:form, headers:{'X-ROBINHOOD-CHALLENGE-RESPONSE-ID':currentID}}).then(function(data){
 			hide('MFAForm');
-			show('profilePage');
-			show('monitorPage');
+			showDiv('profilePage');
+			showDiv('monitorPage');
 			hide('loginPage');
 			authData = data;
 			authHeader = {'Authorization':data.token_type + " " + data.access_token};

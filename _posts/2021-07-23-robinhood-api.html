@@ -345,7 +345,8 @@ function setSellOrders(data, mainContract, contractDate, symbol) {
 	let orders = [];
 	let ask = inDollars(mainContract.ask);
 	let bid = inDollars(mainContract.bid);
-	let tick = inDollars(optionsBySymbol[symbol].tick);
+	let tick = 1;
+	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = mainContract.strikePrice;
 
 	for (let i = bid; i <= ask - tick; i += tick) {

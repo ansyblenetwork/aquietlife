@@ -879,7 +879,7 @@ function stylizeCancel(orderli, data, origin) {
 		orderli.lastElementChild.textContent = data.detail;
 		orderli.click();
 		return false;
-	} else return !orderStatus(data, orderli.lastElementChild.textContent, orderli.lastElementChild.textContent.previousElementSibling, orderli);
+	} else return !orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
 }
 	
 function makeOrderForm(effect, side, url, price, tick) {

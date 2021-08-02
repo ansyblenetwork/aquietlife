@@ -852,7 +852,7 @@ function makeOrderli(symbol, contract, data, origin) {
 	}
 }
 	
-function orderStatus(data, msg, processedCol, orderli) {
+function orderStatus(data, msg, processedCol, orderli, origin) {
 	if (parseFloat(data.processed_quantity) > 0) {
 		processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 		msg.textContent = "Partially completed...";
@@ -861,12 +861,20 @@ function orderStatus(data, msg, processedCol, orderli) {
 			if (Math.round(parseFloat(data.canceled_quantity)) > 0) msg.textContent = "Remainder cancelled!";
 			orderli.onclick = "";
 			declickable(msg);
+			if (origin) {
+				origin.firstChild.style.backgroundColor = "#ddf";
+				origin.firstChild.style.pointerEvents = "";
+			}
 			return false;
 		}
 	} else if (!data.cancel_url) {
 		msg.textContent = "Cancelled!";	
 		orderli.onclick = "";
 		declickable(msg);	
+		if (origin) {
+			origin.firstChild.style.backgroundColor = "#ddf";
+			origin.firstChild.style.pointerEvents = "";
+		}
 		if (processedCol.textContent == '0') processedCol.textContent = 'X';
 		return false;
 	} else msg.textContent = "Pending...";
@@ -888,12 +896,12 @@ function cancelSequence(url, id, orderli, origin) {
 					console.log(data);
 					orderli.style.backgroundColor = "#dff";
 					setTimeout(function() {	orderli.style.backgroundColor = ""; }, 300);
-					orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
+					orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli, origin);
 					
 					return cancelLoop(data);
 				});
 			} else {
-				orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
+				orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli, origin);
 				return (data.canceled_quantity > 0);
 			}	
 		}

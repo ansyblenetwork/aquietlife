@@ -340,16 +340,16 @@ if (confirm(confMsg)) {
 					orderli.lastElementChild.onclick = function() {		
 						confMsg = "Cancel buying this defensive " + type + "?";
 						if (side == "sell") confMsg = "Cancel opening this " + type + "?";
-					if (confirm(confMsg)) {
-						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1, orders);
+					if (confirm(confMsg)) {							
+						cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+							if (result && count + 1 < orders.length) createBuyOrder(orderli, type, side, count + 1, orders);
 						});
 					}
 					}
 					if (active(D('autoButton'))) {
-						setTimeout(function() {
-						fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-							if (stylizeCancel(orderli, data, li) && count + 1 < orders.length) orderProceed(orderli, count + 1);
+						setTimeout(function() {							
+						cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+							if (result && count + 1 < orders.length) orderProceed(orderli, count + 1);
 						});
 						}, 1000);
 					}
@@ -868,9 +868,34 @@ function orderStatus(data, msg, processedCol, orderli) {
 		declickable(msg);	
 		if (processedCol.textContent == '0') processedCol.textContent = 'X';
 		return false;
-	}
+	} else msg.textContent = "Pending...";
 	return true;
-}		
+}
+	
+function cancelSequence(url, id, orderli, origin) {
+	return fetchData(url, 'POST', { headers:authHeader }).then(function(data) {		
+		console.log("The response to the cancel request: ");
+		console.log(data);		
+		if (data.processed_quantity === undefined) {
+			if (data.detail) orderli.lastElementChild.textContent = data.detail;
+			else orderli.lastElementChild.textContent = "Status unknown.";
+			
+			return fetchData('https://api.robinhood.com/options/orders/' + id, 'GET', { headers:authHeader}).then(function(data) {
+				console.log("Checking for update on status for order:");
+				console.log(data);
+				orderli.style.backgroundColor = "#dff";
+				setTimeout(function() {	orderli.style.backgroundColor = ""; }, 300);
+				orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
+				if (data.canceled_quantity > 0) return true;
+				else return false;
+			});
+		} else {
+			orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
+			if (data.canceled_quantity > 0) return true;
+			else return false;
+		}	
+	});
+}
 
 function stylizeCancel(orderli, data, origin) {
 	console.log("The response to the cancel request: ");
@@ -962,8 +987,8 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 						myMsg = "Keep this defensive leg, and perhaps put it to use?";
 
 					if (confirm(myMsg)) {
-					fetchData(orderData.cancel_url, 'POST', { headers:authHeader }).then(function(cancelData) {
-						if (stylizeCancel(orderli, cancelData, origin)) {
+					cancelSequence(orderData.cancel_url, orderData.id, orderli, origin).then(function(result) {
+						if (result) {
 							clickable(orderli.firstChild);
 							orderli.firstChild.onclick = function() {
 								let confirmMsg = "Re-order, selling for less?";
@@ -1176,16 +1201,16 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							let orderli = makeOrderli(symbol, contract, data, li);						
 							if (orderli) {
 								orderli.lastElementChild.onclick = function() {										
-								if (confirm("Keep this orphan defensive leg, and perhaps put it to use?")) {
-									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-										if (stylizeCancel(orderli, data, li)) createSingleOrder(orderli, contract, orderPrem - tick);
+								if (confirm("Keep this orphan defensive leg, and perhaps put it to use?")) {									
+									cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+										if (result) createSingleOrder(orderli, contract, orderPrem - tick);
 									});
 								}
 								}								
 								if (active(D('autoButton')) && inDollars((orderPrem - tick)) > 0) {									
-									setTimeout(function() {
-									fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-										if (stylizeCancel(orderli, data, li)) singleOrderProceed(orderli, contract, orderPrem - tick);
+									setTimeout(function() {							
+									cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+										if (result) singleOrderProceed(orderli, contract, orderPrem - tick);
 									});
 									}, 1000);
 								}
@@ -1300,17 +1325,17 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						let orderli = makeOrderli(symbol, contract, data, li);
 						if (orderli) {							
 							orderli.lastElementChild.onclick = function() {										
-							if (confirm("Leave this collateral frozen?")) {
-								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li)) createOrder(orderli, contract, orderPrem + tick);
+							if (confirm("Leave this collateral frozen?")) {	
+								cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+									if (result) createOrder(orderli, contract, orderPrem + tick);
 								});
 							}
 							}
 							
 							if (active(D('autoButton')) && count < 3) {
-								setTimeout(function() {
-								fetchData(data.cancel_url, 'POST', { headers:authHeader }).then(function(data) {
-									if (stylizeCancel(orderli, data, li)) orderProceed(orderli, contract, orderPrem + tick, count + 1);
+								setTimeout(function() {							
+								cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+									if (result) orderProceed(orderli, contract, orderPrem + tick, count + 1);
 								});
 								}, 1000);
 							}

@@ -352,7 +352,7 @@ if (confirm(confMsg)) {
 						cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
 							if (result && count + 1 < orders.length) orderProceed(orderli, count + 1);
 						});
-						}, 2000);
+						}, 3000);
 					}
 				}
 			});
@@ -1224,7 +1224,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 									cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
 										if (result) singleOrderProceed(orderli, contract, orderPrem - tick);
 									});
-									}, 2000);
+									}, 3000);
 								}
 							}
 						});
@@ -1349,7 +1349,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
 									if (result) orderProceed(orderli, contract, orderPrem + tick, count + 1);
 								});
-								}, 2000);
+								}, 3000);
 							}
 						}
 					});

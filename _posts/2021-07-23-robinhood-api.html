@@ -291,7 +291,7 @@ function generateRec(symbol, data) {
 		if (type == "call") orders = callOrders;
 		if (side == 'sell') {
 			orders = sellPutOrders;
-			if (type == "call") orders = callOrders;
+			if (type == "call") orders = sellCallOrders;
 		}
 		clickable(li.firstChild);
 		li.firstChild.onclick = function() {

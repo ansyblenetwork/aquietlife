@@ -1268,6 +1268,15 @@ function addAll(dataset) {
 	submitTicker(dataset.join());
 }
 	
+
+window.addEventListener('keydown', function() {
+	if (evt.keyCode == 85 && evt.ctrlKey) {
+		evt.preventDefault();
+		updateAll();
+		update();
+	}
+});
+	
 function updateAll() {
 	d = new Date();
 	D('msg').textContent = d.toLocaleTimeString();

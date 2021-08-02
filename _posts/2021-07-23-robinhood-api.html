@@ -208,10 +208,6 @@ function updateOptions(newOption) {
 			
 			
 			let rhfetch;
-			for (let contractDate in data.callExpDateMap) {
-				rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike);
-				break;
-			}
 			
 			for (let contractDate in data.callExpDateMap) {
 						   
@@ -227,6 +223,7 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(calldefleg2);
 				let referenceli = calldefleg2;
 				
+				if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike);				
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
 				
 				rhfetch.then(function() {

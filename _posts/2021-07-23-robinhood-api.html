@@ -204,13 +204,9 @@ function updateOptions(newOption) {
 	}).then(function(data) {
 		console.log(data);
 		if (data.status == "SUCCESS") {	
-			optionsData[query] = data;
-			// if (currentOption && query != currentOption && D('optionsPrice').children.length > 0) D('stocklist').appendChild(D('optionsPrice').firstChild);
-			currentOption = query;
-			submitTicker(currentOption);
-	
-			D('optionslist').textContent = "";
-					
+			currentOption = query;	
+			clearDOM(D('optionslist'));
+			
 			for (let contractDate in data.callExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////

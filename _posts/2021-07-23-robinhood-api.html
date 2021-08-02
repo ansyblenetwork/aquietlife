@@ -310,7 +310,7 @@ function rhOption(symbol, expiration, type, strike) {
 		console.log(data);
 		
 		if (!optionsBySymbol[symbol]) {
-			optionsBySymbol[symbol] = {tick: parseFloat(data.result[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
+			optionsBySymbol[symbol] = {tick: parseFloat(data.results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
 		}
 		
 		return data;

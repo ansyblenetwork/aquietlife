@@ -871,25 +871,29 @@ function orderStatus(data, msg, processedCol, orderli) {
 function cancelSequence(url, id, orderli, origin) {
 	return fetchData(url, 'POST', { headers:authHeader }).then(function(data) {		
 		console.log("The response to the cancel request: ");
-		console.log(data);		
-		if (data.processed_quantity === undefined) {
-			if (data.detail) orderli.lastElementChild.textContent = data.detail;
-			else orderli.lastElementChild.textContent = "Status unknown.";
-			
-			return fetchData('https://api.robinhood.com/options/orders/' + id, 'GET', { headers:authHeader}).then(function(data) {
-				console.log("Checking for update on status for order:");
-				console.log(data);
-				orderli.style.backgroundColor = "#dff";
-				setTimeout(function() {	orderli.style.backgroundColor = ""; }, 300);
+		console.log(data);
+		
+		function cancelLoop(data) {
+			if (data.processed_quantity === undefined) {
+				if (data.detail) orderli.lastElementChild.textContent = data.detail;
+				else orderli.lastElementChild.textContent = "Status unknown.";
+
+				return fetchData('https://api.robinhood.com/options/orders/' + id, 'GET', { headers:authHeader}).then(function(data) {
+					console.log("Checking for update on status for order:");
+					console.log(data);
+					orderli.style.backgroundColor = "#dff";
+					setTimeout(function() {	orderli.style.backgroundColor = ""; }, 300);
+					orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
+					
+					return cancelLoop(data);
+				});
+			} else {
 				orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
 				if (data.canceled_quantity > 0) return true;
 				else return false;
-			});
-		} else {
-			orderStatus(data, orderli.lastElementChild, orderli.lastElementChild.previousElementSibling, orderli);
-			if (data.canceled_quantity > 0) return true;
-			else return false;
-		}	
+			}	
+		}
+		return cancelLoop(data);
 	});
 }
 

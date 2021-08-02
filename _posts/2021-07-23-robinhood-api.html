@@ -304,7 +304,6 @@ function preCreateOpenOrder(li, type, side, count, maindata, thecontract, contra
 		if (side == "sell") orders = setSellOrders(maindata, thecontract, contractDate, tick);
 		else orders = setOrders(maindata, thecontract, contractDate, tick);
 		
-		
 	function createOpenOrder(li, type, side, count, orders, symbol) {
 	clickable(li.firstChild);
 	li.firstChild.onclick = function() {
@@ -315,7 +314,7 @@ function preCreateOpenOrder(li, type, side, count, maindata, thecontract, contra
 		function orderProceed(li, count) {			
 		fetchData('https://api.robinhood.com/options/orders/', 
 			  'POST', 
-			  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+			  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, tick) }).then(function(data) {
 
 			let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
 			if (orderli) {							
@@ -342,10 +341,10 @@ function preCreateOpenOrder(li, type, side, count, maindata, thecontract, contra
 	}
 	}
 	}
+	createOpenOrder(li, type, side, count, orders, symbol);	
 
 	});
 	});
-	createOpenOrder(li, type, side, count, orders, symbol);	
 }
 	
 	

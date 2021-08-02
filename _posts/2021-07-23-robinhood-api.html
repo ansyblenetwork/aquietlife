@@ -258,11 +258,7 @@ function updateOptions(newOption) {
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-				col.onclick = function() {
-					D('optionsInput').value = data.symbol; 
-					optionsChain();
-				}
+				addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 				D('optionslist').appendChild(referenceli);	
 	
 			/////////////////////// PUTS //////////////////////////////////
@@ -519,7 +515,11 @@ function generateRec(symbol, data) {
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-			addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			col.onclick = function() {
+				D('optionsInput').value = data.symbol; 
+				optionsChain();
+			}
 			bag.appendChild(referenceli);	
 
 		/////////////////////// PUTS //////////////////////////////////

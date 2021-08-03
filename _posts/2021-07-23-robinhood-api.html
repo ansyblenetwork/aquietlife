@@ -1086,7 +1086,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	console.log("this should include ticks");
 	console.log(optionsBySymbol);
 	for (let symbol in taskBySymbol) {
+		console.log("here's the tic kfor" + symbol);
 		let tick = optionsBySymbol[symbol].tick;
+		console.log(tick);
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {

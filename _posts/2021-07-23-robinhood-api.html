@@ -160,6 +160,11 @@ if (typeof(Storage) !== "undefined") {
 	if (localStorage.getItem("authString")) {
 		showDiv('profilePage');
 		showDiv('monitorPage');
+		
+		fetchData('https://api.robinhood.com/quotes/MSFT/', 'GET', { headers:authHeader}).then(function(data) {
+			console.log("Trying to get a quote after login: ");
+			console.log(data);
+		});
 	}
 	else showDiv('loginPage');
 } 	

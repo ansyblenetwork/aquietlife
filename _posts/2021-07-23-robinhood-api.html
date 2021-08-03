@@ -1305,12 +1305,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 					contract.condorPair.forEach(function(pair) {
 						let contract2 = pair.condorPair;
+						if (data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)]) { // might not be there if ITM
 						contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].ask;
 						if (data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last < contract2.premium)
 							contract2.premium = data.putExpDateMap[dateMap(contract.expire)][strikeMap(contract2.strike)][0].last;
 						let condorRate = rateCalc(contract2.premium + contract.premium, pair.condorRelease, tdaContract.expirationDate);
 						if (condorRate < bestCondor.rate) 
 							bestCondor = {call:contract, put:contract2, premium:(contract2.premium + contract.premium), rate:condorRate, release:pair.condorRelease};
+						}
 					});
 				}
 				});

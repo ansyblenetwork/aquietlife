@@ -1083,15 +1083,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	let queryString = "";
-	console.log("this should include ticks");
-	console.log(optionsBySymbol);
 	for (let symbol in taskBySymbol) {
-		console.log("here's the tic kfor" + symbol);
-		let tick = optionsBySymbol[symbol].tick;
-		console.log(optionsBySymbol[symbol]);
-		console.log(tick);
-		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {
+					let tick = optionsBySymbol[symbol].tick;
+		queryString += symbol + ",";
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
@@ -1380,9 +1375,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let li = makeli(symbol, ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
-					console.log("trying a no-condor put");
-					console.log(ncPut.premium);
-					console.log(tick);
 					createOrder(li, ncPut, ncPut.premium - tick);
 				}
 				if (bestPut) {						

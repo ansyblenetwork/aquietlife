@@ -342,8 +342,8 @@ if (confirm(confMsg)) {
 	D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});				
 	function orderProceed(li, count, data) {
 		let effect = 'open';
-		if (side == 'buy' && checkOption(data.results[0].url, 'short')) effect = 'close';
-		if (side == 'sell' && checkOption(data.results[0].url, 'long')) effect = 'close';
+		if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
+		if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
 		fetchData('https://api.robinhood.com/options/orders/', 
 			  'POST', 
 			  { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {

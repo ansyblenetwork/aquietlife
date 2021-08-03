@@ -175,6 +175,7 @@ function hide(id) { DE(id).style.display = 'none';}
 	
 function checkOption(id, type) {
 	console.log("checking option! with type " + type);
+	console.log(id);
 	for (let i = 0; i < optionsPositions.length; i++) {
 		if (optionsPositions[i].option_id == id && optionsPositions[i].type == type) return true;
 	}

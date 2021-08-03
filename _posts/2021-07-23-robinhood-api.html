@@ -344,7 +344,7 @@ if (confirm(confMsg)) {
 		if (side == 'sell' && checkOption(data.results[0].url, 'long')) effect = 'close';
 		fetchData('https://api.robinhood.com/options/orders/', 
 			  'POST', 
-			  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+			  { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
 			let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
 			if (orderli) {	
 				let rhfetch;

@@ -1035,6 +1035,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 let optionsPositions = [];
 function loadPositions(url) {
 	return fetchData(url, 'GET', { headers:authHeader }).then(function(data) {
+		console.log(data);
 		optionsPositions.concat(data.results);
 		if (data.next) return loadPositions(data.next);
 	});

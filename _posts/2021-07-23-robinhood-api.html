@@ -162,9 +162,18 @@ if (typeof(Storage) !== "undefined") {
 		showDiv('monitorPage');
 		
 		fetchData('https://api.robinhood.com/instruments/?symbol=MSFT', 'GET', { headers:authHeader}).then(function(data) {
-			console.log("Trying to get a quote after login: ");
-			console.log(data);
-		});
+			let optionForm = {
+				'chain_id': data.results[0].tradable_chain_id,
+				'expiration_dates': "2021-08-06",
+				'strike_price': "285.0000",
+				'type': "call",
+				'state': 'active'
+			};
+			let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
+			fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {	
+				console.log(data);
+			});
+		});	
 	}
 	else showDiv('loginPage');
 } 	

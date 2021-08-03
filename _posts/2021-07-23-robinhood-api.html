@@ -122,6 +122,7 @@ var optionsPositions = [];
 	
 // map from Robinhood option URL to contract type
 var urlMap = {};
+var reverseMap = {};
 var dteMap = {};
 	
 // monitoring variables
@@ -313,6 +314,13 @@ function updateOptions(newOption) {
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
 function rhOption(symbol, expiration, type, strike) {
+	if (reverseMap[symbol+expiration+type+strike]) {
+		return new Promise (function (resolve, reject) {			
+			if (!optionsBySymbol[symbol])
+			optionsBySymbol[symbol] = {tick: parseFloat(reverseMap[symbol+expiration+type+strike].results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
+		    resolve(reverseMap[symbol+expiration+type+strike]);
+		}
+	}
 	return fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 		let optionForm = {
 			'chain_id': data.results[0].tradable_chain_id,
@@ -322,7 +330,8 @@ function rhOption(symbol, expiration, type, strike) {
 			'state': 'active'
 		};
 		let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
-	return fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {		
+	return fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {
+		reverseMap[symbol+expiration+type+strike] = data;
 		if (!optionsBySymbol[symbol])
 			optionsBySymbol[symbol] = {tick: parseFloat(data.results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
 				
@@ -737,6 +746,7 @@ function logout() {
 	optionsBySymbol = {};
 	optionsPositions = [];
 	urlMap = {};
+	reverseMap = {};
 	tickerList = [];
 	incompleteCondorList = {};
 	

@@ -315,11 +315,13 @@ function updateOptions(newOption) {
 
 function rhOption(symbol, expiration, type, strike) {
 	if (reverseMap[symbol+expiration+type+strike]) {
-		return new Promise (function (resolve, reject) {			
-			if (!optionsBySymbol[symbol])
-			optionsBySymbol[symbol] = {tick: parseFloat(reverseMap[symbol+expiration+type+strike].results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
-		    resolve(reverseMap[symbol+expiration+type+strike]);
-		}
+		return new Promise (
+			function (resolve, reject) {			
+				if (!optionsBySymbol[symbol]) 
+					optionsBySymbol[symbol] = {tick: parseFloat(reverseMap[symbol+expiration+type+strike].results[0].min_ticks.below_tick), shortCall:[], shortPut:[], defCall:[], defPut:[]};
+				resolve(reverseMap[symbol+expiration+type+strike]);
+			}
+		);
 	}
 	return fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 		let optionForm = {

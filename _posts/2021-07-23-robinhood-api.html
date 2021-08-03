@@ -172,6 +172,11 @@ if (typeof(Storage) !== "undefined") {
 			let urlstring = '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&');
 			fetchData('https://api.robinhood.com/options/instruments/' + urlstring, 'GET').then(function(data) {	
 				console.log(data);
+				
+				fetchData('https://api.robinhood.com/marketdata/options/historicals/' + data.results[0].id, 'GET').then(function(data) {	
+					console.log("final options data:");
+					console.log(data);
+				});
 			});
 		});	
 	}

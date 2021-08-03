@@ -1062,7 +1062,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	for (let i = 0; i < optionsPositions.length; i++) {
 		
 		if (i == 0) {
-				fetchData('https://api.robinhood.com/marketdata/options/historicals/' + optionsPositions[0].id, 'GET', { headers:authHeader}).then(function(data) {	
+				fetchData('https://api.robinhood.com/marketdata/options/historicals/' + optionsPositions[0].option_id, 'GET', { headers:authHeader}).then(function(data) {	
 					console.log("final options data:");
 					console.log(data);
 				});

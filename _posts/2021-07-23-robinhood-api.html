@@ -1088,6 +1088,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	for (let symbol in taskBySymbol) {
 		console.log("here's the tic kfor" + symbol);
 		let tick = optionsBySymbol[symbol].tick;
+		console.log(optionsBySymbol[symbol]);
 		console.log(tick);
 		queryString += symbol + ",";
 		Promise.all(taskBySymbol[symbol]).then(function() {

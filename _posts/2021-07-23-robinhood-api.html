@@ -1083,6 +1083,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	let queryString = "";
+	console.log("this should include ticks");
+	console.log(optionsBySymbol);
 	for (let symbol in taskBySymbol) {
 		let tick = optionsBySymbol[symbol].tick;
 		queryString += symbol + ",";

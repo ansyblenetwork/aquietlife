@@ -1670,7 +1670,7 @@ function condor(symbol, build) {
 			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("PCS", "50px", li);
-			let col = addCol("$" + total, "100px", li);
+			addCol("$" + total, "100px", li);
 			let col = addCol("$" + pcsOnly[expiration], "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
@@ -1687,7 +1687,7 @@ function condor(symbol, build) {
 			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("call", "50px", li);
-			let col = addCol("$" + total, "100px", li);
+			addCol("$" + total, "100px", li);
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
@@ -1705,7 +1705,7 @@ function condor(symbol, build) {
 			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("put", "50px", li);
-			let col = addCol("$" + total, "100px", li);
+			addCol("$" + total, "100px", li);
 			let col = addCol("$" + expireCalls, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));

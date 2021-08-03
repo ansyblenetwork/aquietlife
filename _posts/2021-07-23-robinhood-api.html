@@ -374,6 +374,10 @@ if (confirm(confMsg)) {
 						}
 					});
 					}, 3000);
+				} else {
+					setTimeout(function() {
+						orderli.click();
+					}, 3000);
 				}
 			}
 		});
@@ -901,7 +905,9 @@ function orderStatus(data, msg, processedCol, orderli, origin) {
 		processedCol.textContent = "$" + parseFloat(data.processed_premium).toFixed(2);
 		if (parseFloat(data.pending_quantity) > 0) msg.textContent = "Partially completed...";
 		else {
-			msg.textContent = "Completed!";
+			msg.textContent = "Completed!";			
+			if (active(D('soundButton')))  D('audio').play();
+			if (active(D('notificationButton'))) new Notification(data.chain_symbol + " " + data.legs[0].side + " to " + data.legs[0].position_effect + " completed!");
 			return false;
 		}
 	} else msg.textContent = "Pending...";
@@ -1237,6 +1243,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										if (result) singleOrderProceed(orderli, contract, orderPrem - tick);
 									});
 									}, 3000);
+								} else {
+									setTimeout(function() {
+										orderli.click();
+									}, 3000);
 								}
 							}
 						});
@@ -1363,6 +1373,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 								cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
 									if (result) orderProceed(orderli, contract, orderPrem + tick, count + 1);
 								});
+								}, 3000);
+							} else {
+								setTimeout(function() {
+									orderli.click();
 								}, 3000);
 							}
 						}

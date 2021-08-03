@@ -1375,6 +1375,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					let li = makeli(symbol, ncPut);
 					addColCost(li, ncPut, ncPut.ncRate, ncPut.ncRelease);
 					addOrdered(li, D('ncRelease'));
+					console.log("trying a no-condor put");
+					console.log(ncPut.premium);
+					console.log(tick);
 					createOrder(li, ncPut, ncPut.premium - tick);
 				}
 				if (bestPut) {						

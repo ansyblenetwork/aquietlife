@@ -118,6 +118,7 @@ var accountURL = "";
 	
 // the main list of options data from the account
 var optionsBySymbol = {};
+var optionsPositions = [];
 	
 // map from Robinhood option URL to contract type
 var urlMap = {};
@@ -172,7 +173,11 @@ function DE(id) {
 function showDiv(id) { DE(id).style.display = 'block';}	
 function hide(id) { DE(id).style.display = 'none';}
 	
-
+function checkOption(id, type) {
+	for (let i = 0; i < optionsPositions.length; i++) {
+		if (optionsPositions[i].option_id == id && optionsPositions[i].type == type) return true;
+	}
+}
 	
 function optionsChain() {	
 	if (D('optionsInput').value.toUpperCase()) updateOptions(true);
@@ -334,6 +339,9 @@ li.firstChild.onclick = function() {
 if (confirm(confMsg)) {	
 	D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});				
 	function orderProceed(li, count, data) {
+		let effect = 'open';
+		if (side == 'buy' && checkOption(data.results[0].url, 'short')) effect = 'close';
+		if (side == 'sell' && checkOption(data.results[0].url, 'long')) effect = 'close';
 		fetchData('https://api.robinhood.com/options/orders/', 
 			  'POST', 
 			  { headers:authHeader, json:makeOrderForm('open', side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
@@ -721,6 +729,7 @@ function logout() {
 	authData = {};
 	authHeader = {};	
 	optionsBySymbol = {};
+	optionsPositions = [];
 	urlMap = {};
 	tickerList = [];
 	incompleteCondorList = {};
@@ -1034,7 +1043,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 	
 fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
 	console.log(data);
-	let optionsPositions = data.results;
+	optionsPositions = data.results;
 	wipeDOM();
 	let promises = [];
 	optionsBySymbol = {};

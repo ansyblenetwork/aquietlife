@@ -161,7 +161,7 @@ if (typeof(Storage) !== "undefined") {
 		showDiv('profilePage');
 		showDiv('monitorPage');
 		
-		fetchData('https://api.robinhood.com/quotes/MSFT/', 'GET', { headers:authHeader}).then(function(data) {
+		fetchData('https://api.robinhood.com/instruments/?symbol=MSFT', 'GET', { headers:authHeader}).then(function(data) {
 			console.log("Trying to get a quote after login: ");
 			console.log(data);
 		});

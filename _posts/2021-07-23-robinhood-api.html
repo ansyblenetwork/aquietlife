@@ -1031,17 +1031,10 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 		}
 	}
 });
-
-let optionsPositions = [];
-function loadPositions(url) {
-	return fetchData(url, 'GET', { headers:authHeader }).then(function(data) {
-		console.log(data);
-		optionsPositions.concat(data.results);
-		if (data.next) return loadPositions(data.next);
-	});
-}
-loadPositions("https://api.robinhood.com/options/positions/?nonzero=True").then(function() {
-	console.log(optionsPositions);
+	
+fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
+	console.log(data);
+	let optionsPositions = data.results;
 	wipeDOM();
 	let promises = [];
 	optionsBySymbol = {};

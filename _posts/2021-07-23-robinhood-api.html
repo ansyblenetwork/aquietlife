@@ -35,6 +35,9 @@ title: "Options collateral analysis via the Robinhood API"
 		<audio id="complete" src="{{ "reload-202.mp3" | relative_url }}" autostart="false"></audio>
 		<audio id="audiodown" src="{{ "case-closed-531.mp3" | relative_url }}" autostart="false"></audio>
 		<audio id="audio" src="{{ "that-was-quick.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="ordering" src="{{ "oh-finally-355.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="ordered" src="{{ "youve-been-informed-345.mp3" | relative_url }}" autostart="false"></audio>
+			
 		<button onclick="toggleAuto(this);" id="autoButton" class="active">Order-Chaining On</button>
 		<div style="float:right">
 			<span id="msg" onclick="getData(); getOptions();" style="cursor:pointer; border-radius:5px; background-color:white; padding: 5px 10px;"></span>
@@ -866,6 +869,7 @@ function makeOrderli(symbol, contract, data, origin) {
 		return false;
 	}
 	else {
+		if (active(D('soundButton')))  D('ordering').play();
 		if (origin) {
 			origin.style.color = "#aaa";
 			declickable(origin.firstChild);
@@ -906,6 +910,7 @@ function orderStatus(data, msg, processedCol, orderli, origin) {
 		}
 		else {
 			msg.textContent = "Cancelled!";	
+			if (active(D('soundButton')))  D('starting').play();
 			processedCol.textContent = 'X';
 		}		
 		if (origin) {
@@ -921,7 +926,7 @@ function orderStatus(data, msg, processedCol, orderli, origin) {
 		if (parseFloat(data.pending_quantity) > 0) msg.textContent = "Partially completed...";
 		else {
 			msg.textContent = "Completed!";			
-			if (active(D('soundButton')))  D('complete').play();
+			if (active(D('soundButton')))  D('ordered').play();
 			if (active(D('notificationButton'))) new Notification(data.chain_symbol + " " + data.legs[0].side + " to " + data.legs[0].position_effect + " completed!");
 			return false;
 		}

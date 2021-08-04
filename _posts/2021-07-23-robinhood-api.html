@@ -348,6 +348,9 @@ function rhOption(symbol, expiration, type, strike) {
 
 function createBuyOrder(li, type, side, count, orders, symbol) {
 if (!accountURL) return false;
+	console.log("Starting order for " + symbol);
+	console.log(orders);
+	console.log(count);
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
 function createBuyOrderInner(li, count, data) {
 	clickable(li.firstChild);

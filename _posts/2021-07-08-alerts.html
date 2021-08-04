@@ -246,12 +246,19 @@ function generateRec(symbol) {
 
 	/////////////////////// MIDDLE //////////////////////////////////
 
-		let referenceli = make('li');
-		referenceli.style.textAlign = "center";
-		referenceli.style.fontWeight = "bold";
-		addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-		addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-		bag.appendChild(referenceli);	
+			let referenceli = make('li');
+			referenceli.style.textAlign = "center";
+			referenceli.style.fontWeight = "bold";
+			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+			let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+			col.style.cursor = "pointer";
+			col.onclick = function() {
+				D('optionsInput').value = data.symbol; 
+				optionsChain();
+				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+			}
+			bag.appendChild(referenceli);	
+		
 	/////////////////////// PUTS //////////////////////////////////
 
 		if (candidateObj.put) {			

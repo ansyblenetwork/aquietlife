@@ -349,6 +349,7 @@ function rhOption(symbol, expiration, type, strike) {
 function createBuyOrder(li, type, side, count, orders, symbol) {
 if (!accountURL) return false;
 	console.log("Starting order for " + symbol);
+	console.log(side);
 	console.log(orders);
 	console.log(count);
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
@@ -494,6 +495,8 @@ function generateRec(symbol, data) {
 		let altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
 		let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altData, contractDate, symbol);
+		console.log("Call orders for " + symbol);
+		console.log(callOrders);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {

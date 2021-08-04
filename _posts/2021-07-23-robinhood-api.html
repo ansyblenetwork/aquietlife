@@ -39,7 +39,7 @@ title: "Options collateral analysis via the Robinhood API"
 		<div style="float:right">
 			<span id="msg" onclick="getData(); getOptions();" style="cursor:pointer; border-radius:5px; background-color:white; padding: 5px 10px;"></span>
 			<button id="optionButton" onclick="getData(); getOptions();">Analyze Positions</button>
-			<button id="optionButton" onclick="logout();">Log Out</button>
+			<button onclick="logout();">Log Out</button>
 		</div>
 		</div>
 		
@@ -1011,10 +1011,11 @@ window.addEventListener('keydown', function(evt) {
 });
 	
 function getOptions() {	
+if (D('optionButton').disabled) return false;
+	
+D('optionButton').disabled = true;	
 let endpointCounter = 0;
 let neededCounter = 2;
-if (D('optionButton').disabled) return false;
-D('optionButton').disabled = true;
 if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	endpointCounter++;			

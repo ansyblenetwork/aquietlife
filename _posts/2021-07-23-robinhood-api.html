@@ -451,6 +451,7 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 	
 	let atStrikeOrders = [];
 	for (let contractStrike in data) {
+		let contract = data[contractStrike][0];
 		if (contract.strikePrice == strike) {
 			for (let i = bid + tick; i <= ask; i += tick) {
 				let contract = data[contractStrike][0];
@@ -458,6 +459,7 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 			}
 		}
 	}
+	processOrderList(atStrikeOrders);
 	
 	return orders.concat(atStrikeOrders);
 }		

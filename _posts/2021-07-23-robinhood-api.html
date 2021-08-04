@@ -1065,6 +1065,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 });
 	
 fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { headers:authHeader }).then(function(data) {
+	console.log("All open positions:");
 	console.log(data);
 	optionsPositions = data.results;
 	wipeDOM();

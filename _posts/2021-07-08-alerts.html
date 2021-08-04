@@ -888,7 +888,7 @@ function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename, title) 
 		if (weeklys.includes(symbol)) {
 			stWeeklyList.push(symbol);
 			if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
-				if (active(D('soundButton'))) D('audio').play();
+				if (active(D('soundButton'))) D('starting').play();
 				if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
 				return stLinkify("<strong style='color:blue'>" + symbol + "</strong></a>", symbol, title) + " ";
 			} else return stLinkify("<strong style='color:#333'>" + symbol + "</strong></a>", symbol, title) + " ";
@@ -929,7 +929,7 @@ function toggleSound(elt) {
 	if (active(elt)) deactivate(elt, "Sound Off");
 	else {	
 		activate(elt, "Sound On");
-		D('audio').play();
+		D('starting').play();
 	}
 }
 	

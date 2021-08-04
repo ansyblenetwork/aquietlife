@@ -419,23 +419,24 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = altData.strike;
 
+	function rate(order) {
+		let cost = order.premium - bid;
+		let collateral = strike - order.strike;
+		if (collateral < 0) collateral = 0 - collateral;
+		if (collateral == 0) collateral = 0.0001;
+		return collateral / cost;
+	}
 	function processOrderList(orders) {
 		orders.sort(function(y, x) {return rate(x) - rate(y);});
-		function rate(order) {
-			let cost = order.premium - bid;
-			let collateral = strike - order.strike;
-			if (collateral < 0) collateral = 0 - collateral;
-			if (collateral == 0) collateral = 0.0001;
-			return collateral / cost;
-		}
 		if (orders.length > 3) {
 			let sparseOrders = [];
 			for (let i = 0; i < 3; i++) {
 				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
 			}
 			if (Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-			orders = sparseOrders;
+			return sparseOrders;
 		}
+		return orders;
 	}
 	
 	let orders = [];
@@ -447,7 +448,7 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 			}
 		}
 	}
-	processOrderList(orders);
+	orders = processOrderList(orders);
 	
 	let atStrikeOrders = [];
 	for (let contractStrike in data) {
@@ -459,9 +460,9 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 			}
 		}
 	}
-	processOrderList(atStrikeOrders);
+	atStrikeOrders = processOrderList(atStrikeOrders);
 	
-	return orders.concat(atStrikeOrders);
+	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 }		
 	
 function setSellOrders(data, mainContract, contractDate, symbol) {

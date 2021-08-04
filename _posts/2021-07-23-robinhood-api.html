@@ -11,7 +11,7 @@ title: "Options collateral analysis via the Robinhood API"
 	<div id="monitorPage" style="text-align:center; display:none; border-bottom:solid; margin-bottom:20px">	
 		<button onclick="toggleSound(this);" id="soundButton" class="active">Sound On</button>
 		<button onclick="toggleNotifications(this);" id="notificationButton">Notifications Off</button>
-		<button onclick="toggleAlerts(this);">Auto-Refresh Off</button>
+		<button onclick="toggleAlerts(this);" id="refreshButton">Auto-Refresh Off</button>
 		<div style="padding-top:20px">Near or in the money:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="itm"></ul>
 		</div>	
@@ -1479,7 +1479,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			});
 		}			
 		console.log(monitorQuery);
-		submitTicker(monitorQuery.join(), monitorMargin);			
+		submitTicker(monitorQuery.join(), monitorMargin);
+		if (monitorQuery.length > 0) D('refreshButton').click();		
 		d = new Date();
 		D('msg').textContent = d.toLocaleTimeString();
 		D('msg').style.backgroundColor = "#dff";

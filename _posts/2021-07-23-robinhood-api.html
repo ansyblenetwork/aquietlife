@@ -1480,7 +1480,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}			
 		console.log(monitorQuery);
 		submitTicker(monitorQuery.join(), monitorMargin);
-		if (monitorQuery.length > 0) D('refreshButton').click();		
+		if (monitorQuery.length > 0 && !active(D('refreshButton'))) D('refreshButton').click();		
 		d = new Date();
 		D('msg').textContent = d.toLocaleTimeString();
 		D('msg').style.backgroundColor = "#dff";

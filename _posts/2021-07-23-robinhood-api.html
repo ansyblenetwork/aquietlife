@@ -31,7 +31,8 @@ title: "Options collateral analysis via the Robinhood API"
 	<div id="profilePage" style="text-align:center; display:none; border-bottom:solid;">		
 	
 		<div id="controlPanel" style="text-align:left; position:fixed; bottom:10px; left:0px; max-width:920px;">
-		<audio id="complete" src="{{ "small-footprint-110.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="starting" src="{{ "small-footprint-110.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="complete" src="{{ "reload-202.mp3" | relative_url }}" autostart="false"></audio>
 		<audio id="audiodown" src="{{ "case-closed-531.mp3" | relative_url }}" autostart="false"></audio>
 		<audio id="audio" src="{{ "that-was-quick.mp3" | relative_url }}" autostart="false"></audio>
 		<button onclick="toggleAuto(this);" id="autoButton" class="active">Order-Chaining On</button>
@@ -1008,6 +1009,7 @@ window.addEventListener('keydown', function(evt) {
 	
 function getOptions() {	
 D('optionButton').disabled = true;
+if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	console.log("All open orders:");
 	console.log(data);

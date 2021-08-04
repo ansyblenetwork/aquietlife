@@ -1020,7 +1020,7 @@ if (D('optionButton').disabled) return false;
 	
 D('optionButton').disabled = true;	
 let endpointCounter = 0;
-let neededCounter = 1;
+let neededCounter = 2;
 if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	endpointCounter++;			
@@ -1498,7 +1498,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		);
 	}
 	
-	Promise.all(promises).then(function() {		
+	Promise.all(promises).then(function() {	
+		endpointCounter++;			
+		if (endpointCounter == neededCounter) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('optionButton').disabled = false;
+		}
 		// query yahoo for ITM contracts
 		console.log(monitorQuery);
 		submitTicker(monitorQuery.join(), monitorMargin);

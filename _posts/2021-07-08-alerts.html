@@ -100,9 +100,9 @@ title: "Stock alert applet"
 <input onkeyup="if (event.keyCode == 27) this.value = '';
 		else if (event.keyCode == 13) {
 			event.preventDefault(); 
-			optionsChain();
+			updateOptions(true);
 		}"
-id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="optionsChain()">Fetch</button>
+id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="updateOptions(true)">Fetch</button>
 </div>
 <ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;padding-bottom:30px; margin-bottom:20px; border-bottom:solid" id="optionslist"></ul>
 	
@@ -257,7 +257,7 @@ function generateRec(symbol) {
 			col.style.cursor = "pointer";
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
-				optionsChain();
+				updateOptions(true);
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}
@@ -452,14 +452,11 @@ function margin(contract, data) {
 function evalContract(contract, data, altData) {
 	return (returnRate(contract, altData) > 19);
 }
-	
-function optionsChain() {	
-	if (D('optionsInput').value.toUpperCase()) updateOptions(true);
-}
 							       
 function updateOptions(newOption) {	
 	let query = currentOption;
 	if (newOption) query = D('optionsInput').value.toUpperCase();
+	if (!query) return false;
 		
 	fetch("https://ansyble.herokuapp.com/cors/", 
 		{cache:'no-cache', headers: {'Target-Ticker': query }}).then(function(response) {
@@ -660,8 +657,8 @@ function mergeAll() {
 		let mergeString = "Put order: ";
 		for (let i = 0; i < maxdata.length; i++) {
 			if (preEarnings.includes(maxdata[i].symbol)) 
-			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; optionsChain()" style='color:#333'>${maxdata[i].symbol}</strong> `;
-			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; optionsChain()" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
 		}
 				
 		maxdata.sort(function(a,b) {
@@ -670,8 +667,8 @@ function mergeAll() {
 		mergeString += "<br>Call order: ";
 		for (let i = 0; i < maxdata.length; i++) {
 			if (preEarnings.includes(maxdata[i].symbol)) 
-			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; optionsChain()" style='color:#333'>${maxdata[i].symbol}</strong> `;
-			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; optionsChain()" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
 		}				
 		if (mergeString) D('merge').innerHTML = mergeString;
 	});				 				 

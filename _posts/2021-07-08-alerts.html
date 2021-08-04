@@ -145,9 +145,7 @@ var merge = [];
 	
 var optionsData = {};
 var optionsQuotes = {};	
-var recData = {};
 var recCount = 0;
-var sortRecData = [];
 	
 var currentOption = "";
 var tickerList = [];
@@ -183,8 +181,6 @@ function generateRec(symbol) {
 	if (recCount == 0) D('recList').textContent = "";
 	recCount++;
 	let data = optionsData[symbol];
-	
-	recData[symbol] = {data: data, expirations:[], expirationDates:[]};
 	
 	for (let contractDate in data.callExpDateMap) {
 		
@@ -234,33 +230,6 @@ function generateRec(symbol) {
 		});	
 		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
 		
-		recData[symbol].expirationDates.push(defData.contract.daysToExpiration);
-		recData[symbol].expirations.push(candidateObj);	
-		buildRec(symbol, candidateObj, defData.contract.daysToExpiration);	
-		sortRecData.push({symbol:symbol, candidateObj:candidateObj, daysToExpiration: defData.contract.daysToExpiration });
-	}
-	
-	if (recCount == merge.length) {
-		D('recList').textContent = "";
-		sortRecData.sort(function(x, y) {
-			let xcall = 0;
-			let xput = 0;
-			let ycall = 0;
-			let yput = 0;
-			if (x.candidateObj.call) xcall = returnRate(x.candidateObj.call.contract, x.candidateObj.call.altData);
-			if (x.candidateObj.put) xput = returnRate(x.candidateObj.put.contract, x.candidateObj.put.altData);
-			if (y.candidateObj.call) ycall = returnRate(y.candidateObj.call.contract, y.candidateObj.call.altData);
-			if (y.candidateObj.put) yput = returnRate(y.candidateObj.put.contract, y.candidateObj.put.altData);
-			return ycall + yput - xcall - xput;
-		});
-		for (let i = 0; i < sortRecData.length; i++) {
-			buildRec(sortRecData[i].symbol, sortRecData[i].candidateObj, sortRecData[i].daysToExpiration);
-		}
-	}
-}
-							    
-function buildRec(symbol, candidateObj, exp) {
-						    
 	////////////// build the table /////////////////////////////////
 	
 		let bag = make('li');	
@@ -268,9 +237,9 @@ function buildRec(symbol, candidateObj, exp) {
 		let putrate = 0;
 							    
 		if (candidateObj.call) {
-			let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
+			let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 			bag.appendChild(calldefleg2);
-			let calloffleg = buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData);
+			let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
 			bag.appendChild(calloffleg);
 			callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 		}
@@ -280,24 +249,25 @@ function buildRec(symbol, candidateObj, exp) {
 		let referenceli = make('li');
 		referenceli.style.textAlign = "center";
 		referenceli.style.fontWeight = "bold";
-		addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
-		addCol(recData[symbol].data.symbol + " " + exp + " DTE", "675px", referenceli);
+		addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+		addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 		bag.appendChild(referenceli);	
 	/////////////////////// PUTS //////////////////////////////////
 
 		if (candidateObj.put) {			
-			let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
+			let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 			bag.appendChild(putdefleg2);
 			putdefleg2.style.marginBottom = "30px";
-			let putoffleg = buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData);
+			let putoffleg = buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData);
 			bag.insertBefore(putoffleg, referenceli.nextElementSibling);
 			putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);			    
 		} else referenceli.style.marginBottom = "30px";	
 	
 		bag.title = 0 - putrate - callrate;
-		addOrdered(bag, D('recList'));								    
+		addOrdered(bag, D('recList'));	
+	}
 }
-	
+					
 
 	
 function addOrdered(li, element) {
@@ -613,8 +583,6 @@ function mergeAll() {
 	let maxdata =  [];
 	
 	recCount = 0;
-	recData = {};
-	sortRecData = [];
 	optionsData = {};
 	optionsQuotes = {};
 	let promises = [];

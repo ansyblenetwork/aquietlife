@@ -1227,8 +1227,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
 			}).then(function(data) {				
-			endpointCounter++;
-			if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
 			if (data.status == "SUCCESS") {
 				let dateMapData = {};
 				for (let contractDate in data.putExpDateMap) {
@@ -1450,6 +1448,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}).then(function(quotedata) {
 					optionsQuotes[symbol] = quotedata;
 					generateRec(symbol, data);
+					endpointCounter++;
+					if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
 				})
 			} 			       	       
 			});

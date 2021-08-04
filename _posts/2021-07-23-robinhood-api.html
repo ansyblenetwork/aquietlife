@@ -62,9 +62,9 @@ title: "Options collateral analysis via the Robinhood API"
 		<input onkeyup="if (event.keyCode == 27) this.value = '';
 				else if (event.keyCode == 13) {
 					event.preventDefault(); 
-					optionsChain();
+					updateOptions(true);
 				}"
-		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="optionsChain()">Fetch</button>
+		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="updateOptions(true)">Fetch</button>
 		</div>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="optionslist"></ul>
 	</div>		
@@ -184,14 +184,11 @@ function checkOption(id, type) {
 		if (optionsPositions[i].option_id == id && optionsPositions[i].type == type) return true;
 	}
 }
-	
-function optionsChain() {	
-	if (D('optionsInput').value.toUpperCase()) updateOptions(true);
-}
 							       
 function updateOptions(newOption) {	
 	let query = currentOption;
 	if (newOption) query = D('optionsInput').value.toUpperCase();
+	if (!query) return false;
 		
 	fetch("https://ansyble.herokuapp.com/cors/", 
 		{cache:'no-cache', headers: {'Target-Ticker': query }}).then(function(response) {
@@ -561,7 +558,7 @@ function generateRec(symbol, data) {
 			col.style.cursor = "pointer";
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
-				optionsChain();
+				updateOptions(true);
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});				
 				D('optionslist').scrollTo(0, 0); 		
 			}
@@ -1744,7 +1741,7 @@ function condor(symbol, build) {
 			li.style.cursor = "pointer";
 			li.onclick = function() {
 				D('optionsInput').value = symbol; 
-				optionsChain();
+				updateOptions(true);
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}
@@ -1769,7 +1766,7 @@ function condor(symbol, build) {
 			li.style.cursor = "pointer";
 			li.onclick = function() {
 				D('optionsInput').value = symbol; 
-				optionsChain();
+				updateOptions(true);
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}
@@ -1795,7 +1792,7 @@ function condor(symbol, build) {
 			li.style.cursor = "pointer";
 			li.onclick = function() {
 				D('optionsInput').value = symbol; 
-				optionsChain();
+				updateOptions(true);
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}

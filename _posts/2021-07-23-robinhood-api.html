@@ -1121,13 +1121,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				urlMap[optionsPositions[i].option] = getData;
 				handleOptionPosition(getData);
 			});
-			promises.push(task);
 			taskBySymbol[optionsPositions[i].chain_symbol].push(task);
 		}
 	}
 	
 	for (let symbol in taskBySymbol) {
 		neededCounter++;
+		promises.push(
 		Promise.all(taskBySymbol[symbol]).then(function() {
 			let tick = optionsBySymbol[symbol].tick;
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
@@ -1236,7 +1236,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
-			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+			return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
 			}).then(function(data) {				
@@ -1494,7 +1494,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				});
 			} 			       	       
 			});
-		});
+		})
+		);
 	}
 	
 	Promise.all(promises).then(function() {		

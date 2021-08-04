@@ -256,6 +256,7 @@ function generateRec(symbol) {
 				D('optionsInput').value = data.symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+				D('optionslist').scrollTo(0, 0); 		
 			}
 			bag.appendChild(referenceli);	
 		

@@ -413,39 +413,53 @@ if (confirm(confMsg)) {
 	
 	
 function setBuyOrders(data, altData, contractDate, symbol) {
-	let orders = [];
 	let ask = inDollars(altData.premium);
 	let bid = inDollars(altData.contract.bid);
 	let tick = 1;
 	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = altData.strike;
 
+	function processOrderList(orders) {
+		orders.sort(function(y, x) {return rate(x) - rate(y);});
+		function rate(order) {
+			let cost = order.premium - bid;
+			let collateral = strike - order.strike;
+			if (collateral < 0) collateral = 0 - collateral;
+			if (collateral == 0) collateral = 0.0001;
+			return collateral / cost;
+		}
+		if (orders.length > 3) {
+			let sparseOrders = [];
+			for (let i = 0; i < 3; i++) {
+				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
+			}
+			if (Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+			orders = sparseOrders;
+		}
+	}
+	
+	let orders = [];
 	for (let i = bid + tick; i <= ask; i += tick) {
 		for (let contractStrike in data) {
 			let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice <= strike) || (contract.putCall == "PUT" && contract.strikePrice >= strike)) {
+			if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike)) {
 				if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}
 	}
-
-	orders.sort(function(y, x) {return rate(x) - rate(y);});
-	function rate(order) {
-		let cost = order.premium - bid;
-		let collateral = strike - order.strike;
-		if (collateral < 0) collateral = 0 - collateral;
-		if (collateral == 0) collateral = 0.0001;
-		return collateral / cost;
-	}
-	if (orders.length > 4) {
-		let sparseOrders = [];
-		for (let i = 0; i < 4; i++) {
-			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+	processOrderList(orders);
+	
+	let atStrikeOrders = [];
+	for (let contractStrike in data) {
+		if (contract.strikePrice == strike) {
+			for (let i = bid + tick; i <= ask; i += tick) {
+				let contract = data[contractStrike][0];
+				if (inDollars(contract.bid) < i) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
 		}
-		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-		return sparseOrders;
 	}
-	return orders;
+	
+	return orders.concat(atStrikeOrders);
 }		
 	
 function setSellOrders(data, mainContract, contractDate, symbol) {

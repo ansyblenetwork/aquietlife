@@ -78,11 +78,13 @@ title: "Stock alert applet"
 <div id="controlPanel" style="position:fixed; bottom:10px; left:0px; max-width:920px;">
 <audio id="audiodown" src="{{ "case-closed-531.mp3" | relative_url }}" autostart="false"></audio>
 <audio id="audio" src="{{ "that-was-quick.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="starting" src="{{ "small-footprint-110.mp3" | relative_url }}" autostart="false"></audio>
+		<audio id="complete" src="{{ "reload-202.mp3" | relative_url }}" autostart="false"></audio>
 <button onclick="toggleSound(this);" id="soundButton" class="active">Sound On</button>
 <button onclick="toggleNotifications(this);" id="notificationButton">Notifications Off</button>
 <div style="float:right">
 	<span id="msg" style="margin-right:10px; border-radius:5px; background-color:white; padding: 5px 10px;"></span>
-	<button onclick="update(); updateAll();">Refresh</button>
+	<button onclick="update(); updateAll();" id="refreshButton">Refresh</button>
 	<button onclick="toggleAlerts(this);">Auto-Refresh Off</button>
 </div>
 </div>
@@ -93,7 +95,7 @@ title: "Stock alert applet"
 	<div style="margin-bottom:20px; text-align:center">
 <button id="mergeButton" onclick="mergeAll()">Rank</button>
 	</div>
-<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;padding-bottom:30px; margin-bottom:20px; border-bottom:solid" id="recList"></ul>
+<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;padding-bottom:30px; margin-bottom:20px;" id="recList"></ul>
 <div style="width:max-content; margin:auto; margin-bottom:10px">
 <input onkeyup="if (event.keyCode == 27) this.value = '';
 		else if (event.keyCode == 13) {
@@ -157,6 +159,7 @@ var defaultLower = 2;
 let yahootimer;
 let sttimer;
 let wsbtimer;
+var endpointCounter = 0;
 	
 var d = new Date();
 D('msg').textContent = d.toLocaleTimeString();
@@ -723,6 +726,11 @@ function updateEarnings() {
 			});
 			D('earnings').innerHTML = earningsString;
 			//D('earningsButton').textContent = "Monitor All";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 		}
 	});
 }
@@ -744,6 +752,11 @@ function updateFinvizG() {
 		});
 		D('finvizG').innerHTML = stString;
 		//D('finvizGButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 		}
 	});
 }
@@ -764,6 +777,11 @@ function updateFinvizL() {
 		});
 		D('finvizL').innerHTML = stString;
 		//D('finvizLButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 		}
 	});
 }
@@ -784,6 +802,11 @@ function updateFinvizV() {
 		});
 		D('finvizV').innerHTML = stString;
 		//D('finvizVButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 		}
 	});
 }
@@ -805,6 +828,11 @@ function updateYolo() {
 		});
 		D('yolo').innerHTML = yoloString;
 		//D('yoloButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 	});
 }
 
@@ -824,6 +852,11 @@ function updateWSB() {
 		}
 		D('wsb').innerHTML = wsbString;
 		//D('wsbButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 	});
 }
 					      
@@ -843,6 +876,12 @@ function updateStocktwits() {
 		});
 		D('stocktwits').innerHTML = stString;
 		//D('stButton').textContent = "Monitor Weeklys";
+		
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
 	});
 }
 
@@ -1278,6 +1317,12 @@ window.addEventListener('keydown', function(evt) {
 });
 	
 function updateAll() {
+	if (D('refreshButton').disabled) return false;
+	
+	D('refreshButton').disabled = true;
+	endpointCounter = 0;
+	if (active(D('soundButton'))) D('starting').play();
+	
 	d = new Date();
 	D('msg').textContent = d.toLocaleTimeString();
 	updateStocktwits();
@@ -1287,6 +1332,7 @@ function updateAll() {
 	setTimeout(function() { updateFinvizV(); }, 400);
 	updateWSB();
 	updateEarnings();
+	
 	updateOptions();
 }
 

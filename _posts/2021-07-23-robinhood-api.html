@@ -791,7 +791,7 @@ function wipeDOM() {
 	clearDOM(D('condorRelease'));
 	clearDOM(D('ncRelease'));
 	
-	// clearDOM(D('itm'));
+	clearDOM(D('itm'));
 	// clearDOM(D('stocklist'));
 }
 	
@@ -1020,7 +1020,7 @@ if (D('optionButton').disabled) return false;
 	
 D('optionButton').disabled = true;	
 let endpointCounter = 0;
-let neededCounter = 2;
+let neededCounter = 1;
 if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
 	endpointCounter++;			
@@ -1091,6 +1091,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	optionsBySymbol = {};
 	taskBySymbol = {};
 	incompleteCondorList = {};
+	let monitorQuery = [];
+	let monitorMargin = [];
 	for (let i = 0; i < optionsPositions.length; i++) {			
 		if (!optionsBySymbol[optionsPositions[i].chain_symbol]) {
 			optionsBySymbol[optionsPositions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
@@ -1124,12 +1126,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}
 	}
 	
-	let queryString = "";
 	for (let symbol in taskBySymbol) {
 		neededCounter++;
 		Promise.all(taskBySymbol[symbol]).then(function() {
-					let tick = optionsBySymbol[symbol].tick;
-		queryString += symbol + ",";
+			let tick = optionsBySymbol[symbol].tick;
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
@@ -1467,6 +1467,31 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						D('optionButton').disabled = false;
 					}
 				})
+				
+				optionsBySymbol[symbol].shortPut.forEach(function(contract) {
+					if (contract.strike > 100*0.97*data.underlyingPrice) {
+						let li = makeli(symbol, contract);
+						let col = addCol(data.underlyingPrice, "75px", li);
+						col.style.backgroundColor = "#dff";
+						D('itm').appendChild(li);
+						if (!monitorQuery.includes(symbol)) {
+							monitorQuery.push(symbol);
+							monitorMargin.push([contract.strike/100, (contract.strike/100) + 0.1*contract.strike/100]);
+						}
+					}
+				});
+				optionsBySymbol[symbol].shortCall.forEach(function(contract) {
+					if (contract.strike < 100*1.03*data.underlyingPrice) {
+						let li = makeli(symbol, contract);
+						let col = addCol(data.underlyingPrice, "75px", li);
+						col.style.backgroundColor = "#dff";
+						D('itm').appendChild(li);
+						if (!monitorQuery.includes(symbol)) {
+							monitorQuery.push(symbol);	
+							monitorMargin.push([(contract.strike/100) - 0.1*contract.strike/100, contract.strike/100]);
+						}
+					}
+				});
 			} 			       	       
 			});
 		});
@@ -1474,42 +1499,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	Promise.all(promises).then(function() {		
 		// query yahoo for ITM contracts
-		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
-			endpointCounter++;			
-			if (endpointCounter == neededCounter) {
-				if (active(D('soundButton'))) D('complete').play();
-				D('optionButton').disabled = false;
-			}
-		let monitorQuery = [];
-		let monitorMargin = [];
-		clearDOM(D('itm'));
-		let buffer = data.quoteResponse.result;
-		for (let i = 0; i < buffer.length; i++) {
-			optionsBySymbol[buffer[i].symbol].shortPut.forEach(function(contract) {
-				if (contract.strike > 100*0.97*buffer[i].regularMarketPrice) {
-					let li = makeli(buffer[i].symbol, contract);
-					let col = addCol(buffer[i].regularMarketPrice, "75px", li);
-					col.style.backgroundColor = "#dff";
-					D('itm').appendChild(li);
-					if (!monitorQuery.includes(buffer[i].symbol)) {
-						monitorQuery.push(buffer[i].symbol);
-						monitorMargin.push([contract.strike/100, (contract.strike/100) + 0.1*contract.strike/100]);
-					}
-				}
-			});
-			optionsBySymbol[buffer[i].symbol].shortCall.forEach(function(contract) {
-				if (contract.strike < 100*1.03*buffer[i].regularMarketPrice) {
-					let li = makeli(buffer[i].symbol, contract);
-					let col = addCol(buffer[i].regularMarketPrice, "75px", li);
-					col.style.backgroundColor = "#dff";
-					D('itm').appendChild(li);
-					if (!monitorQuery.includes(buffer[i].symbol)) {
-						monitorQuery.push(buffer[i].symbol);	
-						monitorMargin.push([(contract.strike/100) - 0.1*contract.strike/100, contract.strike/100]);
-					}
-				}
-			});
-		}			
 		console.log(monitorQuery);
 		submitTicker(monitorQuery.join(), monitorMargin);
 		if (monitorQuery.length > 0 && !active(D('refreshButton'))) D('refreshButton').click();		
@@ -1517,7 +1506,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		D('msg').textContent = d.toLocaleTimeString();
 		D('msg').style.backgroundColor = "#dff";
 		setTimeout(function() {	D('msg').style.backgroundColor = "white"; }, 300);
-		});
 	});
 });
 }	

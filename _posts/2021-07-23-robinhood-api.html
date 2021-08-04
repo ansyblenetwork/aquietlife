@@ -910,7 +910,6 @@ function orderStatus(data, msg, processedCol, orderli, origin) {
 		}
 		else {
 			msg.textContent = "Cancelled!";	
-			if (active(D('soundButton')))  D('starting').play();
 			processedCol.textContent = 'X';
 		}		
 		if (origin) {

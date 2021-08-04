@@ -426,14 +426,14 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
-	function processOrderList(orders) {
+	function processOrderList(orders, endpoint) {
 		orders.sort(function(y, x) {return rate(x) - rate(y);});
 		if (orders.length > 3) {
 			let sparseOrders = [];
 			for (let i = 0; i < 3; i++) {
 				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
 			}
-			if (Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+			if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
 			return sparseOrders;
 		}
 		return orders;
@@ -455,34 +455,22 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 		let contract = data[contractStrike][0];
 		if (contract.strikePrice == strike) {
 			for (let i = bid + tick; i <= ask; i += tick) {
-				let contract = data[contractStrike][0];
 				if (inDollars(contract.bid) < i) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}
 	}
-	atStrikeOrders = processOrderList(atStrikeOrders);
+	atStrikeOrders = processOrderList(atStrikeOrders, true);
 	
 	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 }		
 	
 function setSellOrders(data, mainContract, contractDate, symbol) {
-	let orders = [];
 	let ask = inDollars(mainContract.ask);
 	let bid = inDollars(mainContract.bid);
 	let tick = 1;
 	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = mainContract.strikePrice;
-
-	for (let i = bid; i <= ask - tick; i += tick) {
-		for (let contractStrike in data) {
-			let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice >= strike) || (contract.putCall == "PUT" && contract.strikePrice <= strike)) {
-				if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
-		}
-	}
-
-	orders.sort(function(y, x) {return rate(x) - rate(y);});
+	
 	function rate(order) {
 		let cost = ask - order.premium;
 		let collateral = strike - order.strike;
@@ -490,15 +478,43 @@ function setSellOrders(data, mainContract, contractDate, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
-	if (orders.length > 4) {
-		let sparseOrders = [];
-		for (let i = 0; i < 4; i++) {
-			sparseOrders.push(orders[Math.round(i*orders.length/4)]);
+	
+	function processOrderList(orders, endpoint) {
+		orders.sort(function(y, x) {return rate(x) - rate(y);});
+		if (orders.length > 3) {
+			let sparseOrders = [];
+			for (let i = 0; i < 3; i++) {
+				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
+			}
+			if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+			return sparseOrders;
 		}
-		if (Math.round(3*orders.length/4) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-		return sparseOrders;
+		return orders;
 	}
-	return orders;
+
+	let orders = [];
+	for (let i = bid; i <= ask - tick; i += tick) {
+		for (let contractStrike in data) {
+			let contract = data[contractStrike][0];
+			if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike)) {
+				if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
+		}
+	}
+	orders = processOrderList(orders);
+	
+	let atStrikeOrders = [];
+	for (let contractStrike in data) {
+		let contract = data[contractStrike][0];
+		if (contract.strikePrice == strike) {
+			for (let i = bid; i <= ask - tick; i += tick) {
+				if (inDollars(contract.ask) > i) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+			}
+		}
+	}
+	atStrikeOrders = processOrderList(atStrikeOrders, true);
+	
+	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 }	
 	
 function generateRec(symbol, data) {	

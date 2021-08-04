@@ -1716,6 +1716,12 @@ function condor(symbol, build) {
 			let col = addCol("$" + pcsOnly[expiration], "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
+			
+			li.onclick = function() {
+				D('optionsInput').value = data.symbol; 
+				optionsChain();
+				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+			}
 			incompleteCondorList[symbol][expiration] = {call: true};
 		}
 		
@@ -1732,7 +1738,13 @@ function condor(symbol, build) {
 			addCol("$" + total, "100px", li);
 			let col = addCol("$" + expirePuts, "100px", li);
 			col.style.backgroundColor = "#dff";
-			addOrdered(li, D('unpaired'));
+			addOrdered(li, D('unpaired'));			
+			
+			li.onclick = function() {
+				D('optionsInput').value = data.symbol; 
+				optionsChain();
+				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+			}
 			incompleteCondorList[symbol][expiration] = {call: true};
 		}
 		
@@ -1751,6 +1763,12 @@ function condor(symbol, build) {
 			let col = addCol("$" + expireCalls, "100px", li);
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
+			
+			li.onclick = function() {
+				D('optionsInput').value = data.symbol; 
+				optionsChain();
+				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+			}
 			if (!incompleteCondorList[symbol][expiration]) incompleteCondorList[symbol][expiration] = {};
 			incompleteCondorList[symbol][expiration].put = true;
 		}

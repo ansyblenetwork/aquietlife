@@ -559,7 +559,8 @@ function generateRec(symbol, data) {
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
 				optionsChain();
-				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});				
+				D('optionslist').scrollTo(0, 0); 		
 			}
 			bag.appendChild(referenceli);	
 
@@ -1733,6 +1734,7 @@ function condor(symbol, build) {
 				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+				D('optionslist').scrollTo(0, 0); 		
 			}
 			incompleteCondorList[symbol][expiration] = {call: true};
 		}
@@ -1757,6 +1759,7 @@ function condor(symbol, build) {
 				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+				D('optionslist').scrollTo(0, 0); 		
 			}
 			incompleteCondorList[symbol][expiration] = {call: true};
 		}
@@ -1782,6 +1785,7 @@ function condor(symbol, build) {
 				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+				D('optionslist').scrollTo(0, 0); 		
 			}
 			if (!incompleteCondorList[symbol][expiration]) incompleteCondorList[symbol][expiration] = {};
 			incompleteCondorList[symbol][expiration].put = true;

@@ -213,7 +213,8 @@ function updateOptions(newOption) {
 		return response.json();
 	}).then(function(data) {
 		console.log(data);
-		if (data.status == "SUCCESS") {	
+		if (data.status == "SUCCESS") {
+			if (query != currentOption) D('optionslist').scrollTo(0, 0); 		
 			currentOption = query;	
 			clearDOM(D('optionslist'));
 			

@@ -261,12 +261,18 @@ function generateRec(symbol) {
 							    
 function buildRec(symbol, candidateObj, exp) {
 						    
-	////////////// build the table /////////////////////////////////						    
+	////////////// build the table /////////////////////////////////
+	
+		let bag = make('li');	
+		let callrate = 0;
+		let putrate = 0;
 							    
 		if (candidateObj.call) {
 			let calldefleg2 = buildli(candidateObj.call.altData.contract, recData[symbol].data);
-			D('recList').appendChild(calldefleg2);
-			D('recList').appendChild(buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData));
+			bag.appendChild(calldefleg2);
+			let calloffleg = buildli(candidateObj.call.contract, recData[symbol].data, calldefleg2, candidateObj.call.altData);
+			bag.appendChild(calloffleg);
+			callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 		}
 
 	/////////////////////// MIDDLE //////////////////////////////////
@@ -276,17 +282,34 @@ function buildRec(symbol, candidateObj, exp) {
 		referenceli.style.fontWeight = "bold";
 		addCol("$" + round(recData[symbol].data.underlyingPrice), "75px", referenceli);
 		addCol(recData[symbol].data.symbol + " " + exp + " DTE", "675px", referenceli);
-		D('recList').appendChild(referenceli);	
-
+		bag.appendChild(referenceli);	
 	/////////////////////// PUTS //////////////////////////////////
 
-		if (candidateObj.put) {
+		if (candidateObj.put) {			
 			let putdefleg2 = buildli(candidateObj.put.altData.contract, recData[symbol].data);
-			D('recList').appendChild(putdefleg2);
+			bag.appendChild(putdefleg2);
 			putdefleg2.style.marginBottom = "30px";
-			D('recList').insertBefore(buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData), referenceli.nextElementSibling);			    
-		} else referenceli.style.marginBottom = "30px";					    
-							    
+			let putoffleg = buildli(candidateObj.put.contract, recData[symbol].data, putdefleg2, candidateObj.put.altData);
+			bag.insertBefore(putoffleg, referenceli.nextElementSibling);
+			putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);			    
+		} else referenceli.style.marginBottom = "30px";	
+	
+		bag.title = 0 - putrate - callrate;
+		addOrdered(bag, D('recList'));								    
+}
+	
+
+	
+function addOrdered(li, element) {
+	let toAdd = true;
+	for (let j = 0; j < element.children.length; j++) {
+		if (parseFloat(li.title) < parseFloat(element.children[j].title)) {
+			element.insertBefore(li, element.children[j]);
+			toAdd = false;
+			break;
+		}
+	}
+	if (toAdd) element.appendChild(li);
 }
 	
 function setDefLeg(defData, altData, data) {      

@@ -1013,11 +1013,15 @@ window.addEventListener('keydown', function(evt) {
 function getOptions() {	
 let endpointCounter = 0;
 let neededCounter = 2;
+if (D('optionButton').disabled) return false;
 D('optionButton').disabled = true;
 if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
-	endpointCounter++;
-	if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
+	endpointCounter++;			
+	if (endpointCounter == neededCounter) {
+		if (active(D('soundButton'))) D('complete').play();
+		D('optionButton').disabled = false;
+	}
 		
 	console.log("All open orders:");
 	console.log(data);
@@ -1451,8 +1455,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}).then(function(quotedata) {
 					optionsQuotes[symbol] = quotedata;
 					generateRec(symbol, data);
-					endpointCounter++;
-					if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
+					endpointCounter++;			
+					if (endpointCounter == neededCounter) {
+						if (active(D('soundButton'))) D('complete').play();
+						D('optionButton').disabled = false;
+					}
 				})
 			} 			       	       
 			});
@@ -1461,10 +1468,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	Promise.all(promises).then(function() {		
 		// query yahoo for ITM contracts
-		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
-			endpointCounter++;
-			if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
+			endpointCounter++;			
+			if (endpointCounter == neededCounter) {
+				if (active(D('soundButton'))) D('complete').play();
+				D('optionButton').disabled = false;
+			}
 		let monitorQuery = [];
 		let monitorMargin = [];
 		clearDOM(D('itm'));

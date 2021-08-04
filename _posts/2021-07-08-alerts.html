@@ -678,17 +678,16 @@ function mergeAll() {
 ///// Trending stocks script /////////////////////////////////////////////////
 	
 function updateEarnings() {
-	earnings = [];
-	preEarnings = [];
-	postEarnings = [];
 	let weeklyQuery = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + weeklys.join();
 
 	fetch("https://ansyble.herokuapp.com/cors/", 
 		{cache:'no-cache', headers: {'Target-URL': weeklyQuery }}).then(function(response) {
 		return response.json();
 	}).then(function(data) { 
-
-		if (data.quoteResponse.result) {
+		if (data.quoteResponse.result) {			
+			earnings = [];
+			preEarnings = [];
+			postEarnings = [];
 			let earningsTime = {};
 			let earningsName = {};
 			let earningsString = "";
@@ -1314,7 +1313,7 @@ window.addEventListener('keydown', function(evt) {
 });
 	
 function updateAll() {
-	if (D('refreshButton').disabled) return false;
+	//if (D('refreshButton').disabled) return false;
 	
 	D('refreshButton').disabled = true;
 	endpointCounter = 0;

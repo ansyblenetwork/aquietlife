@@ -1087,12 +1087,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	console.log(data);
 	optionsPositions = data.results;
 	wipeDOM();
-	let promises = [];
 	optionsBySymbol = {};
-	taskBySymbol = {};
-	incompleteCondorList = {};
-	let monitorQuery = [];
-	let monitorMargin = [];
+	let taskBySymbol = {};
 	for (let i = 0; i < optionsPositions.length; i++) {			
 		if (!optionsBySymbol[optionsPositions[i].chain_symbol]) {
 			optionsBySymbol[optionsPositions[i].chain_symbol] = {shortCall:[], shortPut:[], defCall:[], defPut:[]};
@@ -1125,6 +1121,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		}
 	}
 	
+	let promises = [];
+	incompleteCondorList = {};
+	let monitorQuery = [];
+	let monitorMargin = [];
 	for (let symbol in taskBySymbol) {
 		neededCounter++;
 		promises.push(

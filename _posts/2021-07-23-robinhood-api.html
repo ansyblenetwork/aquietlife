@@ -1717,8 +1717,9 @@ function condor(symbol, build) {
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
 			
+			li.style.cursor = "pointer";
 			li.onclick = function() {
-				D('optionsInput').value = data.symbol; 
+				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 			}
@@ -1740,8 +1741,9 @@ function condor(symbol, build) {
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));			
 			
+			li.style.cursor = "pointer";
 			li.onclick = function() {
-				D('optionsInput').value = data.symbol; 
+				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 			}
@@ -1764,8 +1766,9 @@ function condor(symbol, build) {
 			col.style.backgroundColor = "#dff";
 			addOrdered(li, D('unpaired'));
 			
+			li.style.cursor = "pointer";
 			li.onclick = function() {
-				D('optionsInput').value = data.symbol; 
+				D('optionsInput').value = symbol; 
 				optionsChain();
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 			}

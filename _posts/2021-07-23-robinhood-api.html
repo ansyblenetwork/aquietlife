@@ -1507,7 +1507,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					D('itm').appendChild(li);
 					if (!monitorQuery.includes(buffer[i].symbol)) {
 						monitorQuery.push(buffer[i].symbol);	
-						monitorMargin.push([(contract.strike/100) - 0.1*contract.strike/00, contract.strike/100]);
+						monitorMargin.push([(contract.strike/100) - 0.1*contract.strike/100, contract.strike/100]);
 					}
 				}
 			});

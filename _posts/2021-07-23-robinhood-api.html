@@ -1008,9 +1008,14 @@ window.addEventListener('keydown', function(evt) {
 });
 	
 function getOptions() {	
+let endpointCounter = 0;
+let neededCounter = 2;
 D('optionButton').disabled = true;
 if (active(D('soundButton'))) D('starting').play();
 fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHeader }).then(function(data) {
+	endpointCounter++;
+	if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
+		
 	console.log("All open orders:");
 	console.log(data);
 	clearDOM(D('orders'));
@@ -1108,6 +1113,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 	let queryString = "";
 	for (let symbol in taskBySymbol) {
+		neededCounter++;
 		Promise.all(taskBySymbol[symbol]).then(function() {
 					let tick = optionsBySymbol[symbol].tick;
 		queryString += symbol + ",";
@@ -1220,7 +1226,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
-			}).then(function(data) {
+			}).then(function(data) {				
+			endpointCounter++;
+			if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
 			if (data.status == "SUCCESS") {
 				let dateMapData = {};
 				for (let contractDate in data.putExpDateMap) {
@@ -1452,6 +1460,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 		// query yahoo for ITM contracts
 		D('optionButton').disabled = false;
 		fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + queryString, 'GET').then(function(data) {
+			endpointCounter++;
+			if (endpointCounter == neededCounter && active(D('soundButton')))  D('complete').play();
 		let monitorQuery = [];
 		let monitorMargin = [];
 		clearDOM(D('itm'));
@@ -1986,7 +1996,6 @@ function submitTicker(myQuery, monitorMargin) {
 	}
 	} else D('msg').textContent = "Ticker not found.";
 		
-	if (active(D('soundButton'))) D('complete').play();
 	}).catch(function(error) { 
 		console.log(error); 
 		var e = new Date();

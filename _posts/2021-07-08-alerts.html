@@ -481,6 +481,7 @@ function updateOptions(newOption) {
 		console.log(data);
 		if (data.status == "SUCCESS") {	
 			optionsData[query] = data;
+			if (query != currentOption) D('optionslist').scrollTo(0, 0); 	
 			// if (currentOption && query != currentOption && D('optionsPrice').children.length > 0) D('stocklist').appendChild(D('optionsPrice').firstChild);
 			currentOption = query;
 			submitTicker(currentOption);

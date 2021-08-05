@@ -1337,7 +1337,7 @@ function updateAll() {
 	updateStocktwits();
 	updateYolo();
 	updateFinvizG();
-	updateFinvizL();
+	setTimeout(function() { updateFinvizL(); }, 200);
 	setTimeout(function() { updateFinvizV(); }, 400);
 	updateWSB();
 	updateEarnings();

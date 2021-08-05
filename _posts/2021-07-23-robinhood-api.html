@@ -1312,19 +1312,40 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
 			let totalCallCollateral = noCondorCalls(symbol);
+			
+			if (symbol == "MVIS") {
+				console.log("Base collaterals:");
+				console.log(totalCollateral);
+				console.log(totalPutCollateral);
+				console.log(totalCallCollateral);				
+			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
 				let myStrike = me.strike;
 				let friend = me.friend;
 				if (friend) {
+					console.log("Splitting me and my friend:");
+					console.log(me);
+					console.log(friend);
 					clearOption(friend);
 					clearOption(me);
 					me.strike = 0;
 
 					findPutPair(symbol, friend);
+					
+					console.log("Repairing my friend:");
+					console.log(me);
+					console.log(friend);
+					
+					
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
+					
+					
+					console.log("Releases for this:");
+					console.log(me.closeRelease);
+					console.log(me.ncRelease);
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);

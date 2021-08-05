@@ -698,9 +698,7 @@ function generateRec(symbol, data) {
 	
 					      
 function updateStocktwits() {
-	let query = 'https://api.stocktwits.com/api/2/trending/symbols/equities.json';
-		
-	fetchData(query, get).then(function(data) {
+	fetchData('https://api.stocktwits.com/api/2/trending/symbols/equities.json', "GET").then(function(data) {
 		stList = [];
 		let prevWeekly = stWeeklyList;
 		stWeeklyList = [];

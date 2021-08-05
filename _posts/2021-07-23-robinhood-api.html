@@ -1325,18 +1325,22 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let myStrike = me.strike;
 				let friend = me.friend;
 				if (friend) {
+			if (symbol == "MVIS") {
 					console.log("Splitting me and my friend:");
 					console.log(me);
 					console.log(friend);
+			}
 					clearOption(friend);
 					clearOption(me);
 					me.strike = 0;
 
 					findPutPair(symbol, friend);
 					
-					console.log("Repairing my friend:");
+			if (symbol == "MVIS") {
+					console.log("Repairing my friend; my friend shouldn't find a new friend:");
 					console.log(me);
 					console.log(friend);
+			}
 					
 					
 					me.closeRelease = totalCollateral - condor(symbol);

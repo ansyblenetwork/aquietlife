@@ -1841,7 +1841,12 @@ function noCondorPuts(symbol) {
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
 		if (contract.collateral) totalPuts += contract.collateral;
-		else totalPuts += contract.strike;
+		else {
+			totalPuts += contract.strike;
+			if (symbol == "MVIS") {console.log("strange happening with ncputs");
+					       console.log(contract);
+					      }
+		}
 	});	
 	return totalPuts;
 }

@@ -655,6 +655,9 @@ function generateRec(symbol, data) {
 		////////////// build the table /////////////////////////////////				
 
 			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 0 - 75*(altData.strike - candidateObj.call.contract.strikePrice)) {
+				console.log("Call rec:");
+				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].call);
+				console.log(0 - 75*(altData.strike - candidateObj.call.contract.strikePrice));
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
 				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
@@ -678,6 +681,9 @@ function generateRec(symbol, data) {
 		/////////////////////// PUTS //////////////////////////////////
 
 			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 0 - 75*(candidateObj.put.contract.strikePrice - altData.strike)) {
+				console.log("Put rec:");
+				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].put);
+				console.log(0 - 75*(candidateObj.put.contract.strikePrice - altData.strike));
 				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 				bag.appendChild(putdefleg2);
 				putdefleg2.style.marginBottom = "30px";

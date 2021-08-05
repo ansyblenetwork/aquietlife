@@ -655,6 +655,9 @@ function generateRec(symbol, data) {
 		////////////// build the table /////////////////////////////////				
 
 			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altData.strike - candidateObj.call.contract.strikePrice)) {
+				console.log("call recommendation:");
+				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].call);
+				console.log(75*(altData.strike - candidateObj.call.contract.strikePrice));
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
 				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);

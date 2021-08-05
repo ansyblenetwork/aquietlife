@@ -237,8 +237,6 @@ function showDiv(id) { DE(id).style.display = 'block';}
 function hide(id) { DE(id).style.display = 'none';}
 	
 function checkOption(id, type) {
-	console.log("checking option! with type " + type);
-	console.log(id);
 	for (let i = 0; i < optionsPositions.length; i++) {
 		if (optionsPositions[i].option_id == id && optionsPositions[i].type == type) return true;
 	}
@@ -414,10 +412,6 @@ function rhOption(symbol, expiration, type, strike) {
 
 function createBuyOrder(li, type, side, count, orders, symbol) {
 if (!accountURL) return false;
-	console.log("Starting order for " + symbol);
-	console.log(side);
-	console.log(orders);
-	console.log(count);
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
 function createBuyOrderInner(li, count, data) {
 	clickable(li.firstChild);
@@ -529,7 +523,13 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 	
 	let myorder = orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 	
-	if (myorder.length == 0) console.log("Something wrong with orders! length zero.");
+	if (myorder.length == 0) {
+		console.log("Something wrong with orders! length zero.");
+		console.log(data);
+		console.log(altData);
+		console.log(contractDate);
+		console.log(symbol);
+	}
 	return myorder;
 }		
 	
@@ -597,8 +597,6 @@ function generateRec(symbol, data) {
 		let altData = {strike:0, premium:0, contract:""};
 		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
 		let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altData, contractDate, symbol);
-		console.log("Call orders for " + symbol);
-		console.log(callOrders);
 	
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {

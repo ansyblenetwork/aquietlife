@@ -1964,7 +1964,7 @@ function addCol(text, width, li) {
 	col.style.width = width;
 	col.style.display = "inline-block";
 	col.style.textAlign = "center";
-	col.textContent = text;
+	col.innerHTML = text;
 	li.appendChild(col);  
 	return col;
 }		

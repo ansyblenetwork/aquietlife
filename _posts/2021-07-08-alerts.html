@@ -127,6 +127,7 @@ id="tickerInput" onfocus="this.select()" type="text" style="margin-left:10px; ma
 <script> ////////////////////////////////////////////////////////////////
 
 var fixedInterestRate = 10;
+var namesMap = {};
 	
 var stList = [];
 var stWeeklyList = [];
@@ -683,7 +684,6 @@ function updateEarnings() {
 			preEarnings = [];
 			postEarnings = [];
 			let earningsTime = {};
-			let earningsName = {};
 			let earningsString = "";
 			data.quoteResponse.result.forEach(function(stockData) {
 				if ((stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60) ||
@@ -691,7 +691,7 @@ function updateEarnings() {
 				&& stockData.earningsTimestampStart == stockData.earningsTimestampEnd && stockData.earningsTimestamp - Date.now()/1000 < 2*24*60*60)) {
 					earnings.push(stockData.symbol);
 					earningsTime[stockData.symbol] = stockData.earningsTimestamp;
-					earningsName[stockData.symbol] = stockData.longName;
+					namesMap[stockData.symbol] = stockData.longName;
 				}
 				if (stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60)
 					postEarnings.push(stockData.symbol);
@@ -709,9 +709,9 @@ function updateEarnings() {
 				return  earningsTime[y] - earningsTime[x];
 			});
 			earnings.forEach(function(stock) {
-				if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += "<a title='" + earningsName[stock] 
+				if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += "<a title='" + namesMap[stock] 
 				+ "' target='_blank' href='https://finance.yahoo.com/quote/" + stock + "'><strong style='color:#333'>" + stock + "</strong></a> ";
-				else earningsString += "<a title='" + earningsName[stock] 
+				else earningsString += "<a title='" + namesMap[stock] 
 				+ "' target='_blank' href='https://finance.yahoo.com/quote/" + stock + "'><strong style='color:#94b'>" + stock + "</strong></a> ";							      
 			});
 			D('earnings').innerHTML = earningsString;
@@ -862,7 +862,8 @@ function updateStocktwits() {
 		stWeeklyList = [];
 		let stString = "(" + new Date().toLocaleTimeString() + "): ";
 		data.symbols.forEach(function(stockData) {
-			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits", stockData.title);
+			namesMap[stockData.symbol] = stockData.title;			
+			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits");
 		});
 		D('stocktwits').innerHTML = stString;
 		//D('stButton').textContent = "Monitor Weeklys";
@@ -875,7 +876,7 @@ function updateStocktwits() {
 	});
 }
 
-function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename, title) {
+function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
 	if (monthlys.includes(symbol) || weeklys.includes(symbol)) {
 		stList.push(symbol);
 		if (weeklys.includes(symbol)) {
@@ -883,14 +884,14 @@ function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename, title) 
 			if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
 				if (active(D('soundButton'))) D('starting').play();
 				if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
-				return stLinkify("<strong style='color:blue'>" + symbol + "</strong></a>", symbol, title) + " ";
-			} else return stLinkify("<strong style='color:#333'>" + symbol + "</strong></a>", symbol, title) + " ";
-		} else return stLinkify(symbol, symbol, title) + " ";
+				return stLinkify("<strong style='color:blue'>" + symbol + "</strong></a>", symbol) + " ";
+			} else return stLinkify("<strong style='color:#333'>" + symbol + "</strong></a>", symbol) + " ";
+		} else return stLinkify(symbol, symbol) + " ";
 	} else return "";
 }	
 	
-function stLinkify(str, stock, title) {
-	if (title) return "<a title='" + title + "' target='_blank' href='https://stocktwits.com/symbol/" + stock + "'>" + str + "</a>";
+function stLinkify(str, stock) {
+	if (namesMap[stock]) return "<a title='" + namesMap[stock] + "' target='_blank' href='https://stocktwits.com/symbol/" + stock + "'>" + str + "</a>";
 	else return "<a target='_blank' href='https://stocktwits.com/symbol/" + stock + "'>" + str + "</a>";
 }
 

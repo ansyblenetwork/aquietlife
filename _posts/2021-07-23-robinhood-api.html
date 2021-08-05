@@ -1344,7 +1344,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					console.log(friend);
 			}
 
-					findPutPair(symbol, friend);
+					findPutPair(symbol, friend, null, (symbol == "MVIS"));
 					
 			if (symbol == "MVIS") {
 					console.log("Repairing my friend; my friend shouldn't find a new friend:");
@@ -1750,7 +1750,7 @@ function clearOption(option) {
 	delete option.collateral;
 }
 	
-function findPutPair(symbol, defPut, shortPut) {	
+function findPutPair(symbol, defPut, shortPut, print) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let release = 0;
@@ -1799,8 +1799,20 @@ function findPutPair(symbol, defPut, shortPut) {
 		seeker.collateral = seeker.strike - seeker.release;
 		
 		if (orphan) {
+			if (print) {
+				console.log("someone orphaned");
+				console.log(orphan);
+				console.log(orphan.collateral);
+			}
+			
 			if (defPut) findPutPair(symbol, orphan);
 			else if (shortPut) findPutPair(symbol, null, orphan);
+			
+			if (print) {
+				console.log("someone orphaned, hope repaired");
+				console.log(orphan);
+				console.log(orphan.collateral);
+			}
 		}
 	}	
 }

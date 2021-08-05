@@ -1782,7 +1782,7 @@ function noCondorPuts(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
-		if (contract.collateral) totalPuts += contract.collateral;
+		if (contract.collateral !== undefined) totalPuts += contract.collateral;
 		else totalPuts += contract.strike;
 	});	
 	return totalPuts;
@@ -1810,7 +1810,7 @@ function condor(symbol, build) {
 			putExpireTypes[contract.expire] = {};
 			pcsOnly[contract.expire] = 0;
 		}
-		if (contract.collateral) {
+		if (contract.collateral !== undefined) {
 			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		}

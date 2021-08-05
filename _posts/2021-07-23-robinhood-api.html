@@ -225,8 +225,8 @@ function updateOptions(newOption) {
 			for (let contractDate in data.putExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
+				let DTE = 0;
 				if ( data.callExpDateMap[contractDate]) {
-				
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
 				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
@@ -264,6 +264,11 @@ function updateOptions(newOption) {
 					}
 				});
 					
+				DTE = defData.contract.daysToExpiration;
+				} else {
+					for (let strikes in data.putExpDateMap[contractDate]) {
+						DTE = data.putExpDateMap[contractDate][strikes].daysToExpiration;
+					}
 				}
 	
 			/////////////////////// MIDDLE //////////////////////////////////
@@ -272,7 +277,7 @@ function updateOptions(newOption) {
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				addCol(data.symbol + " " + contractDate.substring(11,12) + " DTE", "675px", referenceli);
+				addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 				D('optionslist').appendChild(referenceli);	
 	
 			/////////////////////// PUTS //////////////////////////////////

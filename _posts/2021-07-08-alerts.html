@@ -251,14 +251,7 @@ function generateRec(symbol) {
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
 			let col = addCol(stLinkify(symbol, symbol, "#333") + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-			col.style.cursor = "pointer";
 			if (namesMap[symbol]) col.title = namesMap[symbol];
-			col.onclick = function() {
-				D('optionsInput').value = symbol; 
-				updateOptions(true);
-				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
-				D('optionslist').scrollTo(0, 0); 		
-			}
 			bag.appendChild(referenceli);	
 		
 	/////////////////////// PUTS //////////////////////////////////

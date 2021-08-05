@@ -479,7 +479,7 @@ function updateOptions(newOption) {
 	
 			D('optionslist').textContent = "";
 					
-			for (let contractDate in data.callExpDateMap) {
+			for (let contractDate in data.putExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
 				
@@ -608,7 +608,7 @@ function mergeAll() {
 			optionsData[merge[i]] = data;
 			if (optionsQuotes[merge[i]]) generateRec(merge[i]);
 			maxdata[i] = {symbol:merge[i], call:0, put:0};
-			for (let contractDate in data.callExpDateMap) {
+			for (let contractDate in data.putExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
 						   

@@ -893,10 +893,19 @@ function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
 }	
 	
 function stLinkify(str, stock) {
-	if (namesMap[stock]) return "<a title='" + namesMap[stock] + "' target='_blank' href='https://stocktwits.com/symbol/" + stock + "'>" + str + "</a>";
-	else return "<a target='_blank' href='https://stocktwits.com/symbol/" + stock + "'>" + str + "</a>";
+	if (namesMap[stock]) return `<a onclick='linkClicker(${stock})' title='${namesMap[stock]}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
+	else return `<a target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }
-
+	
+function linkClicker(symbol) {
+	if (!event.ctrlKey) {
+		event.preventDefault();		
+		D('optionsInput').value = symbol; 
+		updateOptions(true);
+		D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+		D('optionslist').scrollTo(0, 0); 	
+	}
+}
 	
 ///// Toggle buttons script /////////////////////////////////////////////////
 	

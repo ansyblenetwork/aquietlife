@@ -483,6 +483,8 @@ function updateOptions(newOption) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
 				
+				if (data.callExpDateMap[contractDate]) {
+				
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
 				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
@@ -491,7 +493,6 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(calldefleg);
 				let calldefleg2 = buildli(altData.contract, data);
 				D('optionslist').appendChild(calldefleg2);
-				let referenceli = calldefleg2;
 				       
 				let callArray = [];
 				for (let contractStrike in data.callExpDateMap[contractDate]) {
@@ -506,10 +507,12 @@ function updateOptions(newOption) {
 						D('optionslist').appendChild(buildli(contract, data, calldefleg2, altData));
 					}
 				});
+					
+				}
 	
 			/////////////////////// MIDDLE //////////////////////////////////
 	
-				referenceli = make('li');
+				let referenceli = make('li');
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);

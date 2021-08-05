@@ -350,7 +350,7 @@ function updateOptions(newOption) {
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
 				
 				rhfetch.then(function() {
-				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altData, contractDate, query);
+				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altDupe, contractDate, query);
 				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
 				});
 	

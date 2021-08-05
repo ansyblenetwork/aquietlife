@@ -61,14 +61,13 @@ title: "Options collateral analysis via the Robinhood API"
 		</div>
 		
 	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">
-		<div style="margin:0px auto 20px auto; text-align:center">
-			<a target='_blank' href='https://stocktwits.com/'><strong style='color:#333'>Stocktwits</strong></a>
-			<br>
-			<span id="stocktwits">Trending <strong>(weeklys)</strong></span>
-			<br>
-			<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
-		</div>
-		<div id="earnings" style="padding-bottom:20px">Earnings within a week <strong>(weeklys only)</strong></div>		
+		<span id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></span>
+		<br>
+		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
+		<div id="earnings" style="padding-bottom:20px">Earnings within a week <strong>(weeklys only)</strong></div>
+		<br>
+		<button id="stButton" style="margin:10px" onclick="updateEarnings();">Load</button>
+		
 		<div style="width:max-content; margin:auto; margin-bottom:10px">
 		<input onkeyup="if (event.keyCode == 27) this.value = '';
 				else if (event.keyCode == 13) {
@@ -186,8 +185,9 @@ if (typeof(Storage) !== "undefined") {
 		showDiv('monitorPage');
 	}
 	else showDiv('loginPage');
-} 		
-		
+} 	
+	
+function updateEarnings() {		
 let weeklyQuery = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + weeklys.join();
 fetchData(weeklyQuery, 'GET').then(function(data) { 
 	if (data.quoteResponse.result) {
@@ -226,6 +226,8 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 		D('earnings').innerHTML = earningsString;
 	}
 });
+}
+updateEarnings();
 	
 function linkClicker(symbol) {
 	if (!event.ctrlKey) {
@@ -1141,6 +1143,7 @@ function getData() {
 		console.log("Portfolios");
 		console.log(data);
 	});
+	updateStocktwits();
 }	
 
 	

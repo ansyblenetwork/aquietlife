@@ -1312,58 +1312,19 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
 			let totalCallCollateral = noCondorCalls(symbol);
-			
-			if (symbol == "MVIS") {
-				console.log("Base collaterals:");
-				console.log(totalCollateral);
-				console.log(totalPutCollateral);
-				console.log(totalCallCollateral);				
-			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
 				let myStrike = me.strike;
 				let friend = me.friend;
 				if (friend) {
-			if (symbol == "MVIS") {
-					console.log("Splitting me and my friend:");
-					console.log(me.collateral);
-					console.log(friend.collateral);
-					console.log(me);
-					console.log(friend);
-			}
 					clearOption(friend);
 					clearOption(me);
 					me.strike = 0;
-					
-			if (symbol == "MVIS") {
-					console.log("now have been split:");
-					console.log(me.collateral);
-					console.log(friend.collateral);
-					console.log(me);
-					console.log(friend);
-			}
 
-					findPutPair(symbol, friend, null, (symbol == "MVIS"));
-					
-			if (symbol == "MVIS") {
-					console.log("Repairing my friend; my friend shouldn't find a new friend:");
-					console.log(me.collateral);
-					console.log(friend.collateral);
-					console.log(me);
-					console.log(friend);
-			}
-					
-					
+					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
-					
-					
-					console.log("Releases for this:");
-					console.log(condor(symbol));
-					console.log(noCondorPuts(symbol));
-					console.log(me.closeRelease);
-					console.log(me.ncRelease);
 
 					me.strike = myStrike;
 					findPutPair(symbol, null, me);
@@ -1752,7 +1713,7 @@ function clearOption(option) {
 	delete option.collateral;
 }
 	
-function findPutPair(symbol, defPut, shortPut, print) {	
+function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let release = 0;
@@ -1800,28 +1761,9 @@ function findPutPair(symbol, defPut, shortPut, print) {
 		candidate.collateral = candidate.strike - candidate.release;
 		seeker.collateral = seeker.strike - seeker.release;
 		
-		
-			if (print) {
-				console.log("candidate found");
-				console.log(candidate.collateral);
-				console.log(seeker.collateral);
-			}
-		
 		if (orphan) {
-			if (print) {
-				console.log("someone orphaned");
-				console.log(orphan);
-				console.log(orphan.collateral);
-			}
-			
 			if (defPut) findPutPair(symbol, orphan);
 			else if (shortPut) findPutPair(symbol, null, orphan);
-			
-			if (print) {
-				console.log("someone orphaned, hope repaired");
-				console.log(orphan);
-				console.log(orphan.collateral);
-			}
 		}
 	}	
 }
@@ -1841,12 +1783,7 @@ function noCondorPuts(symbol) {
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
 		if (contract.collateral) totalPuts += contract.collateral;
-		else {
-			totalPuts += contract.strike;
-			if (symbol == "MVIS") {console.log("strange happening with ncputs");
-					       console.log(contract);
-					      }
-		}
+		else totalPuts += contract.strike;
 	});	
 	return totalPuts;
 }

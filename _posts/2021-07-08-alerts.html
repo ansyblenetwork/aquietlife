@@ -649,23 +649,18 @@ function mergeAll() {
 		console.log(maxdata);
 		maxdata.sort(function(a,b) {
 			return b.put - a.put;
-		});
-	
+		});	
 		let mergeString = "Put order: ";
 		for (let i = 0; i < maxdata.length; i++) {
-			if (preEarnings.includes(maxdata[i].symbol)) 
-			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
-			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			mergeString += stLinkify("<strong>" + maxdata[i].symbol + "</strong>", maxdata[i].symbol, "#333") + " ";
 		}
-				
+		
 		maxdata.sort(function(a,b) {
 			return b.call - a.call;
 		});		   
 		mergeString += "<br>Call order: ";
 		for (let i = 0; i < maxdata.length; i++) {
-			if (preEarnings.includes(maxdata[i].symbol)) 
-			mergeString += `<strong style="cursor:pointer; color:#94b" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
-			else mergeString += `<strong style="cursor:pointer" onclick="D('optionsInput').value = '${maxdata[i].symbol}'; updateOptions(true)" style='color:#333'>${maxdata[i].symbol}</strong> `;
+			mergeString += stLinkify("<strong>" + maxdata[i].symbol + "</strong>", maxdata[i].symbol, "#333") + " ";
 		}				
 		if (mergeString) D('merge').innerHTML = mergeString;
 	});				 				 

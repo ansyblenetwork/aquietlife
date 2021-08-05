@@ -1099,8 +1099,8 @@ function update() {
 					notify = true;
 				}
 
-				if (avgPrice > 0 && curPrice > 0 && (curPrice > 4*avgPrice || curPrice + 4*avgPrice < 0)) activityNotification("price");
-				if (avgVol > 0 && curVol > 0  && (curVol > 4*avgVol || curVol + 4*avgVol < 0)) activityNotification("volume");
+			//	if (avgPrice > 0 && curPrice > 0 && (curPrice > 4*avgPrice || curPrice + 4*avgPrice < 0)) activityNotification("price");
+			//	if (avgVol > 0 && curVol > 0  && (curVol > 4*avgVol || curVol + 4*avgVol < 0)) activityNotification("volume");
 				if (notify) {
 					if (curPrice > 0) D(stock + "-percent").style.backgroundColor = "#dfd";
 					else D(stock + "-percent").style.backgroundColor = "#fdd";   

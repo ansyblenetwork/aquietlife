@@ -292,6 +292,9 @@ function updateOptions(newOption) {
 				D('optionslist').appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";
 				
+				if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'put', altData.strike);				
+				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
+				
 				rhfetch.then(function() {
 				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altData, contractDate, query);
 				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);

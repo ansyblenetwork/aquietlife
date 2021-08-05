@@ -654,13 +654,13 @@ function generateRec(symbol, data) {
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////				
 
-			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call) {
+			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altData.strike - candidateObj.call.contract.strikePrice)) {
 				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
 				bag.appendChild(calldefleg2);
 				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
 				bag.appendChild(calloffleg);
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
-				
+
 				let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol);
 				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, symbol);
 				createBuyOrder(calloffleg, 'call', 'sell', 0, sellCallOrders, symbol);
@@ -677,7 +677,7 @@ function generateRec(symbol, data) {
 
 		/////////////////////// PUTS //////////////////////////////////
 
-			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)].put) {
+			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidateObj.put.contract.strikePrice - altData.strike)) {
 				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
 				bag.appendChild(putdefleg2);
 				putdefleg2.style.marginBottom = "30px";
@@ -1452,8 +1452,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 						if (prem > 0 || vol > 15) {
 							if (!incompleteCondorList[symbol]) incompleteCondorList[symbol] = {};
 							if (!incompleteCondorList[symbol][contract.expire]) incompleteCondorList[symbol][contract.expire] = {};
-							if (type == "call") incompleteCondorList[symbol][contract.expire].call = true;
-							else incompleteCondorList[symbol][contract.expire].put = true;
+							if (type == "call") incompleteCondorList[symbol][contract.expire].call = 3000;
+							else incompleteCondorList[symbol][contract.expire].put = 3000;
 						}
 						
 						createSingleOrder(li, contract, prem + tick);
@@ -1886,7 +1886,7 @@ function condor(symbol, build) {
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}
-			incompleteCondorList[symbol][expiration] = {call: true};
+			incompleteCondorList[symbol][expiration] = {call: pcsOnly[expiration]};
 		}
 		
 		let expirePuts = 0;
@@ -1911,7 +1911,7 @@ function condor(symbol, build) {
 				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
 				D('optionslist').scrollTo(0, 0); 		
 			}
-			incompleteCondorList[symbol][expiration] = {call: true};
+			incompleteCondorList[symbol][expiration] = {call: expirePuts};
 		}
 		
 		let expireCalls = 0;
@@ -1938,7 +1938,7 @@ function condor(symbol, build) {
 				D('optionslist').scrollTo(0, 0); 		
 			}
 			if (!incompleteCondorList[symbol][expiration]) incompleteCondorList[symbol][expiration] = {};
-			incompleteCondorList[symbol][expiration].put = true;
+			incompleteCondorList[symbol][expiration].put = expireCalls;
 		}
 	}
 					

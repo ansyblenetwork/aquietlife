@@ -331,7 +331,7 @@ function updateOptions(newOption) {
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				addCol(data.symbol + " " + DTE + " DTE", "675px", referenceli);
+				addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
 				D('optionslist').appendChild(referenceli);	
 	
 			/////////////////////// PUTS //////////////////////////////////
@@ -663,14 +663,7 @@ function generateRec(symbol, data) {
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-			let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-			col.style.cursor = "pointer";
-			col.onclick = function() {
-				D('optionsInput').value = data.symbol; 
-				updateOptions(true);
-				D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});				
-				D('optionslist').scrollTo(0, 0); 		
-			}
+			addCol(stLinkify(data.symbol, data.symbol, "#333") + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 			bag.appendChild(referenceli);	
 
 		/////////////////////// PUTS //////////////////////////////////
@@ -693,6 +686,15 @@ function generateRec(symbol, data) {
 		}
 	}
 }	
+	
+function stLinkify(str, stock, color) {
+	let thistitle = "";
+	if (namesMap[stock]) thistitle = namesMap[stock];
+	let colorInsert = `style=''`;
+	if (color) colorInsert = `style='color:${color}'`;
+	if (preEarnings.includes(stock)) colorInsert = `style='color:#94b'`;
+	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
+}
 	
 function setDefLeg(defData, altData, data, contractDate, symbol) {      
 	for (let contractStrike in data) {	

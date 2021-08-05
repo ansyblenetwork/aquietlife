@@ -217,6 +217,15 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 	}
 });
 	
+function linkClicker(symbol) {
+	if (!event.ctrlKey) {
+		event.preventDefault();		
+		D('optionsInput').value = symbol; 
+		updateOptions(true);
+		D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+		D('optionslist').scrollTo(0, 0); 	
+	}
+}	
 	
 function D(string) { return document.getElementById(string); }	
 function DE(id) {

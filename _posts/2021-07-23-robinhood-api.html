@@ -60,7 +60,14 @@ title: "Options collateral analysis via the Robinhood API"
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="recList"></ul>
 		</div>
 		
-	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">		
+	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://stocktwits.com/'><strong style='color:#333'>Stocktwits</strong></a>
+			<br>
+			<span id="stocktwits">Trending <strong>(weeklys)</strong></span>
+			<br>
+			<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
+		</div>
 		<div id="earnings" style="padding-bottom:20px">Earnings within a week <strong>(weeklys only)</strong></div>		
 		<div style="width:max-content; margin:auto; margin-bottom:10px">
 		<input onkeyup="if (event.keyCode == 27) this.value = '';
@@ -153,7 +160,9 @@ var weeklys = ["AA","AAL","AAOI","AAPL","ABBV","ABC","ABNB","ABT","ACAD","ACB","
 var earnings = [];
 var preEarnings = [];
 var postEarnings = [];
-var namesMap = {};
+var namesMap = {};	
+var stList = [];
+var stWeeklyList = [];
 	
 if (Notification.permission === "granted") activate(D('notificationButton'), "Notifications On");
 	
@@ -685,6 +694,35 @@ function generateRec(symbol, data) {
 		addOrdered(bag, D('recList'));	
 		}
 	}
+}	
+	
+					      
+function updateStocktwits() {
+	let query = 'https://api.stocktwits.com/api/2/trending/symbols/equities.json';
+		
+	fetchData(query, get).then(function(data) {
+		stList = [];
+		let prevWeekly = stWeeklyList;
+		stWeeklyList = [];
+		let stString = "(" + new Date().toLocaleTimeString() + "): ";
+		data.symbols.forEach(function(stockData) {
+			namesMap[stockData.symbol] = stockData.title;			
+			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits");
+		});
+		D('stocktwits').innerHTML = stString;
+	});
+}
+
+function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
+	stList.push(symbol);
+	if (weeklys.includes(symbol)) {
+		stWeeklyList.push(symbol);
+		if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
+			if (active(D('soundButton'))) D('starting').play();
+			if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
+			return stLinkify("<strong>" + symbol + "</strong>", symbol, "blue") + " ";
+		} else return stLinkify("<strong>" + symbol + "</strong>", symbol, "#333") + " ";
+	} else return stLinkify(symbol, symbol) + " ";
 }	
 	
 function stLinkify(str, stock, color) {

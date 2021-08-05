@@ -893,7 +893,7 @@ function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
 }	
 	
 function stLinkify(str, stock) {
-	if (namesMap[stock]) return `<a onclick='linkClicker(${stock})' title='${namesMap[stock]}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
+	if (namesMap[stock]) return `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 	else return `<a target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }
 	

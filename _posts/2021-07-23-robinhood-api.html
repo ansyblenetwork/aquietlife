@@ -527,7 +527,10 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 	}
 	atStrikeOrders = processOrderList(atStrikeOrders, true);
 	
-	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
+	let myorder = orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
+	
+	if (myorder.length == 0) console.log("Something wrong with orders! length zero.");
+	return myorder;
 }		
 	
 function setSellOrders(data, mainContract, contractDate, symbol) {

@@ -1327,6 +1327,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (friend) {
 			if (symbol == "MVIS") {
 					console.log("Splitting me and my friend:");
+					console.log(me.collateral);
+					console.log(friend.collateral);
 					console.log(me);
 					console.log(friend);
 			}
@@ -1336,6 +1338,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					
 			if (symbol == "MVIS") {
 					console.log("now have been split:");
+					console.log(me.collateral);
+					console.log(friend.collateral);
 					console.log(me);
 					console.log(friend);
 			}
@@ -1344,6 +1348,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					
 			if (symbol == "MVIS") {
 					console.log("Repairing my friend; my friend shouldn't find a new friend:");
+					console.log(me.collateral);
+					console.log(friend.collateral);
 					console.log(me);
 					console.log(friend);
 			}

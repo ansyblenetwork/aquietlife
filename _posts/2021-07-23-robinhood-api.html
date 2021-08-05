@@ -1609,7 +1609,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				optionsBySymbol[symbol].shortPut.forEach(function(contract) {
 					if (contract.strike > 100*0.97*data.underlyingPrice) {
 						let li = makeli(symbol, contract);
-						let col = addCol(data.underlyingPrice, "75px", li);
+						let col = addCol(data.underlyingPrice.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#dff";
 						D('itm').appendChild(li);
 						if (!monitorQuery.includes(symbol)) {
@@ -1621,7 +1621,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				optionsBySymbol[symbol].shortCall.forEach(function(contract) {
 					if (contract.strike < 100*1.03*data.underlyingPrice) {
 						let li = makeli(symbol, contract);
-						let col = addCol(data.underlyingPrice, "75px", li);
+						let col = addCol(data.underlyingPrice.toFixed(2), "75px", li);
 						col.style.backgroundColor = "#dff";
 						D('itm').appendChild(li);
 						if (!monitorQuery.includes(symbol)) {

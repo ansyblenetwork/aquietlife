@@ -1798,6 +1798,13 @@ function findPutPair(symbol, defPut, shortPut, print) {
 		candidate.collateral = candidate.strike - candidate.release;
 		seeker.collateral = seeker.strike - seeker.release;
 		
+		
+			if (print) {
+				console.log("candidate found");
+				console.log(candidate.collateral);
+				console.log(seeker.collateral);
+			}
+		
 		if (orphan) {
 			if (print) {
 				console.log("someone orphaned");

@@ -1333,6 +1333,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					clearOption(friend);
 					clearOption(me);
 					me.strike = 0;
+					
+			if (symbol == "MVIS") {
+					console.log("now have been split:");
+					console.log(me);
+					console.log(friend);
+			}
 
 					findPutPair(symbol, friend);
 					

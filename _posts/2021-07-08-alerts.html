@@ -512,7 +512,7 @@ function updateOptions(newOption) {
 				DTE = defData.contract.daysToExpiration;
 				} else {
 					for (let strikes in data.putExpDateMap[contractDate]) {
-						DTE = data.putExpDateMap[contractDate][strikes].daysToExpiration;
+						DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
 					}
 				}
 	

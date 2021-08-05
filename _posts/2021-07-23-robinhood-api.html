@@ -1360,6 +1360,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					
 					
 					console.log("Releases for this:");
+					console.log(condor(symbol));
+					console.log(noCondorPuts(symbol));
 					console.log(me.closeRelease);
 					console.log(me.ncRelease);
 

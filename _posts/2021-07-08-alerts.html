@@ -518,7 +518,7 @@ function updateOptions(newOption) {
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+				let col = addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 				if (namesMap[data.symbol]) col.title = namesMap[data.symbol];
 				D('optionslist').appendChild(referenceli);
 	

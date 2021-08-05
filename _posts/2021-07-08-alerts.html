@@ -884,16 +884,17 @@ function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
 			if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
 				if (active(D('soundButton'))) D('starting').play();
 				if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
-				return stLinkify("<strong style='color:blue'>" + symbol + "</strong>", symbol) + " ";
-			} else return stLinkify("<strong style='color:#333'>" + symbol + "</strong>", symbol) + " ";
+				return stLinkify("<strong>" + symbol + "</strong>", symbol, "blue") + " ";
+			} else return stLinkify("<strong>" + symbol + "</strong>", symbol, "#333") + " ";
 		} else return stLinkify(symbol, symbol) + " ";
 	} else return "";
 }	
 	
-function stLinkify(str, stock) {
+function stLinkify(str, stock, color) {
 	let thistitle = "";
 	if (namesMap[stock]) thistitle = namesMap[stock];
 	let colorInsert = `style=''`;
+	if (color) colorInsert = `style='color:#{color}'`;
 	if (preEarnings.includes(stock)) colorInsert = `style='color:#94b'`;
 	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }

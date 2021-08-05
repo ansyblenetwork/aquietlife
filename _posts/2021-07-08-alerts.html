@@ -252,6 +252,7 @@ function generateRec(symbol) {
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
 			let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
 			col.style.cursor = "pointer";
+			if (namesMap[data.symbol]) col.title = namesMap[data.symbol];
 			col.onclick = function() {
 				D('optionsInput').value = data.symbol; 
 				updateOptions(true);
@@ -517,8 +518,9 @@ function updateOptions(newOption) {
 				referenceli.style.textAlign = "center";
 				referenceli.style.fontWeight = "bold";
 				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-				D('optionslist').appendChild(referenceli);	
+				let col = addCol(data.symbol + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
+				if (namesMap[data.symbol]) col.title = namesMap[data.symbol];
+				D('optionslist').appendChild(referenceli);
 	
 			/////////////////////// PUTS //////////////////////////////////
 	

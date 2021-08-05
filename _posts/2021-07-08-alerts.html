@@ -894,7 +894,7 @@ function stLinkify(str, stock) {
 	let thistitle = "";
 	if (namesMap[stock]) thistitle = namesMap[stock];
 	let colorInsert = `style=''`;
-	if (preEarnings.includes(stock)) colorInsert = `style='colorInsert = `style='color:#94b'`;'`;
+	if (preEarnings.includes(stock)) colorInsert = `style='color:#94b'`;'`;
 	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }
 	

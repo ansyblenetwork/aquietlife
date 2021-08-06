@@ -1811,7 +1811,10 @@ function condor(symbol, build) {
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		} else console.log("CALL CONTRACT LACKS COLLATERAL");
+		} else {
+			console.log("CALL CONTRACT LACKS COLLATERAL");
+			console.log(symbol);
+		}
 	});
 	
 	data.shortPut.forEach(function(contract) {

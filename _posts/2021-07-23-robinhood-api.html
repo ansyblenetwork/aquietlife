@@ -1286,8 +1286,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].defPut.sort(function(b, a) { 
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike > b.strike) return 1;
-				else if (a.strike < b.strike) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
 				else return 0;					
 			});
 
@@ -1306,8 +1306,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].defCall.sort(function(b, a) {
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike < b.strike) return 1;
-				else if (a.strike > b.strike) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
 				else return 0;					
 			});
 

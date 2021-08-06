@@ -22,7 +22,7 @@ This management allows the account owner to open a much more diverse set of posi
 2. More positions means less emotional attachment to any one position. 
 3. Closing positions with low depreciation rate means greater capital efficiency.
 4. Every position is marked with its rate of return, so risky trades cannot be entered blindly.
-5. All rate computations are agnostic to potential biases, like position size or underlying stock price. 
+5. All rate computations are agnostic to potential biases, like position size and underlying stock price. 
 
 ### Incrementalism
 

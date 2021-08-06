@@ -1676,7 +1676,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 });
 }	
 	
-function findCallPair(symbol, defCall, shortCall) {	
+function findCallPair(symbol, defCall, shortCall, print) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let collateral = Infinity;
@@ -1716,6 +1716,13 @@ function findCallPair(symbol, defCall, shortCall) {
 	if (candidate) {
 		let orphan = candidate.friend;
 		if (orphan) clearOption(orphan);
+		
+		if (print) {
+			if (orphan) {
+				console.log("orphaned someone:");
+				console.log(orphan);
+			}
+		}
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;

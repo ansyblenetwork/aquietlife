@@ -1349,6 +1349,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let myExpire = me.expire;
 				let friend = me.friend;
 
+				if (!friend) {
+					console.log("no friend issue:");
+					console.log(me);
+				console.log(symbol);
+				}
 				clearOption(friend);
 				clearOption(me);
 				me.expire = "neverplus";

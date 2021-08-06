@@ -1325,33 +1325,30 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
-				let myStrike = me.strike;
 				let friend = me.friend;
 				if (friend) {
 					clearOption(friend);
 					clearOption(me);
-					me.strike = 0;
+					me.collateral = 0;
 
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
 
-					me.strike = myStrike;
+					me.collateral = me.strike;
 					findPutPair(symbol, null, me);
 				} else {
-					me.closeRelease = myStrike;
-					me.ncRelease = myStrike;
+					me.closeRelease = me.strike;
+					me.ncRelease = me.strike;
 				}
 			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				let me = optionsBySymbol[symbol].shortCall[i];
-				let myExpire = me.expire;
 				let friend = me.friend;
 
 				clearOption(friend);
 				clearOption(me);
-				me.expire = "neverplus";
 				me.collateral = 0;
 
 				findCallPair(symbol, friend);			
@@ -1361,24 +1358,22 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
 					let mypair = optionsBySymbol[symbol].shortPut[j];
-					if (myExpire == mypair.expire) {
-						let myPairStrike = mypair.strike;
+					if (me.expire == mypair.expire) {
 						let pairFriend = mypair.friend;
 						if (pairFriend) {
 							clearOption(pairFriend);
 							clearOption(mypair);
-							mypair.strike = 0;
+							mypair.collateral = 0;
 
 							findPutPair(symbol, pairFriend);
 							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
-							mypair.strike = myPairStrike;
+							mypair.collateral = mypair.strike;
 							findPutPair(symbol, null, mypair);
 						}
 					}
 				}
 
-				me.expire = myExpire;
 				me.collateral = Infinity;
 				findCallPair(symbol, null, me);
 			}

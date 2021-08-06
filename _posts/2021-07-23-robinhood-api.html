@@ -1248,8 +1248,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
 				if (optionsPositions[i].type == "short") {
-					if (dat.type == "call") dat.collateral = Infinity;
-					else dat.collateral = dat.strike;					
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
 				}
@@ -1315,9 +1313,11 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
+				console.log("Got past an attempt to find put pair for " + symbol);
 			}
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				findCallPair(symbol, null, optionsBySymbol[symbol].shortCall[i]);
+				console.log("Got past an attempt to find call pair for " + symbol);
 			}
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
@@ -1325,30 +1325,33 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
+				let myStrike = me.strike;
 				let friend = me.friend;
 				if (friend) {
 					clearOption(friend);
 					clearOption(me);
-					me.collateral = 0;
+					me.strike = 0;
 
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
 
-					me.collateral = me.strike;
+					me.strike = myStrike;
 					findPutPair(symbol, null, me);
 				} else {
-					me.closeRelease = me.strike;
-					me.ncRelease = me.strike;
+					me.closeRelease = myStrike;
+					me.ncRelease = myStrike;
 				}
 			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				let me = optionsBySymbol[symbol].shortCall[i];
+				let myExpire = me.expire;
 				let friend = me.friend;
 
 				clearOption(friend);
 				clearOption(me);
+				me.expire = "neverplus";
 				me.collateral = 0;
 
 				findCallPair(symbol, friend);			
@@ -1358,23 +1361,25 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
 					let mypair = optionsBySymbol[symbol].shortPut[j];
-					if (me.expire == mypair.expire) {
+					if (myExpire == mypair.expire) {
+						let myPairStrike = mypair.strike;
 						let pairFriend = mypair.friend;
 						if (pairFriend) {
 							clearOption(pairFriend);
 							clearOption(mypair);
-							mypair.collateral = 0;
+							mypair.strike = 0;
 
 							findPutPair(symbol, pairFriend);
 							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
-							mypair.collateral = mypair.strike;
+							mypair.strike = myPairStrike;
 							findPutPair(symbol, null, mypair);
 						}
 					}
 				}
 
-				me.collateral = Infinity;
+				me.expire = myExpire;
+				delete me.collateral;
 				findCallPair(symbol, null, me);
 			}
 			
@@ -1715,9 +1720,7 @@ function findCallPair(symbol, defCall, shortCall) {
 function clearOption(option) {
 	delete option.friend;
 	delete option.release;
-	
-	if (option.type == "call") option.collateral = Infinity;
-	else option.collateral = option.strike;
+	delete option.collateral;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	
@@ -1789,7 +1792,8 @@ function noCondorPuts(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
-		totalPuts += contract.collateral;
+		if (contract.collateral !== undefined) totalPuts += contract.collateral;
+		else totalPuts += contract.strike;
 	});	
 	return totalPuts;
 }
@@ -1816,7 +1820,7 @@ function condor(symbol, build) {
 			putExpireTypes[contract.expire] = {};
 			pcsOnly[contract.expire] = 0;
 		}
-		if (contract.collateral != contract.strike) {
+		if (contract.collateral !== undefined) {
 			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		}

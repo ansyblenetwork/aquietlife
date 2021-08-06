@@ -1286,8 +1286,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].defPut.sort(function(b, a) { 
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike < b.strike) return 1;
-				else if (a.strike > b.strike) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
 				else return 0;					
 			});
 
@@ -1306,18 +1306,16 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].defCall.sort(function(b, a) {
 				if (a.expire < b.expire) return 1;
 				else if (a.expire > b.expire) return -1;
-				else if (a.strike > b.strike) return 1;
-				else if (a.strike < b.strike) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
 				else return 0;					
 			});
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
-				console.log("Got past an attempt to find put pair for " + symbol);
 			}
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				findCallPair(symbol, null, optionsBySymbol[symbol].shortCall[i]);
-				console.log("Got past an attempt to find call pair for " + symbol);
 			}
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);

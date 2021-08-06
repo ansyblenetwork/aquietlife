@@ -1873,15 +1873,6 @@ function condor(symbol, build) {
 	
 	let total = totalSaved + totalPuts + totalCalls + totalPCS;
 	
-	if (symbol == "SPCE") {
-		if (build) console.log("this is the build");
-		console.log("details:");
-		console.log(totalSaved);
-		console.log(totalPuts);
-		console.log(totalCalls);
-		console.log(totalPCS);
-	}
-	
 	if (build) incompleteCondorList[symbol] = {};
 	for (let expiration in putExpireTypes) {		
 		if (build && pcsOnly[expiration] > 0) {

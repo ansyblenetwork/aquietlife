@@ -1719,7 +1719,9 @@ function findCallPair(symbol, defCall, shortCall) {
 function clearOption(option) {
 	delete option.friend;
 	delete option.release;
-	delete option.collateral;
+	
+	if (option.type == "call") option.collateral = Infinity;
+	else option.collateral = option.strike;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	

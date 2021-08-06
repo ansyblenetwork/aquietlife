@@ -1293,7 +1293,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				else return 0;					
 			});
 
-			let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall;
+			let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall.length;
 			for (let i = 0; i < append; i++) {
 				 optionsBySymbol[symbol].defCall.push({expire:"never", strike:0});
 			}

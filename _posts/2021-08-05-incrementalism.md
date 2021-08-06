@@ -26,7 +26,7 @@ This management allows the account owner to open a much more diverse set of posi
 
 ### Incrementalism
 
-This reminded me of a freakonomics radio episode I overheard on the radio in grad school, about the British cycling team, and how they won some substantial number of gold medals in recent competitions after many years of not winning.
+This reminded me of a freakonomics episode I overheard on the radio in grad school, about the British cycling team, and how they won some substantial number of gold medals in recent competitions after many years of not winning.
 
 > Physics and cycling go hand in hand. It’s a sport that lends itself nicely to physics, data collection, measurement, power and speed. And so, we could collect lots of data and analyze performance and we could feed that back to riders. And then we could work with them on small, very small, minor tweaks, minor changes that probably felt relatively insignificant at the time, but over time, would stick.
 > 

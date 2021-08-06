@@ -1038,7 +1038,7 @@ function updateDisplay(stock, fixed) {
 		D(stock + "-current").style.color = "#F00";
 	} else if (upper.style.fontWeight == "bold") {
 		D(stock + "-current").style.fontWeight = "bold";
-		D(stock + "-current").style.color = "#3b7";
+		D(stock + "-current").style.color = "#0a8";
 	} else {	      
 		D(stock + "-current").style.fontWeight = "initial";
 		D(stock + "-current").style.color = "#333";
@@ -1067,7 +1067,7 @@ function update() {
 			D(stock + "-current").textContent = round(price);	
 			D(stock + "-percent").textContent = stock + " " + round(daily) + " (" + round(dailyPercent, true) + "%)";
 	
-			if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+			if (dailyPercent > 0) D(stock + "-percent").style.color = "#0a8";
 			else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
 			else D(stock + "-percent").style.color = "#333";
 			updateDisplay(stock);
@@ -1168,7 +1168,7 @@ function submitTicker(myQuery) {
 			newTicker.style.paddingLeft = "10px";
 			newTicker.style.paddingRight = "10px";
 			newTicker.textContent = stock + " " + round(buffer.regularMarketChange) + " (" + round(buffer.regularMarketChangePercent, true) + "%)";
-			if (buffer.regularMarketChangePercent > 0) newTicker.style.color = "#1a8";
+			if (buffer.regularMarketChangePercent > 0) newTicker.style.color = "#0a8";
 			else if (buffer.regularMarketChangePercent < 0) newTicker.style.color = "#FF0000";
 			newTicker.href = "https://finance.yahoo.com/quote/" + stock;
 			newTicker.target = "_blank";
@@ -1295,7 +1295,7 @@ function submitTicker(myQuery) {
 			D(stock + "-current").textContent = round(buffer.regularMarketPrice);	
 			D(stock + "-percent").textContent = stock + " " + round(buffer.regularMarketChange) + " (" + round(dailyPercent, true) + "%)";
 
-			if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+			if (dailyPercent > 0) D(stock + "-percent").style.color = "#0a8";
 			else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
 			else D(stock + "-percent").style.color = "#333";	
 			D('stocklist').insertBefore(D(stock), D('stocklist').firstChild);

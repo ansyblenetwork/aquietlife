@@ -36,7 +36,7 @@ This reminded me of a freakonomics episode I overheard on the radio in grad scho
 > 
 > Is that going win us a medal? Well, no, it’s not. But is it going to contribute to it? Yeah, potentially.
 
-Algorithmic trading, or simply computer-aided trading, is a bit like this. It helps automate some calculations. This frees some mental capacity, allowing the user to focus on the decisions that really matter.
+Algorithmic trading, or simply computer-aided trading, is a bit like this. It helps automate some calculations. This frees some mental capacity, allowing the user to focus exclusively on the decisions that really matter.
 
 ### Success?
 

@@ -1247,9 +1247,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
-				if (dat.type == "call") dat.collateral = Infinity;
-				else dat.collateral = dat.strike;
 				if (optionsPositions[i].type == "short") {
+					if (dat.type == "call") dat.collateral = Infinity;
+					else dat.collateral = dat.strike;					
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
 				}

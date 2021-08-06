@@ -1358,7 +1358,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					console.log(friend);					
 				}
 				
-				findCallPair(symbol, friend);			
+				if (symbol =="SPCE") {
+				findCallPair(symbol, friend, null, true);	
+				} else 
+				findCallPair(symbol, friend, null);
 				
 				
 				if (symbol =="SPCE") {

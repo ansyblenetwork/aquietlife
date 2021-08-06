@@ -1320,13 +1320,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
 			let totalCallCollateral = noCondorCalls(symbol);
-			
-			
-				if (symbol =="SPCE") {
-					console.log("here's the total collateral: " + totalCollateral);
-					console.log("here's the total collateral put: " + totalPutCollateral);
-					console.log("here's the total collateral call: " + totalCallCollateral);
-				}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
@@ -1358,25 +1351,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				clearOption(me);
 				me.expire = "neverplus";
 				me.collateral = 0;
-				
-				if (symbol =="SPCE") {
-					console.log("before unpairing:");
-					console.log(me);
-					console.log(friend);					
-				}
-				
-				if (symbol =="SPCE") {
-				findCallPair(symbol, friend, null, true);	
-				} else 
-				findCallPair(symbol, friend, null);
-				
-				
-				if (symbol =="SPCE") {
-					console.log("after unpairing:");
-					console.log(me);
-					console.log(friend);					
-				}
-				
+
+				findCallPair(symbol, friend);			
 				me.closeRelease = totalCollateral - condor(symbol);
 				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
 
@@ -1403,11 +1379,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.expire = myExpire;
 				delete me.collateral;
 				findCallPair(symbol, null, me);
-				
-				
-				if (symbol =="SPCE") {
-					console.log("here's the total collateral AFTER: " + condor(symbol));
-				}
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
@@ -1691,7 +1662,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 });
 }	
 	
-function findCallPair(symbol, defCall, shortCall, print) {	
+function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
 	let maxGain = 0;
 	let collateral = Infinity;
@@ -1711,9 +1682,7 @@ function findCallPair(symbol, defCall, shortCall, print) {
 	
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire 
-		    && ((!candidate && !subject.friend) || 
-			(callCollateral(defCall, shortCall) < collateral && callCollateral(defCall, shortCall) < subject.collateral)
-		   )) {
+		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
@@ -1733,13 +1702,6 @@ function findCallPair(symbol, defCall, shortCall, print) {
 	if (candidate) {
 		let orphan = candidate.friend;
 		if (orphan) clearOption(orphan);
-		
-		if (print) {
-			if (orphan) {
-				console.log("orphaned someone:");
-				console.log(orphan);
-			}
-		}
 		
 		candidate.friend = seeker;
 		seeker.friend = candidate;

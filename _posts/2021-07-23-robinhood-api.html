@@ -1645,6 +1645,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	Promise.all(promises).then(function() {	
+		console.log(JSON.stringify(optionsBySymbol));
 		endpointCounter++;			
 		if (endpointCounter == neededCounter) {
 			if (active(D('soundButton'))) D('complete').play();

@@ -1247,6 +1247,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
+				if (optionData.type == "call") dat.collateral = Infinity;
+				else dat.collateral = data.strike;
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -1377,7 +1379,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				me.expire = myExpire;
-				delete me.collateral;
+				me.collateral = Infinity;
 				findCallPair(symbol, null, me);
 			}
 			
@@ -1681,8 +1683,7 @@ function findCallPair(symbol, defCall, shortCall) {
 	}
 	
 	function evaluate(defCall, shortCall, subject) {
-		if (defCall.expire >= shortCall.expire 
-		    && (!subject.friend || (callCollateral(defCall, shortCall) < collateral && callCollateral(defCall, shortCall) < subject.collateral))) {
+		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral && callCollateral(defCall, shortCall) < subject.collateral) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;

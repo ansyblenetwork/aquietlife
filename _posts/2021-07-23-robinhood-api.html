@@ -1247,6 +1247,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
+				if (dat.type == "call") dat.collateral = Infinity;
+				else dat.collateral = dat.strike;
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -1347,11 +1349,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				let myExpire = me.expire;
 				let friend = me.friend;
 
-				console.log("Friend issues: ");
-				console.log(symbol);
-				console.log(friend);
-				console.log(me);
-				
 				clearOption(friend);
 				clearOption(me);
 				me.expire = "neverplus";
@@ -1382,7 +1379,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				me.expire = myExpire;
-				delete me.collateral;
+				me.collateral = Infinity;
 				findCallPair(symbol, null, me);
 			}
 			
@@ -1723,7 +1720,9 @@ function findCallPair(symbol, defCall, shortCall) {
 function clearOption(option) {
 	delete option.friend;
 	delete option.release;
-	delete option.collateral;
+	
+	if (option.type == "call") option.collateral = Infinity;
+	else option.collateral = option.strike;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	
@@ -1795,8 +1794,7 @@ function noCondorPuts(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
-		if (contract.collateral !== undefined) totalPuts += contract.collateral;
-		else totalPuts += contract.strike;
+		totalPuts += contract.collateral;
 	});	
 	return totalPuts;
 }
@@ -1823,7 +1821,7 @@ function condor(symbol, build) {
 			putExpireTypes[contract.expire] = {};
 			pcsOnly[contract.expire] = 0;
 		}
-		if (contract.collateral !== undefined) {
+		if (contract.collateral != contract.strike) {
 			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
 		}

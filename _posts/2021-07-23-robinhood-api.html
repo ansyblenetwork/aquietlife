@@ -218,8 +218,8 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 			return  earningsTime[y] - earningsTime[x];
 		});
 		earnings.forEach(function(stock) {
-			if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#40b'>${stock}</strong></a> `;
-			else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#04b'>${stock}</strong></a> `;							      
+			if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#70b'>${stock}</strong></a> `;
+			else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#07b'>${stock}</strong></a> `;							      
 		});
 		D('earnings').innerHTML = earningsString;
 	}
@@ -734,8 +734,8 @@ function stLinkify(str, stock, color) {
 	if (namesMap[stock]) thistitle = namesMap[stock];
 	let colorInsert = `style=''`;
 	if (color) colorInsert = `style='color:${color}'`;
-	if (postEarnings.includes(stock)) colorInsert = `style='color:#40b'`;
-	if (preEarnings.includes(stock)) colorInsert = `style='color:#04b'`;
+	if (postEarnings.includes(stock)) colorInsert = `style='color:#70b'`;
+	if (preEarnings.includes(stock)) colorInsert = `style='color:#07b'`;
 	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }
 	

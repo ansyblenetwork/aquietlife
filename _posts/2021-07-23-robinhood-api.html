@@ -1324,6 +1324,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			
 				if (symbol =="SPCE") {
 					console.log("here's the total collateral: " + totalCollateral);
+					console.log("here's the total collateral put: " + totalPutCollateral);
+					console.log("here's the total collateral call: " + totalCallCollateral);
 				}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {

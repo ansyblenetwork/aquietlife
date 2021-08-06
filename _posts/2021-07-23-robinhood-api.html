@@ -1711,7 +1711,9 @@ function findCallPair(symbol, defCall, shortCall, print) {
 	
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire 
-		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+		    && ((!candidate && !subject.friend) || 
+			(callCollateral(defCall, shortCall) < collateral && callCollateral(defCall, shortCall) < subject.collateral)
+		   )) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;

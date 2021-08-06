@@ -1351,8 +1351,22 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				clearOption(me);
 				me.expire = "neverplus";
 				me.collateral = 0;
-
+				
+				if (symbol =="SPCE") {
+					console.log("before unpairing:");
+					console.log(me);
+					console.log(friend);					
+				}
+				
 				findCallPair(symbol, friend);			
+				
+				
+				if (symbol =="SPCE") {
+					console.log("after unpairing:");
+					console.log(me);
+					console.log(friend);					
+				}
+				
 				me.closeRelease = totalCollateral - condor(symbol);
 				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
 

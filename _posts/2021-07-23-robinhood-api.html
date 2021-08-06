@@ -1291,6 +1291,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				else return 0;					
 			});
 
+			console.log("An append computation for " + symbol);
+			console.log(optionsBySymbol[symbol].shortCall.length);
+			console.log(optionsBySymbol[symbol].defCall);
+			console.log(optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall);
 			let append = optionsBySymbol[symbol].shortCall.length - optionsBySymbol[symbol].defCall;
 			for (let i = 0; i < append; i++) {
 				 optionsBySymbol[symbol].defCall.push({expire:"never", strike:0});

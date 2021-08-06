@@ -1136,7 +1136,7 @@ function getData() {
 		accountURL = data.results[0].account;
 		
 		let growth = data.results[0].equity - data.results[0].equity_previous_close;		
-		if (growth > 0) D("accountValue").style.color = "#1a8";
+		if (growth > 0) D("accountValue").style.color = "#0a8";
 		else if (growth < 0) {
 			D("accountValue").style.color = "#F00";
 			growth = 0 - growth;
@@ -2016,7 +2016,7 @@ function submitTicker(myQuery, monitorMargin) {
 			newTicker.style.paddingLeft = "10px";
 			newTicker.style.paddingRight = "10px";
 			newTicker.textContent = stock + " " + round(buffer.regularMarketChange) + " (" + round(buffer.regularMarketChangePercent, true) + "%)";
-			if (buffer.regularMarketChangePercent > 0) newTicker.style.color = "#1a8";
+			if (buffer.regularMarketChangePercent > 0) newTicker.style.color = "#0a8";
 			else if (buffer.regularMarketChangePercent < 0) newTicker.style.color = "#FF0000";
 			newTicker.href = "https://finance.yahoo.com/quote/" + stock;
 			newTicker.target = "_blank";
@@ -2146,7 +2146,7 @@ function submitTicker(myQuery, monitorMargin) {
 			D(stock + "-current").textContent = round(buffer.regularMarketPrice);	
 			D(stock + "-percent").textContent = stock + " " + round(buffer.regularMarketChange) + " (" + round(dailyPercent, true) + "%)";
 
-			if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+			if (dailyPercent > 0) D(stock + "-percent").style.color = "#0a8";
 			else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
 			else D(stock + "-percent").style.color = "#333";	
 			D('stocklist').insertBefore(D(stock), D('stocklist').firstChild);
@@ -2177,7 +2177,7 @@ function update() {
 			D(stock + "-current").textContent = round(price);	
 			D(stock + "-percent").textContent = stock + " " + round(daily) + " (" + round(dailyPercent, true) + "%)";
 	
-			if (dailyPercent > 0) D(stock + "-percent").style.color = "#1a8";
+			if (dailyPercent > 0) D(stock + "-percent").style.color = "#0a8";
 			else if (dailyPercent < 0) D(stock + "-percent").style.color = "#F00";
 			else D(stock + "-percent").style.color = "#333";
 			updateDisplay(stock);

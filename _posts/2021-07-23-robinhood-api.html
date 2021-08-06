@@ -1311,6 +1311,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				else return 0;					
 			});
 
+			if (symbol == "MVIS" || symbol == "OCGN") {				
+				console.log(JSON.stringify(optionsBySymbol));
+			}
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
 			}

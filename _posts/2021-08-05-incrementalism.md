@@ -4,7 +4,7 @@ title: "Incrementalism in options trading"
 
 For the past few weeks I have been working on a [Robinhood API applet]({% post_url 2021-07-23-robinhood-api %}) tailored to my personal approach toward trading options (which more or less has been fully presented in my posts up to now).
 
-The process of refining the applet has gotten me thinking about trading strategies and how to best execute them - but also to ask the existential question: Will the strategy even work?
+The process of refining the applet has gotten me thinking about trading strategies and how to best execute them - but also to ask the existential question: Will a given strategy even work?
 
 
 ### The applet
@@ -36,7 +36,7 @@ This reminded me of a freakonomics episode I overheard on the radio in grad scho
 > 
 > Is that going win us a medal? Well, no, it’s not. But is it going to contribute to it? Yeah, potentially.
 
-Algorithmic trading, or simply computer-aided trading, is a bit like this. It helps automate some calculations. This frees some mental capacity, allowing the user to focus exclusively on the decisions that really matter.
+Algorithmic trading, or "advanced trading" (in the sense of [advanced chess](https://en.wikipedia.org/wiki/Advanced_chess), is a bit like this. It helps automate some calculations. This frees a lot of mental capacity, allowing the user to focus exclusively on the decisions that really matter.
 
 ### Success?
 

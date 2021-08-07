@@ -1247,8 +1247,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
-				if (optionData.type == "call") dat.collateral = Infinity;
-				else dat.collateral = dat.strike;
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -1354,33 +1352,9 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.expire = "neverplus";
 				me.collateral = 0;
 
-				if (symbol == "OCGN") {
-					console.log("Here, OCGN shouldn't have a friend; then it should:");
-					console.log(friend.friend);
-					console.log(friend.collateral);
-					console.log("Here, I shouldn't have a friend; ever:");
-					console.log(me.friend);
-					console.log(me.collateral);
-					
-				}
-				findCallPair(symbol, friend);	
-				if (symbol == "OCGN") {				
-					console.log(friend.friend);
-					console.log(friend.collateral);
-					console.log(me.friend);
-					console.log(me.collateral);
-				}
-				
+				findCallPair(symbol, friend);			
 				me.closeRelease = totalCollateral - condor(symbol);
 				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
-				
-				if (symbol == "OCGN") {				
-					console.log(friend.friend);
-					console.log(friend.collateral);
-					console.log(me.friend);
-					console.log(me.collateral);
-				}
-				
 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
@@ -1403,19 +1377,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				me.expire = myExpire;
-				me.collateral = Infinity;
-				let success = findCallPair(symbol, null, me);
-				
-				console.log("Always true:");
-				console.log(success);
-				
-				
-				if (symbol == "OCGN") {				
-					console.log(friend.friend);
-					console.log(friend.collateral);
-					console.log(me.friend);
-					console.log(me.collateral);
-				}
+				delete me.collateral;
+				findCallPair(symbol, null, me);
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
@@ -1719,8 +1682,7 @@ function findCallPair(symbol, defCall, shortCall) {
 	
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire 
-		    && (callGain(defCall, shortCall, subject) > maxGain || 
-			(maxGain == Infinity && callGain(defCall, shortCall, subject) == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
@@ -1750,17 +1712,13 @@ function findCallPair(symbol, defCall, shortCall) {
 			if (defCall) findCallPair(symbol, orphan);
 			else if (shortCall) findCallPair(symbol, null, orphan);
 		}
-		return true;
 	}	
-	return false;
 }
 	
 function clearOption(option) {
 	delete option.friend;
 	delete option.release;
-	
-	if (option.type == "call") option.collateral = Infinity;
-	else option.collateral = option.strike;
+	delete option.collateral;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	
@@ -1823,10 +1781,7 @@ function noCondorCalls(symbol) {
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
 		if (contract.collateral !== undefined) totalCalls += contract.collateral;
-		else {
-			console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
-			console.log(contract);
-		}
+		else console.log("CALL CONTRACT LACKS COLLATERAL");
 	});	
 	return totalCalls;
 }
@@ -1855,10 +1810,7 @@ function condor(symbol, build) {
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		} else {
-			console.log("CALL CONTRACT LACKS COLLATERAL" + symbol);
-			console.log(contract);
-		}
+		} else console.log("CALL CONTRACT LACKS COLLATERAL");
 	});
 	
 	data.shortPut.forEach(function(contract) {

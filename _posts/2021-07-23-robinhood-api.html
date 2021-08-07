@@ -1311,9 +1311,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				else return 0;					
 			});
 
-			if (symbol == "MVIS" || symbol == "OCGN") {				
-				console.log(JSON.stringify(optionsBySymbol[symbol]));
-			}
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
 			}
@@ -1648,7 +1645,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	}
 	
 	Promise.all(promises).then(function() {	
-		console.log(JSON.stringify(optionsBySymbol));
 		endpointCounter++;			
 		if (endpointCounter == neededCounter) {
 			if (active(D('soundButton'))) D('complete').play();
@@ -1686,7 +1682,8 @@ function findCallPair(symbol, defCall, shortCall) {
 	
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire 
-		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+		    && (callGain(defCall, shortCall, subject) > maxGain || 
+			(maxGain == Infinity && callGain(defCall, shortCall, subject) == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
@@ -1814,10 +1811,7 @@ function condor(symbol, build) {
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		} else {
-			console.log("CALL CONTRACT LACKS COLLATERAL");
-			console.log(symbol);
-		}
+		} else console.log("CALL CONTRACT LACKS COLLATERAL");
 	});
 	
 	data.shortPut.forEach(function(contract) {

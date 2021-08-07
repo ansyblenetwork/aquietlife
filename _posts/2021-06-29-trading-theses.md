@@ -1,5 +1,5 @@
 ---
-title: "Opportunism, capital efficiency, and diversification (OCD): The three principles of trading"
+title: "Principles II: Opportunism, capital efficiency, and diversification (OCD)"
 ---
 
 Every trading decision should be backed by a thesis. In turn, every thesis should uphold one or more of the following principles:

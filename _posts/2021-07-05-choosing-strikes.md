@@ -1,5 +1,5 @@
 ---
-title: "Choosing strikes for your options trades"
+title: "Tactics II: Choosing strikes for your options trades"
 ---
 
 Choosing an appropriate strike is a much harder task than choosing an appropriate expiration date.

@@ -1681,11 +1681,14 @@ function findCallPair(symbol, defCall, shortCall) {
 	}
 	
 	function evaluate(defCall, shortCall, subject) {
-		if (defCall.expire >= shortCall.expire 
-		    && (callGain(defCall, shortCall, subject) > maxGain || (maxGain == Infinity && callCollateral(defCall, shortCall) < collateral ))) {
+		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
+			if (!subject.friend || (seeker == defCall && subject.friend.expiration >= seeker.expiration)
+			   || (seeker == shortCall && subject.friend.expiration <= seeker.expiration)
+			   ) {
 			maxGain = callGain(defCall, shortCall, subject);
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
+			}
 		}
 	}
 
@@ -1740,10 +1743,14 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 	
 	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putGain(defPut, shortPut, subject) > maxGain) {
+		if (defPut.expire >= shortPut.expire && putRelease(defPut, shortPut) > release) {			
+			if (!subject.friend || (seeker == defPut && subject.friend.expiration >= seeker.expiration)
+			   || (seeker == shortPut && subject.friend.expiration <= seeker.expiration)
+			   ) {
 			maxGain = putGain(defPut, shortPut, subject);
 			release = putRelease(defPut, shortPut);
 			candidate = subject;
+			}
 		}
 	}
 	

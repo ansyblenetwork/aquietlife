@@ -1,5 +1,5 @@
 ---
-title: "Buy capital, not premium"
+title: "Tactics IV: Buy capital, not premium"
 ---
 
 According to the principle of capital efficiency with respect to the [case for shorting options contracts]({% post_url 2021-06-28-case-for-trading %}), you should never buy extrinsic value, or premium.

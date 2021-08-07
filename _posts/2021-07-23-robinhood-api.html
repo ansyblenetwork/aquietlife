@@ -1247,6 +1247,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			let quantity = parseInt(optionsPositions[i].quantity);
 			for (let j = 0; j < quantity; j++) {
 				let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
+				if (optionData.type == "call") dat.collateral = Infinity;
+				else dat.collateral = dat.strike;
 				if (optionsPositions[i].type == "short") {
 					if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
 					else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
@@ -1401,7 +1403,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				}
 
 				me.expire = myExpire;
-				delete me.collateral;
+				me.collateral = Infinity;
 				let success = findCallPair(symbol, null, me);
 				
 				console.log("Always true:");
@@ -1756,7 +1758,9 @@ function findCallPair(symbol, defCall, shortCall) {
 function clearOption(option) {
 	delete option.friend;
 	delete option.release;
-	delete option.collateral;
+	
+	if (option.type == "call") option.collateral = Infinity;
+	else option.collateral = option.strike;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	

@@ -1279,8 +1279,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
-				else if (a.strike > b.strike) return 1;
-				else if (a.strike < b.strike) return -1;
+				else if (a.strike < b.strike) return 1;
+				else if (a.strike > b.strike) return -1;
 				else return 0;					
 			});
 			optionsBySymbol[symbol].defPut.sort(function(b, a) { 
@@ -1299,8 +1299,8 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			optionsBySymbol[symbol].shortCall.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;
 				else if (a.expire < b.expire) return -1;
-				else if (a.strike < b.strike) return 1;
-				else if (a.strike > b.strike) return -1;
+				else if (a.strike > b.strike) return 1;
+				else if (a.strike < b.strike) return -1;
 				else return 0;					
 			});
 			optionsBySymbol[symbol].defCall.sort(function(b, a) {

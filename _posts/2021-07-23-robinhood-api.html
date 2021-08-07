@@ -1355,10 +1355,12 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				if (symbol == "OCGN") {
 					console.log("Here, OCGN shouldn't have a friend; then it should:");
 					console.log(friend.friend);
+					console.log(friend.collateral);
 				}
 				findCallPair(symbol, friend);	
 				if (symbol == "OCGN") {				
 					console.log(friend.friend);
+					console.log(friend.collateral);
 				}
 				
 				me.closeRelease = totalCollateral - condor(symbol);

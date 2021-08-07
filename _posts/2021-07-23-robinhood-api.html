@@ -1782,7 +1782,7 @@ function noCondorCalls(symbol) {
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
 		if (contract.collateral !== undefined) totalCalls += contract.collateral;
-		else console.log("CALL CONTRACT LACKS COLLATERAL");
+		else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
 	});	
 	return totalCalls;
 }
@@ -1811,7 +1811,7 @@ function condor(symbol, build) {
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		} else console.log("CALL CONTRACT LACKS COLLATERAL");
+		} else console.log("CALL CONTRACT LACKS COLLATERAL" + symbol);
 	});
 	
 	data.shortPut.forEach(function(contract) {

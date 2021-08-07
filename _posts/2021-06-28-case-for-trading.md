@@ -1,5 +1,5 @@
 ---
-title: "The case for shorting stock options"
+title: "Principles I: The case for shorting stock options"
 ---
 
 This is my case for taking on the riskiest trade of all: Shorting options contracts. There are many articles about this online, but I wanted to do this systematically, myself.

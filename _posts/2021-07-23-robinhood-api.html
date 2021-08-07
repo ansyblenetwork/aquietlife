@@ -1402,7 +1402,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 				me.expire = myExpire;
 				delete me.collateral;
-				findCallPair(symbol, null, me);
+				let success = findCallPair(symbol, null, me);
+				
+				console.log("Always true:");
+				console.log(success);
 				
 				
 				if (symbol == "OCGN") {				
@@ -1745,7 +1748,9 @@ function findCallPair(symbol, defCall, shortCall) {
 			if (defCall) findCallPair(symbol, orphan);
 			else if (shortCall) findCallPair(symbol, null, orphan);
 		}
+		return true;
 	}	
+	return false;
 }
 	
 function clearOption(option) {

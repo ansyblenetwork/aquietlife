@@ -60,12 +60,7 @@ title: "Options collateral analysis via the Robinhood API"
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="recList"></ul>
 		</div>
 		
-	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">
-		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
-		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
-		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
-		<button id="stButton" style="margin:10px" onclick="updateEarnings();">Load</button>
-		
+	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">		
 		<div style="width:max-content; margin:auto; margin-bottom:10px">
 		<input onkeyup="if (event.keyCode == 27) this.value = '';
 				else if (event.keyCode == 13) {
@@ -75,6 +70,11 @@ title: "Options collateral analysis via the Robinhood API"
 		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="updateOptions(true)">Fetch</button>
 		</div>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="optionslist"></ul>
+		
+		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
+		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
+		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
+		<button id="stButton" style="margin:10px" onclick="updateEarnings();">Load</button>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:

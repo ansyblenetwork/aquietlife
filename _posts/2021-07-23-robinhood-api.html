@@ -1371,6 +1371,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				
 				me.closeRelease = totalCollateral - condor(symbol);
 				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
+				
+				if (symbol == "OCGN") {				
+					console.log(friend.friend);
+					console.log(friend.collateral);
+					console.log(me.friend);
+					console.log(me.collateral);
+				}
+				
 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
@@ -1395,6 +1403,14 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				me.expire = myExpire;
 				delete me.collateral;
 				findCallPair(symbol, null, me);
+				
+				
+				if (symbol == "OCGN") {				
+					console.log(friend.friend);
+					console.log(friend.collateral);
+					console.log(me.friend);
+					console.log(me.collateral);
+				}
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	

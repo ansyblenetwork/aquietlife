@@ -1,5 +1,5 @@
 ---
-title: "Collateral: The right way to understand options strategies"
+title: "Principles III: Understanding options strategies through collateral"
 ---
 
 I like fundamental concepts (generally - not only in the sense of financial lingo). In particular, one of my pet peeves is when options traders talk about complex options strategies, often to flex a supposedly deep understanding of options.

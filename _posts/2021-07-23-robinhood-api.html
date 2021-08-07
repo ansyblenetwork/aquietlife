@@ -1285,6 +1285,12 @@ optionsBySymbol.MVIS = JSON.parse('{"shortCall":[{"url":"https://api.robinhood.c
 				
 			}
 			
+			if (symbol == "OCGN") {
+				
+optionsBySymbol.OCGN = JSON.parse('{"shortCall":[{"url":"https://api.robinhood.com/options/instruments/e85382e6-5643-42ca-bf41-1e017cf2e904/","type":"call","expire":"2021-08-13","strike":1000},{"url":"https://api.robinhood.com/options/instruments/e35ea9af-af20-472a-bb63-16783c287d12/","type":"call","expire":"2021-08-06","strike":950},{"url":"https://api.robinhood.com/options/instruments/6b847d72-b529-430d-8887-4a67a3b3a665/","type":"call","expire":"2021-08-06","strike":1300}],"shortPut":[{"url":"https://api.robinhood.com/options/instruments/5d9956a4-b1fe-4be4-b947-4239b0a3ea4e/","type":"put","expire":"2021-08-06","strike":750},{"url":"https://api.robinhood.com/options/instruments/5d9956a4-b1fe-4be4-b947-4239b0a3ea4e/","type":"put","expire":"2021-08-06","strike":750},{"url":"https://api.robinhood.com/options/instruments/5dfced39-83ba-49f2-baa0-d57c5cf3a4d3/","type":"put","expire":"2021-08-06","strike":600}],"defCall":[{"url":"https://api.robinhood.com/options/instruments/659062fb-dd8d-4a0a-ab6c-a5e0c3b96e72/","type":"call","expire":"2021-08-06","strike":1200},{"url":"https://api.robinhood.com/options/instruments/ff79972c-b2b5-4635-aaf6-942faf7f700f/","type":"call","expire":"2021-08-06","strike":1500},{"url":"https://api.robinhood.com/options/instruments/191f2cf4-45cb-4062-8091-ad76075dab34/","type":"call","expire":"2021-08-13","strike":1200}],"defPut":[{"url":"https://api.robinhood.com/options/instruments/2d036cba-d0f7-4faf-8ec1-c14f7da96f59/","type":"put","expire":"2021-08-06","strike":700},{"url":"https://api.robinhood.com/options/instruments/2d036cba-d0f7-4faf-8ec1-c14f7da96f59/","type":"put","expire":"2021-08-06","strike":700},{"url":"https://api.robinhood.com/options/instruments/93df9a4d-4afa-4147-afce-e67a0f3aed7c/","type":"put","expire":"2021-08-06","strike":500}],"tick":0.01}');
+				
+			}
+			
 			
 			optionsBySymbol[symbol].shortPut.sort(function(b, a) {
 				if (a.expire > b.expire) return 1;

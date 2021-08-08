@@ -30,7 +30,7 @@ Sometimes people talk about "wanting assignment" in the course of a wheel strate
 
 This doesn't mean that wheeling and rolling are necessarily bad responses to losing trades. Both wheeling and rolling have the advantage of capturing mean-reversion tendencies. Typically, a trade which ends in management is a surprise mixed in with some capitulation, and some mean-reversion is in store. (Even if this is not reflected in the underlying stock price, it is typically reflected in the options chain via inflated premiums.) 
 
-However, it is easy to lean too much into both management strategies. Trading to break even on a losing trade typically induces a position that is larger or riskier than the trader would have taken in the absence of the preceding loss.
+However, it is easy to lean too much into both management strategies. Trading to break even on a losing trade typically induces a position that is larger or riskier than the trader would have initiated in the absence of the preceding loss.
 
 ### Aim to lose
 

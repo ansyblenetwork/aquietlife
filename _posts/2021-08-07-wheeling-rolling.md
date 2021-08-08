@@ -24,7 +24,7 @@ There are a few reasons you might want to wheel, however.
 
 ### Losing 
 
-Sometimes people talk about "wanting assignment" in the course of a wheel strategy. However, there is no such thing as a good options loss. Part of the game is correctly predicting a stock's Friday market price. Being wrong has (high) opportunity costs. If you were better at the game, you would not get assigned, but instead have your position expire at the money and buy the underlying after hours on Friday with your released collateral.
+Sometimes people talk about "wanting assignment" in the course of a wheel strategy. However, there is no such thing as a good options loss. The whole point of options trading is correctly predicting a stock's Friday market price, and being wrong has irrecoverable (and high) opportunity costs. If you were better at the game, you would never get assigned, but instead have your position expire at the money. If you liked the stock, you would then be free to buy the underlying after hours on Friday with your released collateral.
 
 (People rarely talk about wanting to roll their positions - another nominal advantage of rolling.)
 

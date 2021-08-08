@@ -36,7 +36,7 @@ This reminded me of a freakonomics episode I overheard on the radio in grad scho
 > 
 > Is that going win us a medal? Well, no, it’s not. But is it going to contribute to it? Yeah, potentially.
 
-Algorithmic trading, or "advanced trading" (in the sense of [advanced chess](https://en.wikipedia.org/wiki/Advanced_chess), is a bit like this. It helps automate some calculations. This frees a lot of mental capacity, allowing the user to focus exclusively on the decisions that really matter.
+Algorithmic trading, or "advanced trading" (in the sense of [advanced chess](https://en.wikipedia.org/wiki/Advanced_chess)), is a bit like this. It helps ensure optimal strategy on deterministic factors, akin to preventing blunders in chess. It also helps automate many calculations. This frees a lot of mental capacity, allowing the user to focus exclusively on the decisions that really matter.
 
 ### Success?
 

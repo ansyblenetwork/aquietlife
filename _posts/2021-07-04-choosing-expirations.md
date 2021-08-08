@@ -1,5 +1,5 @@
 ---
-title: "Tactics I: Choosing expirations for your options trades"
+title: "Options Tactics I: Choosing expirations for your options trades"
 ---
 
 There is a lot of bad advice on the internet for how to choose an expiration for your options contracts.

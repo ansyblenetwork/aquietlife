@@ -294,17 +294,16 @@ function updateOptions(newOption) {
 				let altData = {strike:0, premium:0, contract:""};
 				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
 	
-				let calldefleg = buildli(defData.contract, data);
+				D('optionslist').appendChild(buildli(defData.contract, data));
+				let calldefleg = buildli(altData.contract, data);
 				D('optionslist').appendChild(calldefleg);
-				let calldefleg2 = buildli(altData.contract, data);
-				D('optionslist').appendChild(calldefleg2);
 				
 				if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altData.strike);				
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
 				
 				rhfetch.then(function() {
 				let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
-				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, query);
+				createBuyOrder(calldefleg, 'call', 'buy', 0, callOrders, query);
 				});
 				       
 				let callArray = [];
@@ -317,7 +316,7 @@ function updateOptions(newOption) {
 				callArray.forEach(function(contract) {				
 					if (maxReturn < returnRate(contract, altData)) {
 						maxReturn = returnRate(contract, altData);
-						let contractli = buildli(contract, data, calldefleg2, altData);
+						let contractli = buildli(contract, data, calldefleg, altData);
 						D('optionslist').appendChild(contractli);
 						
 						rhfetch.then(function() {
@@ -349,18 +348,18 @@ function updateOptions(newOption) {
 				altData = {strike:0, premium:0, contract:""};
 				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
 				
-				let putdefleg2 = buildli(altData.contract, data);
-				D('optionslist').appendChild(putdefleg2);
-				let putdefleg = buildli(defData.contract, data);
+				let putdefleg = buildli(altData.contract, data);
 				D('optionslist').appendChild(putdefleg);
-				putdefleg.style.marginBottom = "30px";
+				let cheapestPut = buildli(defData.contract, data);
+				D('optionslist').appendChild(cheapestPut);
+				cheapestPut.style.marginBottom = "30px";
 				
 				if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'put', altData.strike);				
 				let altDupe = {strike:altData.strike, premium:altData.premium, contract:altData.contract};
 				
 				rhfetch.then(function() {
 				let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altDupe, contractDate, query);
-				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, query);
+				createBuyOrder(putdefleg, 'put', 'buy', 0, putOrders, query);
 				});
 	
 				let putArray = [];
@@ -373,7 +372,7 @@ function updateOptions(newOption) {
 				putArray.forEach(function(contract) {				
 					if (maxReturn < returnRate(contract, altData)) {
 						maxReturn = returnRate(contract, altData);
-						let contractli = buildli(contract, data, putdefleg2, altData);
+						let contractli = buildli(contract, data, putdefleg, altData);
 						D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 						
 						rhfetch.then(function() {
@@ -658,14 +657,14 @@ function generateRec(symbol, data) {
 				console.log("Call rec:");
 				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].call);
 				console.log(75*(candidateObj.call.altData.strike - candidateObj.call.contract.strikePrice));
-				let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
-				bag.appendChild(calldefleg2);
-				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
+				let calldefleg = buildli(candidateObj.call.altData.contract, data);
+				bag.appendChild(calldefleg);
+				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg, candidateObj.call.altData);
 				bag.appendChild(calloffleg);
 				callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
 
 				let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol);
-				createBuyOrder(calldefleg2, 'call', 'buy', 0, callOrders, symbol);
+				createBuyOrder(calldefleg, 'call', 'buy', 0, callOrders, symbol);
 				createBuyOrder(calloffleg, 'call', 'sell', 0, sellCallOrders, symbol);
 			}
 
@@ -684,15 +683,15 @@ function generateRec(symbol, data) {
 				console.log("Put rec:");
 				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].put);
 				console.log(75*(candidateObj.put.contract.strikePrice - candidateObj.put.altData.strike));
-				let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
-				bag.appendChild(putdefleg2);
-				putdefleg2.style.marginBottom = "30px";
-				let putoffleg = buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData);
+				let putdefleg = buildli(candidateObj.put.altData.contract, data);
+				bag.appendChild(putdefleg);
+				putdefleg.style.marginBottom = "30px";
+				let putoffleg = buildli(candidateObj.put.contract, data, putdefleg, candidateObj.put.altData);
 				bag.insertBefore(putoffleg, referenceli.nextElementSibling);
 				putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);
 				
 				let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract, contractDate, symbol);
-				createBuyOrder(putdefleg2, 'put', 'buy', 0, putOrders, symbol);
+				createBuyOrder(putdefleg, 'put', 'buy', 0, putOrders, symbol);
 				createBuyOrder(putoffleg, 'put', 'sell', 0, sellPutOrders, symbol);
 			} else referenceli.style.marginBottom = "30px";		
 

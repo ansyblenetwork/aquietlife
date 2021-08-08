@@ -282,9 +282,7 @@ function updateOptions(newOption) {
 			currentOption = query;	
 			clearDOM(D('optionslist'));
 			
-			
-			let rhfetch;
-			
+			let rhfetch;			
 			for (let contractDate in data.putExpDateMap) {
 						   
 			/////////////////////// CALLS //////////////////////////////////
@@ -478,8 +476,6 @@ if (confirm(confMsg)) {
 });
 }
 	
-	
-	
 function setBuyOrders(data, altData, contractDate, symbol) {
 	let ask = inDollars(altData.premium);
 	let bid = inDollars(altData.contract.bid);
@@ -494,52 +490,36 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
-	function processOrderList(orders, endpoint) {
-		orders.sort(function(y, x) {return rate(x) - rate(y);});
-		if (orders.length > 3) {
-			let sparseOrders = [];
-			for (let i = 0; i < 3; i++) {
-				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
-			}
-			if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-			return sparseOrders;
-		}
-		return orders;
-	}
 	
 	let orders = [];
-	for (let i = bid + tick; i <= ask; i += tick) {
-		for (let contractStrike in data) {
-			let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike)) {
-				if (inDollars(contract.bid) < i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+	let atStrikeOrders = [];
+	for (let contractStrike in data) {
+		let contract = data[contractStrike][0];
+		for (let i = bid + tick; i <= ask; i += tick) {
+			if (inDollars(contract.bid) < i) {
+				if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike))
+					orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}
 	}
 	orders = processOrderList(orders);
+	atStrikeOrders = processOrderList(atStrikeOrders, true);	
+	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
+}	
 	
-	let atStrikeOrders = [];
-	for (let contractStrike in data) {
-		let contract = data[contractStrike][0];
-		if (contract.strikePrice == strike) {
-			for (let i = bid + tick; i <= ask; i += tick) {
-				if (inDollars(contract.bid) < i) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
+function processOrderList(orders, endpoint) {
+	orders.sort(function(y, x) {return rate(x) - rate(y);});
+	if (orders.length > 3) {
+		let sparseOrders = [];
+		for (let i = 0; i < 3; i++) {
+			sparseOrders.push(orders[Math.round(i*orders.length/3)]);
 		}
+		if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+		return sparseOrders;
 	}
-	atStrikeOrders = processOrderList(atStrikeOrders, true);
-	
-	let myorder = orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
-	
-	if (myorder.length == 0) {
-		console.log("Something wrong with orders! length zero.");
-		console.log(data);
-		console.log(altData);
-		console.log(contractDate);
-		console.log(symbol);
-	}
-	return myorder;
-}		
+	return orders;
+}
 	
 function setSellOrders(data, mainContract, contractDate, symbol) {
 	let ask = inDollars(mainContract.ask);
@@ -555,42 +535,21 @@ function setSellOrders(data, mainContract, contractDate, symbol) {
 		if (collateral == 0) collateral = 0.0001;
 		return collateral / cost;
 	}
-	
-	function processOrderList(orders, endpoint) {
-		orders.sort(function(y, x) {return rate(x) - rate(y);});
-		if (orders.length > 3) {
-			let sparseOrders = [];
-			for (let i = 0; i < 3; i++) {
-				sparseOrders.push(orders[Math.round(i*orders.length/3)]);
-			}
-			if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-			return sparseOrders;
-		}
-		return orders;
-	}
 
 	let orders = [];
-	for (let i = bid; i <= ask - tick; i += tick) {
-		for (let contractStrike in data) {
-			let contract = data[contractStrike][0];
-			if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike)) {
-				if (inDollars(contract.ask) > i) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+	let atStrikeOrders = [];
+	for (let contractStrike in data) {
+		let contract = data[contractStrike][0];
+		for (let i = bid; i <= ask - tick; i += tick) {
+			if (inDollars(contract.ask) > i) {
+				if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike))
+					orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}
 	}
 	orders = processOrderList(orders);
-	
-	let atStrikeOrders = [];
-	for (let contractStrike in data) {
-		let contract = data[contractStrike][0];
-		if (contract.strikePrice == strike) {
-			for (let i = bid; i <= ask - tick; i += tick) {
-				if (inDollars(contract.ask) > i) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
-		}
-	}
-	atStrikeOrders = processOrderList(atStrikeOrders, true);
-	
+	atStrikeOrders = processOrderList(atStrikeOrders, true);	
 	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 }	
 	
@@ -1149,8 +1108,6 @@ function getData() {
 	});
 	updateStocktwits();
 }	
-
-	
 	
 window.addEventListener('keydown', function(evt) {
 	if (evt.keyCode == 81 && evt.altKey) {

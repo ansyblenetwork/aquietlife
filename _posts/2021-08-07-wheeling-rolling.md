@@ -36,8 +36,8 @@ However, it is easy to lean too much into both management strategies. Trading to
 
 Use losses as indicators.
 
-1. First, view losses as events that bring your attention to good trades. Use either wheeling or rolling as trading strategies, not management strategies. Trade your strategy and trade to win, not to break even.
-2. Expect or even aim to have a few losing trades a month. Having no losses is indicative of strikes that are too far out of the money, with unearned premium as an opportunity cost.
+1. Expect or even aim to have a few losing trades a month. Having no losses is indicative of strikes that are too far out of the money, with unearned premium as an opportunity cost.
+2. View losses as events that bring your attention to good trades. Use either wheeling or rolling as trading strategies, not management strategies. Trade your strategy and trade to win, not to break even.
 
 The nice thing about losses on options trades is that the positives are all proportional. If your losses are rare, they should also be small; and if your losses are small, it should be easy to strip emotions from your management strategy.
 

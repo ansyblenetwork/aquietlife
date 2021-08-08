@@ -4,7 +4,7 @@ title: "Options Tactics VI: Wheeling, rolling, and losing"
 
 When a trade is challenged by assignment (or in the case of a spread, liquidation), should you take assignment, roll the trade, or exit the trade?
 
-Unlike a lot of other tactical questions regarding options trading, there seems to be some disagreement on the internet, with reasonable adoption of all three.
+Unlike a lot of other tactical questions regarding options trading, there seems to be some disagreement on the internet, with reasonable adoption of all three approaches.
 
 My take: Roll rather than wheel, view both as losses, but aim to lose occasionally.
 

@@ -1,5 +1,5 @@
 ---
-title: "Tactics VI: Wheeling, rolling, and losing"
+title: "Options Tactics VI: Wheeling, rolling, and losing"
 ---
 
 When a trade is challenged by assignment (or in the case of a spread, liquidation), should you take assignment, roll the trade, or exit the trade?

@@ -1,5 +1,5 @@
 ---
-title: "Tactics III: Favoring illiquid strikes"
+title: "Options Tactics III: Favoring illiquid strikes"
 ---
 
 Given the opportunity, you should trade options at strikes with low liquidity. This is fairly obvious to me, but I have never heard anyone recommend it.

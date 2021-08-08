@@ -1152,27 +1152,25 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 					if (orderData.legs[0].side == "sell" && orderData.legs[0].position_effect == "close") 
 						myMsg = "Keep this defensive leg, and perhaps put it to use?";
 
-					if (confirm(myMsg)) {
+					if (!confirm(myMsg)) return false;
 					cancelSequence(orderData.cancel_url, orderData.id, orderli, origin).then(function(result) {
-						if (result) {
-							clickable(orderli.firstChild);
-							orderli.firstChild.onclick = function() {
-								let confirmMsg = "Re-order, selling for less?";
-								if (orderData.legs[0].side == "buy") confirmMsg = "Re-order, buying for more?";
-								if (confirm(confirmMsg)) {
-									let price = parseFloat(orderData.price) + parseFloat(optionData.min_ticks.below_tick);
-									if (orderData.legs[0].side == 'sell') price = parseFloat(orderData.price) - parseFloat(optionData.min_ticks.below_tick);
+						if (!result) return false;
+						clickable(orderli.firstChild);
+						orderli.firstChild.onclick = function() {
+							let confirmMsg = "Re-order, selling for less?";
+							if (orderData.legs[0].side == "buy") confirmMsg = "Re-order, buying for more?";
+							if (confirm(confirmMsg)) {
+								let price = parseFloat(orderData.price) + parseFloat(optionData.min_ticks.below_tick);
+								if (orderData.legs[0].side == 'sell') price = parseFloat(orderData.price) - parseFloat(optionData.min_ticks.below_tick);
 
-									fetchData('https://api.robinhood.com/options/orders/', 
-										  'POST', 
-										  { headers:authHeader,	json:makeOrderForm(orderData.legs[0].position_effect, orderData.legs[0].side, orderData.legs[0].option, price, parseFloat(optionData.min_ticks.below_tick)) }).then(function(newdata) {
-										createGenericOrder(optionData, orderli);
-									});
-								}
+								fetchData('https://api.robinhood.com/options/orders/', 
+									  'POST', 
+									  { headers:authHeader,	json:makeOrderForm(orderData.legs[0].position_effect, orderData.legs[0].side, orderData.legs[0].option, price, parseFloat(optionData.min_ticks.below_tick)) }).then(function(newdata) {
+									createGenericOrder(optionData, orderli);
+								});
 							}
 						}
 					});
-					}
 				}
 			}
 			if (urlMap[symbol]) createGenericOrder(urlMap[symbol]);
@@ -1358,7 +1356,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				function createSingleOrder(li, contract, orderPrem) {
 				clickable(li.firstChild);
 				li.firstChild.onclick = function() {
-				if (confirm("Sell this orphan defensive leg, for a dollar or two?")) {
+					if (!confirm("Sell this orphan defensive leg, for a dollar or two?")) return false;
 					D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});	
 					function singleOrderProceed(li, contract, orderPrem) {
 						fetchData('https://api.robinhood.com/options/orders/', 
@@ -1390,37 +1388,35 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					singleOrderProceed(li, contract, orderPrem);
 				}
 				}
-				}
 				
-				function checkOrphanDef(contract, type) {					
-					if (!contract.friend) {
-						let li = makeli(symbol, contract);
-						let prem = 0;
-						let vol = 0;
-						let strikeList = data.putExpDateMap[dateMap(contract.expire)];
-						if (type == "call") strikeList = data.callExpDateMap[dateMap(contract.expire)];
-						if (strikeList) {
-							if (!(strikeList[strikeMap(contract.strike)])) prem = -1; // this is in the money
-							else {
-								prem = strikeList[strikeMap(contract.strike)][0].bid;
-								vol =  strikeList[strikeMap(contract.strike)][0].totalVolume;
-							}
+				function checkOrphanDef(contract, type) {
+					if (contract.friend) return false;
+					let li = makeli(symbol, contract);
+					let prem = 0;
+					let vol = 0;
+					let strikeList = data.putExpDateMap[dateMap(contract.expire)];
+					if (type == "call") strikeList = data.callExpDateMap[dateMap(contract.expire)];
+					if (strikeList) {
+						if (!(strikeList[strikeMap(contract.strike)])) prem = -1; // this is in the money
+						else {
+							prem = strikeList[strikeMap(contract.strike)][0].bid;
+							vol =  strikeList[strikeMap(contract.strike)][0].totalVolume;
 						}
-						let col = addCol(prem.toFixed(2), "75px", li);
-						if (prem > 0) col.style.backgroundColor = "#dff";
-						col = addCol(vol, "75px", li);
-						if (vol > 15) col.style.backgroundColor = "#dff";
-						D('singles').appendChild(li);
-						
-						if (prem > 0) {
-							if (!incompleteCondorList[symbol]) incompleteCondorList[symbol] = {};
-							if (!incompleteCondorList[symbol][contract.expire]) incompleteCondorList[symbol][contract.expire] = {};
-							if (type == "call") incompleteCondorList[symbol][contract.expire].call = 3000;
-							else incompleteCondorList[symbol][contract.expire].put = 3000;
-						}
-						
-						createSingleOrder(li, contract, prem + tick);
 					}
+					let col = addCol(prem.toFixed(2), "75px", li);
+					if (prem > 0) col.style.backgroundColor = "#dff";
+					col = addCol(vol, "75px", li);
+					if (vol > 15) col.style.backgroundColor = "#dff";
+					D('singles').appendChild(li);
+
+					if (prem > 0) {
+						if (!incompleteCondorList[symbol]) incompleteCondorList[symbol] = {};
+						if (!incompleteCondorList[symbol][contract.expire]) incompleteCondorList[symbol][contract.expire] = {};
+						if (type == "call") incompleteCondorList[symbol][contract.expire].call = 3000;
+						else incompleteCondorList[symbol][contract.expire].put = 3000;
+					}
+
+					createSingleOrder(li, contract, prem + tick);
 				}
 				optionsBySymbol[symbol].defPut.forEach(function(contract) {
 					checkOrphanDef(contract, "put");

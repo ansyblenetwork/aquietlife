@@ -11,9 +11,32 @@ My qualitative recommendation is to focus more on opportunism than capital effic
 
 So in a nutshell, one should start with strikes deep out of the money (OTM), with low liquidity and the possibility of high inefficiency. I will discuss this (fairly contrarian) view in another post. For now, I also have some remarks on quantiative recommendations.
 
+
+
+### The case against delta
+
+I've [noted before](% post_url 2021-07-04-choosing-expirations %}) that I do not like discussing options Greeks. Here is an example of why.
+
+I just watched a Tasty Trade video discussing the "perfect delta" to trade at. They roughly agreed with my point that the answer is not clear, and their explanations were actually pretty similar to mine, at least in spirit. However, as part of their discussion, they kept saying something to the effect of:
+
+> Our research shows that 0.5 delta contracts are the most capital efficient.
+
+That claim bugs me to no end, and here's why: A 0.5 delta contract is synonymous with an ATM contract. The conclusion of their research was the trivial fact that an ATM contract is most premium-efficient.
+
+This is just one instance demonstrating the harm of options Greeks: They mostly serve to obfuscate. This case was perhaps a mostly harmless instance of grandstanding, but sometimes the obfuscation leads to real detriment.
+
+The harms of using delta to choose strikes include the following:
+
+1. Its computation is opaque. You do not know exactly how your broker computes it, and how often they update it.
+2. Its affect on concrete quantities is opaque. Directionality is perhaps obvious - like a general proportionality between volatility and delta - but the exact relationship is not clear and adds unnecessary uncertainty to your trading strategy.
+3. Depending on the source, it's possible that delta is computed simply via the Black-Scholes model, which is agnostic to current options prices. This leaves important information on the table.
+
+
+
+
 ### Rate of return
 
-In the presence of so many strikes in any single options chain, how does one ground oneself (preferably quantitatively) to make a choice? My recommendation is simple: rate of return. It is the quantity that is easiest to compute and understand, and at the end of all things, it is the only quantity that matters.
+So in the presence of so many strikes in any single options chain, how does one ground oneself (preferably quantitatively) to make a choice? My recommendation is simple: rate of return. It is the quantity that is easiest to compute and understand, and at the end of all things, it is the only quantity that matters. You can easily compute it yourself, and this allows you to ensure that you are trading using real time data - a priceless advantage.
 
 However, this still doesn't help you decide which rate of return is best. There isn't really a clean answer. As I noted in the introduction, variable opportunistic factors should swamp almost any rule of thumb.
 
@@ -28,19 +51,4 @@ Here is a transcript of the relevant anecdote:
 > Now at a place like Berkshire Hathaway or even the Daily Journal, we’ve done better than average. And now there’s a question, why has that happened? Why has that happened? __And the answer is pretty simple. We tried to do less.__
 >
 > __We never had the illusion we could just hire a bunch of bright young people and they would know more than anybody about canned soup and aerospace and utilities and so on and so on and so on. We never had that dream.__
-
-
-
-
-### Delta: mostly unnecessary
-
-I've [noted before](% post_url 2021-07-04-choosing-expirations %}) that I do not like discussing options Greeks. Here is an example of why.
-
-I just watched a Tasty Trade video discussing the "perfect delta" to trade at. They roughly agreed with my point that the answer is not clear, and their explanations were actually pretty similar to mine, at least in spirit. However, as part of their discussion, they kept saying something to the effect of:
-
-> Our research shows that 0.5 delta contracts are the most capital efficient.
-
-That claim bugs me to no end, and here's why: A 0.5 delta contract is synonymous with an ATM contract. The conclusion of their research was the trivial fact that an ATM contract is most premium-efficient.
-
-This is just one instance demonstrating the harm of options Greeks: They mostly serve to obfuscate. This case was perhaps a mostly harmless instance of grandstanding, but sometimes the obfuscation leads to real detriment.
 

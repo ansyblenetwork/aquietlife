@@ -721,15 +721,18 @@ function setDefLeg(defContract, altContract, data, contractDate, symbol) {
 		let currentContract;
 		for (let contractStrike in data) {
 			let contract = data[contractStrike][0];
-
-			let cstrike = candData.strikePrice;
+			
+			let cask = 0;
+			if (candData) cask = candData.ask;
+			let cstrike = 0;
+			if (candData) cstrike = candData.strikePrice;
 			let astrike = altContract.strikePrice;
 			let newstrike = contract.strikePrice;
 			if (contract.putCall == "PUT") {
 				cstrike = -cstrike; astrike = -astrike; newstrike = -newstrike;
 			}
 			if (contract.ask > altContract.ask && newstrike < astrike
-				&& (candData.ask == 0 || contract.ask < candData.ask || (contract.ask == candData.ask && newstrike < cstrike))) {
+				&& (cask == 0 || contract.ask < cask || (contract.ask == cask && newstrike < cstrike))) {
 				candData = contract;
 				currentContract = contract;
 			}

@@ -628,7 +628,7 @@ function generateRec(symbol, data) {
 			if (evalContract(contract, data, altContract)) putArray.push(contract);
 		}
 		
-		let cumVol = 0;
+		cumVol = 0;
 		putArray.forEach(function(contract) {
 			cumVol += contract.totalVolume;
 			contract.totalVolume = cumVol;

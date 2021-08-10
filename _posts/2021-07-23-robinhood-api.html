@@ -314,11 +314,14 @@ function updateOptions(newOption) {
 
 			let maxReturn = 0;
 			let prevContract = altContract;
-			callArray.forEach(function(contract) {				
+			let cumVol = 0;
+			callArray.forEach(function(contract) {
+				cumVol += contract.totalVolume;
 				if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
 					prevContract = contract;
+					contract.totalVolume = cumVol;
 					let contractli = buildli(contract, data, calldefleg, altContract);
 					D('optionslist').appendChild(contractli);
 
@@ -373,11 +376,14 @@ function updateOptions(newOption) {
 
 			maxReturn = 0;
 			let prevContract = altContract;
+			let cumVol = 0;
 			putArray.forEach(function(contract) {
+				cumVol += contract.totalVolume;
 				if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
 					prevContract = contract;
+					contract.totalVolume = cumVol;
 					let contractli = buildli(contract, data, putdefleg, altContract);
 					D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 

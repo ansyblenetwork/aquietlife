@@ -313,9 +313,11 @@ function updateOptions(newOption) {
 			}	       
 
 			let maxReturn = 0;
+			let prevContract = altContract;
 			callArray.forEach(function(contract) {				
-				if (maxReturn < returnRate(contract, altContract)) {
-					maxReturn = returnRate(contract, altContract);
+				if (maxReturn < returnRate(contract, prevContract)) {
+					maxReturn = returnRate(contract, prevContract);
+					prevContract = contract;
 					let contractli = buildli(contract, data, calldefleg, altContract);
 					D('optionslist').appendChild(contractli);
 
@@ -369,9 +371,11 @@ function updateOptions(newOption) {
 			}
 
 			maxReturn = 0;
+			let prevContract = altContract;
 			putArray.forEach(function(contract) {				
-				if (maxReturn < returnRate(contract, altContract)) {
-					maxReturn = returnRate(contract, altContract);
+				if (maxReturn < returnRate(contract, prevContract)) {
+					maxReturn = returnRate(contract, prevContract);
+					prevContract = contract;
 					let contractli = buildli(contract, data, putdefleg, altContract);
 					D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 
@@ -573,11 +577,13 @@ function generateRec(symbol, data) {
 		}	       
 
 		let maxReturn = 0;
+		let prevContract = altContract;
 		let candidate;
 		callArray.forEach(function(contract) {
-			if (maxReturn < returnRate(contract, altContract)) {
+			if (maxReturn < returnRate(contract, prevContract)) {
 				candidate = contract;
-				maxReturn = returnRate(contract, altContract);
+				maxReturn = returnRate(contract, prevContract);
+					prevContract = contract;
 			}
 		});
 		
@@ -597,11 +603,13 @@ function generateRec(symbol, data) {
 		}
 
 		maxReturn = 0;
+		prevContract = altContract;
 		candidate = null;
 		putArray.forEach(function(contract) {
-			if (maxReturn < returnRate(contract, altContract)) {
+			if (maxReturn < returnRate(contract, prevContract)) {
 				candidate = contract;
-				maxReturn = returnRate(contract, altContract);
+				maxReturn = returnRate(contract, prevContract);
+					prevContract = contract;
 			}
 		});	
 		if (candidate) candidateObj.put = {contract:candidate, altContract:altContract};

@@ -823,7 +823,10 @@ function buildli(contract, data, defleg, altData) {
 	let lastTrade = "x";
 	if (contract.tradeTimeInLong) lastTrade = Math.round((Date.now() - contract.tradeTimeInLong)/60000);			       
 	addCol(lastTrade + "m", "75px", li);
-	if (altData) addCol(contract.totalVolume + "%", "50px", li);
+	if (altData) {
+		col = addCol(contract.totalVolume + "%", "50px", li);
+		if (contract.totalVolume < 11) col.style.backgroundColor = "#ddf";
+	}
 	else addCol(contract.totalVolume, "50px", li);
 	li.classList.add("libold");
 

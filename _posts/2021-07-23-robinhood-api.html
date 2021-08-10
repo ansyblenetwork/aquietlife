@@ -701,8 +701,9 @@ function stLinkify(str, stock, color) {
 function setDefLeg(defContract, altContract, data, contractDate, symbol) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
-
-		let dstrike = defContract.strikePrice;
+		
+		let dstrike = 0;
+		if (defContract) dstrike = defContract.strikePrice;
 		let newstrike = contract.strikePrice;
 		if (contract.putCall == "PUT") {
 			dstrike = -dstrike; newstrike = -newstrike;

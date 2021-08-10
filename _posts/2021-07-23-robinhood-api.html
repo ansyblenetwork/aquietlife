@@ -743,7 +743,7 @@ function setDefLeg(data, contractDate, symbol) {
 		if (!currentContract || altContract.strikePrice == candData.strikePrice || interestRate(currentContract, altContract) > fixedInterestRate) break;
 	}
 	
-	return {defContract:defContract; altContract:altContract};
+	return {defContract:defContract, altContract:altContract};
 }	
 	
 

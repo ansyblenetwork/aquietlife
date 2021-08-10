@@ -825,7 +825,7 @@ function buildli(contract, data, defleg, altData) {
 	addCol(lastTrade + "m", "75px", li);
 	if (altData) {
 		col = addCol(contract.totalVolume + "%", "50px", li);
-		if (contract.totalVolume < 11) col.style.backgroundColor = "#ddf";
+		if (contract.totalVolume < 12) col.style.backgroundColor = "#ddf";
 	}
 	else addCol(contract.totalVolume, "50px", li);
 	li.classList.add("libold");

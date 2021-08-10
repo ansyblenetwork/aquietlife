@@ -602,11 +602,11 @@ function generateRec(symbol, data) {
 		let prevContract = altContract;
 		let candidate;
 		callArray.forEach(function(contract) {	
-			if (contractAboveVolatility(contract, data)) {
+			contract.totalVolume = inDollars(contract.totalVolume/cumVol);
+			if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
 			if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 				if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 				if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-				contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 				candidate = contract;
 				prevContract = contract;
 			}
@@ -638,11 +638,11 @@ function generateRec(symbol, data) {
 		prevContract = altContract;
 		candidate = null;
 		putArray.forEach(function(contract) {
-			if (contractAboveVolatility(contract, data)) {
+			contract.totalVolume = inDollars(contract.totalVolume/cumVol);
+			if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
 			if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 				if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 				if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-				contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 				candidate = contract;
 				prevContract = contract;
 			}

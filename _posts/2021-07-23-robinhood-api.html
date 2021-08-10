@@ -325,7 +325,7 @@ function updateOptions(newOption) {
 					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
 					prevContract = contract;
-					contract.totalVolume = roundTwo(contract.totalVolume/cumVol);
+					contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 					let contractli = buildli(contract, data, calldefleg, altContract);
 					D('optionslist').appendChild(contractli);
 
@@ -391,7 +391,7 @@ function updateOptions(newOption) {
 					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
 					prevContract = contract;
-					contract.totalVolume = roundTwo(contract.totalVolume/cumVol);
+					contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 					let contractli = buildli(contract, data, putdefleg, altContract);
 					D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 
@@ -823,7 +823,8 @@ function buildli(contract, data, defleg, altData) {
 	let lastTrade = "x";
 	if (contract.tradeTimeInLong) lastTrade = Math.round((Date.now() - contract.tradeTimeInLong)/60000);			       
 	addCol(lastTrade + "m", "75px", li);
-	addCol(contract.totalVolume, "50px", li);
+	if (defleg) addCol(contract.totalVolume + "%", "50px", li);
+	else addCol(contract.totalVolume, "50px", li);
 	li.classList.add("libold");
 
 	if (defleg) {

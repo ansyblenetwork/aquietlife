@@ -589,18 +589,27 @@ function generateRec(symbol, data) {
 		let callArray = [];
 		for (let contractStrike in data.callExpDateMap[contractDate]) {
 			let contract = data.callExpDateMap[contractDate][contractStrike][0];
-			if (evalContract(contract, data, altContract) && contractAboveVolatility(contract, data)) callArray.unshift(contract);
+			if (evalContract(contract, data, altContract)) callArray.unshift(contract);
 		}	       
+		
+		let cumVol = 0;
+		callArray.forEach(function(contract) {
+			cumVol += contract.totalVolume;
+			contract.totalVolume = cumVol;
+		});
 
 		let maxReturn = 0;
 		let prevContract = altContract;
 		let candidate;
-		callArray.forEach(function(contract) {				
+		callArray.forEach(function(contract) {	
+			if (contractAboveVolatility(contract, data)) {
 			if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 				if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 				if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
+				contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 				candidate = contract;
 				prevContract = contract;
+			}
 			}
 		});
 		
@@ -616,18 +625,27 @@ function generateRec(symbol, data) {
 		let putArray = [];
 		for (let contractStrike in data.putExpDateMap[contractDate]) {
 			let contract = data.putExpDateMap[contractDate][contractStrike][0];
-			if (evalContract(contract, data, altContract) && contractAboveVolatility(contract, data)) putArray.push(contract);
+			if (evalContract(contract, data, altContract)) putArray.push(contract);
 		}
+		
+		let cumVol = 0;
+		putArray.forEach(function(contract) {
+			cumVol += contract.totalVolume;
+			contract.totalVolume = cumVol;
+		});
 
 		maxReturn = 0;
 		prevContract = altContract;
 		candidate = null;
 		putArray.forEach(function(contract) {
+			if (contractAboveVolatility(contract, data)) {
 			if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 				if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 				if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
+				contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 				candidate = contract;
 				prevContract = contract;
+			}
 			}
 		});	
 		if (candidate) candidateObj.put = {contract:candidate, altContract:altContract};

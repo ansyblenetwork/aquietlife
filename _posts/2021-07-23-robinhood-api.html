@@ -290,9 +290,9 @@ function updateOptions(newOption) {
 		/////////////////////// CALLS //////////////////////////////////
 			let DTE = 0;
 			if ( data.callExpDateMap[contractDate]) {
-			let defContract;
-			let altContract;
-			setDefLeg(defContract, altContract, data.callExpDateMap[contractDate]);
+			let pack = setDefLeg(data.callExpDateMap[contractDate]);
+			let defContract = pack.defContract;
+			let altContract = pack.altContract;
 
 			D('optionslist').appendChild(buildli(defContract, data));
 			let calldefleg = buildli(altContract, data);
@@ -344,9 +344,9 @@ function updateOptions(newOption) {
 
 		/////////////////////// PUTS //////////////////////////////////
 
-			let defContract;
-			let altContract;
-			setDefLeg(defContract, altContract, data.putExpDateMap[contractDate]);
+			let pack = setDefLeg(data.putExpDateMap[contractDate]);
+			let defContract = pack.defContract;
+			let altContract = pack.altContract;
 
 			let putdefleg = buildli(altContract, data);
 			D('optionslist').appendChild(putdefleg);
@@ -561,9 +561,9 @@ function generateRec(symbol, data) {
 		
 	/////////////////////// CALLS //////////////////////////////////
 
-		let defContract;
-		let altContract;
-		setDefLeg(defContract, altContract, data.callExpDateMap[contractDate]);
+		let pack = setDefLeg(data.callExpDateMap[contractDate]);
+		let defContract = pack.defContract;
+		let altContract = pack.altContract;
 		let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altContract, contractDate, symbol);
 	
 		let callArray = [];
@@ -584,10 +584,10 @@ function generateRec(symbol, data) {
 		if (candidate) candidateObj.call = {contract:candidate, altContract:altContract};
 
 	/////////////////////// PUTS //////////////////////////////////
-
-		defContract = null;
-		altContract = null;
-		setDefLeg(defContract, altContract, data.putExpDateMap[contractDate]);
+		
+		pack = setDefLeg(data.putExpDateMap[contractDate]);
+		defContract = pack.defContract;
+		altContract = pack.altContract;
 		let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altContract, contractDate, symbol);
 	
 		let putArray = [];
@@ -698,7 +698,9 @@ function stLinkify(str, stock, color) {
 	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
 }
 	
-function setDefLeg(defContract, altContract, data, contractDate, symbol) {      
+function setDefLeg(data, contractDate, symbol) {      
+	let defContract;
+	let altContract;
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 		
@@ -740,6 +742,8 @@ function setDefLeg(defContract, altContract, data, contractDate, symbol) {
 		
 		if (!currentContract || altContract.strikePrice == candData.strikePrice || interestRate(currentContract, altContract) > fixedInterestRate) break;
 	}
+	
+	return {defContract:defContract; altContract:altContract};
 }	
 	
 

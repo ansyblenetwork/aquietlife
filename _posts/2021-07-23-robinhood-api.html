@@ -702,13 +702,15 @@ function setDefLeg(defContract, altContract, data, contractDate, symbol) {
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 		
+		let dask = 0;
+		if (defContract) dask = defContract.ask;
 		let dstrike = 0;
 		if (defContract) dstrike = defContract.strikePrice;
 		let newstrike = contract.strikePrice;
 		if (contract.putCall == "PUT") {
 			dstrike = -dstrike; newstrike = -newstrike;
 		}
-		if (contract.ask > 0 && (defContract.ask == 0 || contract.ask < defContract.ask || (contract.ask == defContract.ask && newstrike < dstrike))) defContract = contract;
+		if (contract.ask > 0 && (dask == 0 || contract.ask < dask || (contract.ask == dask && newstrike < dstrike))) defContract = contract;
 	}
 	
 	let candData = defContract;

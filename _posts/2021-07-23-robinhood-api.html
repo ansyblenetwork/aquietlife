@@ -361,43 +361,43 @@ function updateOptions(newOption) {
 			let altContract = pack.altContract;
 
 			D('optionslist').appendChild(buildli(defContract, data));
-			let calldefleg = buildli(altContract, data);
-			D('optionslist').appendChild(calldefleg);
+			let defleg = buildli(altContract, data);
+			D('optionslist').appendChild(defleg);
 
 			if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altContract.strikePrice);				
 			let altDupe = altContract;
 
 			rhfetch.then(function() {
-			let callOrders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
-			createBuyOrder(calldefleg, 'call', 'buy', 0, callOrders, query);
+			let orders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
+			createBuyOrder(defleg, 'call', 'buy', 0, orders, query);
 			});
 
-			let callArray = [];
+			let tempArray = [];
 			for (let contractStrike in data.callExpDateMap[contractDate]) {
 				let contract = data.callExpDateMap[contractDate][contractStrike][0];
-				if (evalContract(contract, data, altContract)) callArray.unshift(contract);
+				if (evalContract(contract, data, altContract)) tempArray.unshift(contract);
 			}	       
 				
 			let cumVol = 0;
-			callArray.forEach(function(contract) {
+			tempArray.forEach(function(contract) {
 				cumVol += contract.totalVolume;
 				contract.totalVolume = cumVol;
 			});
 
 			let maxReturn = 0;
 			let prevContract = altContract;
-			callArray.forEach(function(contract) {
+			tempArray.forEach(function(contract) {
 				if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
 					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
 					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
 					prevContract = contract;
 					contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-					let contractli = buildli(contract, data, calldefleg, altContract);
+					let contractli = buildli(contract, data, defleg, altContract);
 					D('optionslist').appendChild(contractli);
 
 					rhfetch.then(function() {
-					let sellCallOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
-					createBuyOrder(contractli, 'call', 'sell', 0, sellCallOrders, query);
+					let sellOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
+					createBuyOrder(contractli, 'call', 'sell', 0, sellOrders, query);
 					});
 				}
 			});

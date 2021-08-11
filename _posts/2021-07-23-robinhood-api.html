@@ -610,14 +610,14 @@ function mergeAll() {
 			}).then(function(data) {				
 				if (data.status != "SUCCESS") return false;
 			
-				generateRec(merge[i], data, D('exploreRecList'));	
+				generateRec(merge[i], data, D('exploreRecList'), true);	
 			});
 		})
 	}			 				 
 }	
 	
 	
-function generateRec(symbol, data, elt) {	
+function generateRec(symbol, data, elt, override) {	
 	for (let contractDate in data.callExpDateMap) {
 		
 		let candidateObj = {};	
@@ -694,16 +694,13 @@ function generateRec(symbol, data, elt) {
 		if (candidate) candidateObj.put = {contract:candidate, altContract:altContract};
 		
 		// add to DOM //////////////////////////////////////////////////
-		if (incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
+		if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
 		let bag = make('li');	
 		let callrate = 0;
 		let putrate = 0;
 		////////////// build the table /////////////////////////////////				
 
-			if (candidateObj.call && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(candidateObj.call.altContract.strikePrice - candidateObj.call.contract.strikePrice)) {
-				console.log("Call rec:");
-				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].call);
-				console.log(75*(candidateObj.call.altContract.strikePrice - candidateObj.call.contract.strikePrice));
+			if (candidateObj.call && (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(candidateObj.call.altContract.strikePrice - candidateObj.call.contract.strikePrice))) {
 				let calldefleg = buildli(candidateObj.call.altContract, data);
 				bag.appendChild(calldefleg);
 				let calloffleg = buildli(candidateObj.call.contract, data, calldefleg, candidateObj.call.altContract);
@@ -726,10 +723,7 @@ function generateRec(symbol, data, elt) {
 
 		/////////////////////// PUTS //////////////////////////////////
 
-			if (candidateObj.put && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidateObj.put.contract.strikePrice - candidateObj.put.altContract.strikePrice)) {
-				console.log("Put rec:");
-				console.log(incompleteCondorList[symbol][contractDate.substring(0, 10)].put);
-				console.log(75*(candidateObj.put.contract.strikePrice - candidateObj.put.altContract.strikePrice));
+			if (candidateObj.put && (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidateObj.put.contract.strikePrice - candidateObj.put.altContract.strikePrice))) {
 				let putdefleg = buildli(candidateObj.put.altContract, data);
 				bag.appendChild(putdefleg);
 				putdefleg.style.marginBottom = "30px";

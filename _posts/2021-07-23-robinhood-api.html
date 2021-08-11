@@ -356,7 +356,7 @@ function updateOptions(newOption) {
 		  let defleg = buildli(altContract, data);
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
 		  let altDupe = altContract;
-		  rhfetch.then(function() { createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altDupe, contractDate, query), query);  });
+		  createBuyOrder(defleg, type, 'buy', chain, altDupe, contractDate, query, rhfetch);
                   
 		  if (type == "call") {
 			D('optionslist').appendChild(predefleg);
@@ -392,7 +392,7 @@ function updateOptions(newOption) {
 			      prevContract = contract;
 			      contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 			      let contractli = buildli(contract, data, defleg, altContract);
-			      rhfetch.then(function() { createBuyOrder(contractli, type, 'sell', 0, setSellOrders(chain, contract, contractDate, query), query);});
+			      createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
 			      if (type == "call") D('optionslist').appendChild(contractli);
 			      else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 
@@ -446,8 +446,13 @@ function rhOption(symbol, expiration, type, strike) {
 	});
 }
 
-function createBuyOrder(li, type, side, count, orders, symbol) {
+function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch) {
 if (!accountURL) return false;
+tickerFetch.then(function() {
+      let orders;
+      if (side == "sell") setSellOrders(chain, contract, contractDate, symbol);
+      else setBuyOrders(chain, contract, contractDate, symbol);
+      let count = 0;
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
 function createBuyOrderInner(li, count, data) {
 	clickable(li.firstChild);
@@ -502,6 +507,7 @@ if (confirm(confMsg)) {
 }
 }
 	createBuyOrderInner(li, count, data);
+});
 });
 }
 	
@@ -691,9 +697,10 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let defleg = buildli(altContract, data);
-                                    createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                    let rhfetch = rhOption(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
+                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
                                     let offleg = buildli(candidate, data, defleg, altContract);
-                                    createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
+                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);
                                     if (type == "call") {
                                           bag.insertBefore(defleg, referenceli);
                                           bag.insertBefore(offleg, referenceli);

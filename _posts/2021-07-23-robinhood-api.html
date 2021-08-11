@@ -415,7 +415,7 @@ function rhOption(symbol, expiration, type, strike) {
 }
 
 function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch, referenceli) {                 
-if (type == "call") referenceli.parentNode.appendChild(li, referenceli);
+if (type == "call") referenceli.parentNode.insertBefore(li, referenceli);
 else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);
 if (!accountURL) return false;
 tickerFetch.then(function() {

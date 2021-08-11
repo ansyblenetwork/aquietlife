@@ -355,8 +355,10 @@ function updateOptions(newOption) {
 
 		/////////////////////// CALLS //////////////////////////////////
 			let DTE = 0;
-			if ( data.callExpDateMap[contractDate]) {
-			let pack = setDefLeg(data.callExpDateMap[contractDate]);
+			let chain = data.callExpDateMap[contractDate];
+			let type = 'call'
+			if (chain) {
+			let pack = setDefLeg(chain);
 			let defContract = pack.defContract;
 			let altContract = pack.altContract;
 
@@ -364,17 +366,17 @@ function updateOptions(newOption) {
 			let defleg = buildli(altContract, data);
 			D('optionslist').appendChild(defleg);
 
-			if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'call', altContract.strikePrice);				
+			if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
 			let altDupe = altContract;
 
 			rhfetch.then(function() {
-			let orders = setBuyOrders(data.callExpDateMap[contractDate], altDupe, contractDate, query);
-			createBuyOrder(defleg, 'call', 'buy', 0, orders, query);
+			let orders = setBuyOrders(chain, altDupe, contractDate, query);
+			createBuyOrder(defleg, type, 'buy', 0, orders, query);
 			});
 
 			let tempArray = [];
-			for (let contractStrike in data.callExpDateMap[contractDate]) {
-				let contract = data.callExpDateMap[contractDate][contractStrike][0];
+			for (let contractStrike in chain) {
+				let contract = chain[contractStrike][0];
 				if (evalContract(contract, data, altContract)) tempArray.unshift(contract);
 			}	       
 				
@@ -396,8 +398,8 @@ function updateOptions(newOption) {
 					D('optionslist').appendChild(contractli);
 
 					rhfetch.then(function() {
-					let sellOrders = setSellOrders(data.callExpDateMap[contractDate], contract, contractDate, query);
-					createBuyOrder(contractli, 'call', 'sell', 0, sellOrders, query);
+					let sellOrders = setSellOrders(chain, contract, contractDate, query);
+					createBuyOrder(contractli, type, 'sell', 0, sellOrders, query);
 					});
 				}
 			});

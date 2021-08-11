@@ -350,69 +350,80 @@ function updateOptions(newOption) {
 		currentOption = query;	
 		clearDOM(D('optionslist'));
 
-		let rhfetch;			
-		for (let contractDate in data.putExpDateMap) {
+		let rhfetch;
+    function makeChain(chain, type, contractDate, referenceli) {
+      let pack = setDefLeg(chain);
+      let defContract = pack.defContract;
+      let altContract = pack.altContract;
 
+      let predefleg = buildli(defContract, data);
+      let defleg = buildli(altContract, data);
+      if (type == "call") {
+        D('optionslist').appendChild(predefleg);
+        D('optionslist').appendChild(defleg);
+      } else {
+        D('optionslist').appendChild(defleg);
+        D('optionslist').appendChild(predefleg);
+        predefleg.style.marginBottom = "30px";
+      }
+
+      if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
+      let altDupe = altContract;
+
+      rhfetch.then(function() {
+        let orders = setBuyOrders(chain, altDupe, contractDate, query);
+        createBuyOrder(defleg, type, 'buy', 0, orders, query);
+      });
+
+      let tempArray = [];
+      for (let contractStrike in chain) {
+        let contract = chain[contractStrike][0];
+        if (evalContract(contract, data, altContract)) {
+          if (type == "call") tempArray.unshift(contract);
+          else tempArray.push(contract);
+        }
+      }	       
+
+      let cumVol = 0;
+      tempArray.forEach(function(contract) {
+        cumVol += contract.totalVolume;
+        contract.totalVolume = cumVol;
+      });
+
+
+      let maxReturn = 0;
+      let prevContract = altContract;
+      tempArray.forEach(function(contract) {
+        if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
+          if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
+          if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
+          prevContract = contract;
+          contract.totalVolume = inDollars(contract.totalVolume/cumVol);
+          let contractli = buildli(contract, data, defleg, altContract);
+          if (type == "call") D('optionslist').appendChild(contractli);
+          else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
+
+          rhfetch.then(function() {
+            let sellOrders = setSellOrders(chain, contract, contractDate, query);
+            createBuyOrder(contractli, type, 'sell', 0, sellOrders, query);
+          });
+        }
+      });
+    }
+    
+		for (let contractDate in data.putExpDateMap) {
 		/////////////////////// CALLS //////////////////////////////////
 			let DTE = 0;
 			let chain = data.callExpDateMap[contractDate];
-			let type = 'call'
 			if (chain) {
-			let pack = setDefLeg(chain);
-			let defContract = pack.defContract;
-			let altContract = pack.altContract;
-
-			D('optionslist').appendChild(buildli(defContract, data));
-			let defleg = buildli(altContract, data);
-			D('optionslist').appendChild(defleg);
-
-			if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
-			let altDupe = altContract;
-
-			rhfetch.then(function() {
-			let orders = setBuyOrders(chain, altDupe, contractDate, query);
-			createBuyOrder(defleg, type, 'buy', 0, orders, query);
-			});
-
-			let tempArray = [];
-			for (let contractStrike in chain) {
-				let contract = chain[contractStrike][0];
-				if (evalContract(contract, data, altContract)) tempArray.unshift(contract);
-			}	       
-				
-			let cumVol = 0;
-			tempArray.forEach(function(contract) {
-				cumVol += contract.totalVolume;
-				contract.totalVolume = cumVol;
-			});
-
-			let maxReturn = 0;
-			let prevContract = altContract;
-			tempArray.forEach(function(contract) {
-				if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
-					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
-					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-					prevContract = contract;
-					contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-					let contractli = buildli(contract, data, defleg, altContract);
-					D('optionslist').appendChild(contractli);
-
-					rhfetch.then(function() {
-					let sellOrders = setSellOrders(chain, contract, contractDate, query);
-					createBuyOrder(contractli, type, 'sell', 0, sellOrders, query);
-					});
-				}
-			});
-
-			DTE = defContract.daysToExpiration;
+        makeChain(chain, "call", contractDate);
+			  DTE = defContract.daysToExpiration;
 			} else {
 				for (let strikes in data.putExpDateMap[contractDate]) {
 					DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
 				}
 			}
-
 		/////////////////////// MIDDLE //////////////////////////////////
-
 			let referenceli = make('li');
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
@@ -420,55 +431,8 @@ function updateOptions(newOption) {
 			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
 			D('optionslist').appendChild(referenceli);	
 
-		/////////////////////// PUTS //////////////////////////////////
-
-			let pack = setDefLeg(data.putExpDateMap[contractDate]);
-			let defContract = pack.defContract;
-			let altContract = pack.altContract;
-
-			let putdefleg = buildli(altContract, data);
-			D('optionslist').appendChild(putdefleg);
-			let cheapestPut = buildli(defContract, data);
-			D('optionslist').appendChild(cheapestPut);
-			cheapestPut.style.marginBottom = "30px";
-
-			if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), 'put', altContract.strike);				
-			let altDupe = altContract;
-
-			rhfetch.then(function() {
-			let putOrders = setBuyOrders(data.putExpDateMap[contractDate], altDupe, contractDate, query);
-			createBuyOrder(putdefleg, 'put', 'buy', 0, putOrders, query);
-			});
-
-			let putArray = [];
-			for (let contractStrike in data.putExpDateMap[contractDate]) {
-				let contract = data.putExpDateMap[contractDate][contractStrike][0];
-				if (evalContract(contract, data, altContract)) putArray.push(contract);
-			}
-
-			let cumVol = 0;
-			putArray.forEach(function(contract) {
-				cumVol += contract.totalVolume;
-				contract.totalVolume = cumVol;
-			});
-			
-			maxReturn = 0;
-			let prevContract = altContract;
-			putArray.forEach(function(contract) {
-				if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
-					if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
-					if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-					prevContract = contract;
-					contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-					let contractli = buildli(contract, data, putdefleg, altContract);
-					D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
-
-					rhfetch.then(function() {
-					let sellPutOrders = setSellOrders(data.putExpDateMap[contractDate], contract, contractDate, query);
-					createBuyOrder(contractli, 'put', 'sell', 0, sellPutOrders, query);
-					});
-				}
-			});
+		/////////////////////// PUTS //////////////////////////////////      
+      makeChain(data.putExpDateMap[contractDate], "put", contractDate, referenceli);
 		}	       	       
 	});								       
 }

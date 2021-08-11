@@ -354,9 +354,8 @@ function updateOptions(newOption) {
 
 		  let predefleg = buildli(defContract, data);
 		  let defleg = buildli(altContract, data);
-		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
-		  let altDupe = altContract;
-		  createBuyOrder(defleg, type, 'buy', chain, altDupe, contractDate, query, rhfetch);
+		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
+		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);
                   
 		  if (type == "call") {
 			D('optionslist').appendChild(predefleg);

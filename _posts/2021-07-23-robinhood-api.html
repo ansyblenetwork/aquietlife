@@ -71,7 +71,9 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		</div>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="optionslist"></ul>
 		
-		<div style="padding-top:20px">Recommended new:
+		<div style="padding-top:20px">			
+		<button id="mergeButton" style="margin:10px; margin-bottom:20px;" onclick="mergeAll()">Rank</button>
+		<button onclick="updateAll();" id="refreshButton">Refresh and Rank</button>
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
 		</div>
 		
@@ -121,8 +123,6 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
 		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
 		<button id="stButton" style="margin:10px; margin-bottom:20px;" onclick="updateEarnings();">Load</button>
-		<button id="mergeButton" style="margin:10px; margin-bottom:20px;" onclick="mergeAll()">Rank</button>
-		<button onclick="updateAll();" id="refreshButton">Refresh and Rank</button>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:

@@ -122,6 +122,7 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
 		<button id="stButton" style="margin:10px; margin-bottom:20px;" onclick="updateEarnings();">Load</button>
 		<button id="mergeButton" style="margin:10px; margin-bottom:20px;" onclick="mergeAll()">Rank</button>
+		<button onclick="updateAll();" id="refreshButton">Refresh and Rank</button>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:
@@ -219,7 +220,7 @@ var finvizVWeeklyList = [];
 var wsbList = [];
 var wsbWeeklyList = [];
 	
-var endpointCounter = 0;
+var endpointCounterX = 0;
 	
 if (Notification.permission === "granted") activate(D('notificationButton'), "Notifications On");
 	
@@ -2675,6 +2676,18 @@ function updateWSB() {
 			if (active(D('soundButton'))) D('complete').play();
 		}
 	});
+}
+	
+function updateAll() {
+	endpointCounter = 0;
+	if (active(D('soundButton'))) D('starting').play();
+	updateStocktwits();
+	updateYolo();
+	updateFinvizG();
+	setTimeout(function() { updateFinvizL(); }, 300);
+	setTimeout(function() { updateFinvizV(); }, 600);
+	updateWSB();
+	updateEarnings();
 }
 			
 

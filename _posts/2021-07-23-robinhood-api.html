@@ -392,10 +392,10 @@ function updateOptions(newOption) {
 			      prevContract = contract;
 			      contract.totalVolume = inDollars(contract.totalVolume/cumVol);
 			      let contractli = buildli(contract, data, defleg, altContract);
+			      rhfetch.then(function() { createBuyOrder(contractli, type, 'sell', 0, setSellOrders(chain, contract, contractDate, query), query);});
 			      if (type == "call") D('optionslist').appendChild(contractli);
 			      else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 
-			      rhfetch.then(function() { createBuyOrder(contractli, type, 'sell', 0, setSellOrders(chain, contract, contractDate, query), query);});
 			}
 		  });
 		}    
@@ -691,8 +691,8 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let defleg = buildli(altContract, data);
-                                    let offleg = buildli(candidate, data, defleg, altContract);
                                     createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                    let offleg = buildli(candidate, data, defleg, altContract);
                                     createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
                                     if (type == "call") {
                                           bag.insertBefore(defleg, referenceli);

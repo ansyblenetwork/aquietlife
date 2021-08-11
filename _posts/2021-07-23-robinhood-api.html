@@ -349,10 +349,10 @@ function updateOptions(newOption) {
 		  let chain = data.putExpDateMap[contractDate];
 		  if (type == "call") chain = data.callExpDateMap[contractDate];
 		  let pack = setDefLeg(chain);
-		  let defContract = pack.defContract;
 		  let altContract = pack.altContract;
+		  let tempArray = makeArray(chain, data, altContract, type);
 
-		  let predefleg = buildli(defContract, data);
+		  let predefleg = buildli(pack.defContract, data);
 		  let defleg = buildli(altContract, data);
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);
@@ -366,8 +366,6 @@ function updateOptions(newOption) {
 			predefleg.style.marginBottom = "30px";
 		  }
                   
-		  let tempArray = makeArray(chain, data, altContract, type);
-                  
 		  tempArray.forEach(function(contract) {
                     let contractli = buildli(contract, data, defleg, altContract);
                     createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
@@ -375,6 +373,7 @@ function updateOptions(newOption) {
                     else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 		  });
 		}    
+            
 		for (let contractDate in data.putExpDateMap) {
 			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate);
                   
@@ -382,10 +381,10 @@ function updateOptions(newOption) {
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
 			D('optionslist').appendChild(referenceli);	
  
                 	makeChain("put", contractDate, referenceli);
-			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
 		}	       	       
 	});								       
 }
@@ -669,10 +668,7 @@ function generateRec(symbol, data, elt, override) {
                   function filterChain(type) {
                         let chain = data.callExpDateMap[contractDate];
                         if (type == "put") chain = data.putExpDateMap[contractDate];
-                        let pack = setDefLeg(chain);
-                        let defContract = pack.defContract;
-                        let altContract = pack.altContract;
-
+                        let altContract = setDefLeg(chain).altContract;
                         let tempArray = makeArray(chain, data, altContract, type);
 
                         let candidate;
@@ -684,8 +680,8 @@ function generateRec(symbol, data, elt, override) {
                               if (override 
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
-                                    let defleg = buildli(altContract, data);
                                     let rhfetch = rhOption(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
+                                    let defleg = buildli(altContract, data);
                                     createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
                                     let offleg = buildli(candidate, data, defleg, altContract);
                                     createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);

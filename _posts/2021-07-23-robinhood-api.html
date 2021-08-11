@@ -351,39 +351,32 @@ function updateOptions(newOption) {
 		  let pack = setDefLeg(chain);
 		  let altContract = pack.altContract;
 		  let tempArray = makeArray(chain, data, altContract, type);
-
-		  let predefleg = buildli(pack.defContract, data);
-		  let defleg = buildli(altContract, data);
+                  
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
-		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);
+
+		  let predefleg = buildli(pack.defContract, data);                               
+              if (type == "call") referenceli.parentNode.appendChild(predefleg, referenceli);
+              else referenceli.parentNode.insertBefore(predefleg, referenceli.nextElementSibling);
+
+		  if (type == "put") predefleg.style.marginBottom = "30px";
                   
-		  if (type == "call") {
-			D('optionslist').appendChild(predefleg);
-			D('optionslist').appendChild(defleg);
-		  } else {
-			D('optionslist').appendChild(defleg);
-			D('optionslist').appendChild(predefleg);
-			predefleg.style.marginBottom = "30px";
-		  }
-                  
+		  let defleg = buildli(altContract, data);
+		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch, referenceli);                     
 		  tempArray.forEach(function(contract) {
                     let contractli = buildli(contract, data, defleg, altContract);
-                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
-                    if (type == "call") D('optionslist').appendChild(contractli);
-                    else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
+                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch, referenceli);
 		  });
 		}    
             
 		for (let contractDate in data.putExpDateMap) {
-			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate);
-                  
 			let referenceli = make('li');
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
 			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
 			D('optionslist').appendChild(referenceli);	
- 
+                  
+			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate, referenceli); 
                 	makeChain("put", contractDate, referenceli);
 		}	       	       
 	});								       
@@ -421,7 +414,9 @@ function rhOption(symbol, expiration, type, strike) {
 	});
 }
 
-function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch) {
+function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch, referenceli) {                 
+if (type == "call") referenceli.parentNode.appendChild(li, referenceli);
+else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);
 if (!accountURL) return false;
 tickerFetch.then(function() {
       let orders;
@@ -657,13 +652,14 @@ function generateRec(symbol, data, elt, override) {
 	for (let contractDate in data.callExpDateMap) {	
 		if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
                   let bag = make('li');
+                  bag.style.marginBottom = "30px";
 
                   let referenceli = make('li');
                   referenceli.style.textAlign = "center";
                   referenceli.style.fontWeight = "bold";
                   addCol("$" + round(data.underlyingPrice), "75px", referenceli);
                   addCol(stLinkify(data.symbol, data.symbol, "#333") + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
-                  bag.appendChild(referenceli);
+                  bag.appendChild(referenceli);                
                   
                   function filterChain(type) {
                         let chain = data.callExpDateMap[contractDate];
@@ -682,26 +678,17 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let rhfetch = rhOption(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
                                     let defleg = buildli(altContract, data);
-                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
+                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch, referenceli);
                                     let offleg = buildli(candidate, data, defleg, altContract);
-                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);
-                                    if (type == "call") {
-                                          bag.insertBefore(defleg, referenceli);
-                                          bag.insertBefore(offleg, referenceli);
-                                    } else {
-                                          bag.appendChild(offleg);
-                                          bag.appendChild(defleg);
-                                          defleg.style.marginBottom = "30px";
-                                    }
+                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch, referenceli);
+                                    
                                     return returnRate(candidate, altContract);
                               }
                         }
                         return 0;
                   }
                   let callrate = filterChain("call");
-                  let putrate = filterChain("put");
-
-                  if (!referenceli.nextElementSibling) referenceli.style.marginBottom = "30px";	
+                  let putrate = filterChain("put");  
                   bag.title = 0 - putrate - callrate;
                   addOrdered(bag, elt);	
 		}

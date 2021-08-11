@@ -365,37 +365,14 @@ function updateOptions(newOption) {
 			D('optionslist').appendChild(predefleg);
 			predefleg.style.marginBottom = "30px";
 		  }
-
-		  let tempArray = [];
-		  for (let contractStrike in chain) {
-			let contract = chain[contractStrike][0];
-			if (evalContract(contract, data, altContract)) {
-			      if (type == "call") tempArray.unshift(contract);
-			      else tempArray.push(contract);
-			}
-		  }	       
-
-		  let cumVol = 0;
+                  
+		  let tempArray = makeArray(chain, data, altContract, type);
+                  
 		  tempArray.forEach(function(contract) {
-			cumVol += contract.totalVolume;
-			contract.totalVolume = cumVol;
-		  });
-
-
-		  let maxReturn = 0;
-		  let prevContract = altContract;
-		  tempArray.forEach(function(contract) {
-			if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
-			      if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
-			      if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-			      prevContract = contract;
-			      contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-			      let contractli = buildli(contract, data, defleg, altContract);
-			      createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
-			      if (type == "call") D('optionslist').appendChild(contractli);
-			      else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
-
-			}
+                    let contractli = buildli(contract, data, defleg, altContract);
+                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
+                    if (type == "call") D('optionslist').appendChild(contractli);
+                    else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 		  });
 		}    
 		for (let contractDate in data.putExpDateMap) {
@@ -640,6 +617,41 @@ function mergeAll() {
 		})
 	}			 				 
 }	
+
+
+function makeArray(chain, data, altContract, type) {
+      let tempArray = [];
+      for (let contractStrike in chain) {
+            let contract = chain[contractStrike][0];
+            if (evalContract(contract, data, altContract)) {
+                  if (type == "call") tempArray.unshift(contract);
+                  else tempArray.push(contract);
+            }
+      }	
+
+      let cumVol = 0;
+      tempArray.forEach(function(contract) {
+            cumVol += contract.totalVolume;
+            contract.totalVolume = cumVol;
+      });
+
+      let finalArray = [];
+
+
+      let maxReturn = 0;
+      let prevContract = altContract;
+      tempArray.forEach(function(contract) {
+            if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
+                  if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
+                  if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
+                  prevContract = contract;
+                  contract.totalVolume = inDollars(contract.totalVolume/cumVol);
+                  finalArray.push(contract);
+
+            }
+      });
+      return finalArray;
+}
 	
 	
 function generateRec(symbol, data, elt, override) {	
@@ -661,34 +673,11 @@ function generateRec(symbol, data, elt, override) {
                         let defContract = pack.defContract;
                         let altContract = pack.altContract;
 
-                        let tempArray = [];
-                        for (let contractStrike in chain) {
-                              let contract = chain[contractStrike][0];
-                              if (evalContract(contract, data, altContract)) {
-                                    if (type == "call") tempArray.unshift(contract);
-                                    else tempArray.push(contract);
-                              }
-                        }	       
+                        let tempArray = makeArray(chain, data, altContract, type);
 
-                        let cumVol = 0;
-                        tempArray.forEach(function(contract) {
-                              cumVol += contract.totalVolume;
-                              contract.totalVolume = cumVol;
-                        });
-
-                        let maxReturn = 0;
-                        let prevContract = altContract;
                         let candidate;
-                        tempArray.forEach(function(contract) {	
-                              contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-                              if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
-                              if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
-                                    if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
-                                    if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-                                    candidate = contract;
-                                    prevContract = contract;
-                              }
-                              }
+                        tempArray.forEach(function(contract) {
+                              if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) candidate = contract;
                         });
 
                         if (candidate) {

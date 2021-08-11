@@ -351,7 +351,9 @@ function updateOptions(newOption) {
 		clearDOM(D('optionslist'));
 
 		let rhfetch;
-    function makeChain(chain, type, contractDate, referenceli) {
+    function makeChain(type, contractDate, referenceli) {
+      let chain = data.putExpDateMap[contractDate];
+      if (type == "call") chain = data.callExpDateMap[contractDate];
       let pack = setDefLeg(chain);
       let defContract = pack.defContract;
       let altContract = pack.altContract;
@@ -410,28 +412,18 @@ function updateOptions(newOption) {
         }
       });
           return defContract.daysToExpiration;
-    }
-    
+    }    
 		for (let contractDate in data.putExpDateMap) {
-		/////////////////////// CALLS //////////////////////////////////
-			let DTE = 0;
-			let chain = data.callExpDateMap[contractDate];
-			if (chain) DTE = makeChain(chain, "call", contractDate);
-			else {
-				for (let strikes in data.putExpDateMap[contractDate]) {
-				      DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
-				}
-			}
-		/////////////////////// MIDDLE //////////////////////////////////
+			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate);
+                  
 			let referenceli = make('li');
 			referenceli.style.textAlign = "center";
 			referenceli.style.fontWeight = "bold";
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
 			D('optionslist').appendChild(referenceli);	
-
-		/////////////////////// PUTS //////////////////////////////////      
-      makeChain(data.putExpDateMap[contractDate], "put", contractDate, referenceli);
+ 
+                  let DTE = makeChain("put", contractDate, referenceli);
+			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
 		}	       	       
 	});								       
 }

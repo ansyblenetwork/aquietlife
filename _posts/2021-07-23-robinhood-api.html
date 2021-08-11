@@ -354,6 +354,10 @@ function updateOptions(newOption) {
 
 		  let predefleg = buildli(defContract, data);
 		  let defleg = buildli(altContract, data);
+		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
+		  let altDupe = altContract;
+		  rhfetch.then(function() { createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altDupe, contractDate, query), query);  });
+                  
 		  if (type == "call") {
 			D('optionslist').appendChild(predefleg);
 			D('optionslist').appendChild(defleg);
@@ -362,11 +366,6 @@ function updateOptions(newOption) {
 			D('optionslist').appendChild(predefleg);
 			predefleg.style.marginBottom = "30px";
 		  }
-
-		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
-		  let altDupe = altContract;
-
-		  rhfetch.then(function() { createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altDupe, contractDate, query), query);  });
 
 		  let tempArray = [];
 		  for (let contractStrike in chain) {
@@ -693,6 +692,8 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let defleg = buildli(altContract, data);
                                     let offleg = buildli(candidate, data, defleg, altContract);
+                                    createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                    createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
                                     if (type == "call") {
                                           bag.insertBefore(defleg, referenceli);
                                           bag.insertBefore(offleg, referenceli);
@@ -701,8 +702,6 @@ function generateRec(symbol, data, elt, override) {
                                           bag.appendChild(defleg);
                                           defleg.style.marginBottom = "30px";
                                     }
-                                    createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
-                                    createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
                                     return returnRate(candidate, altContract);
                               }
                         }

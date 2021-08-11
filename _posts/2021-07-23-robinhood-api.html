@@ -1107,6 +1107,7 @@ function cancelSequence(url, id, orderli, origin) {
 		
 		function cancelLoop(data) {
 			if (data.pending_quantity === undefined || parseFloat(data.pending_quantity) > 0) {
+				if (!url) return true;
 				if (data.detail) orderli.lastElementChild.textContent = data.detail;
 				else orderli.lastElementChild.textContent = "Status unknown.";
 
@@ -1198,7 +1199,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 			function createGenericOrder(optionData, origin) {
 				let orderData = data.results[i];
 				let orderli = makeOrderli(symbol, {type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))}, orderData, origin);
-				if (!orderli) return false;
+				// if (!orderli) return false;
 				orderli.lastElementChild.onclick = function() {
 					let myMsg = "Leave this collateral frozen?";
 					if (orderData.legs[0].side == "buy" && orderData.legs[0].position_effect == "open") 

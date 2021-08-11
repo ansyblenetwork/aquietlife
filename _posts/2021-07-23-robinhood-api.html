@@ -409,18 +409,17 @@ function updateOptions(newOption) {
           });
         }
       });
+          return defContract.daysToExpiration;
     }
     
 		for (let contractDate in data.putExpDateMap) {
 		/////////////////////// CALLS //////////////////////////////////
 			let DTE = 0;
 			let chain = data.callExpDateMap[contractDate];
-			if (chain) {
-        makeChain(chain, "call", contractDate);
-			  DTE = defContract.daysToExpiration;
-			} else {
+			if (chain) DTE = makeChain(chain, "call", contractDate);
+			else {
 				for (let strikes in data.putExpDateMap[contractDate]) {
-					DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
+				      DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
 				}
 			}
 		/////////////////////// MIDDLE //////////////////////////////////

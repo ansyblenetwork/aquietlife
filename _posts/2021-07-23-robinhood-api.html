@@ -59,9 +59,6 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<div style="padding-top:20px">Recommended condor completions:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="recList"></ul>
 		</div>
-		<div style="padding-top:20px">Recommended new:
-		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
-		</div>
 		
 	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">		
 		<div style="width:max-content; margin:auto; margin-bottom:10px">
@@ -73,6 +70,10 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		id="optionsInput" onfocus="this.select()" type="text" style="margin:10px;" autocomplete="off" placeholder="Options chain..."><button onclick="updateOptions(true)">Fetch</button>
 		</div>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px; scroll-margin:20px;" id="optionslist"></ul>
+		
+		<div style="padding-top:20px">Recommended new:
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
+		</div>
 		
 		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
 		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>

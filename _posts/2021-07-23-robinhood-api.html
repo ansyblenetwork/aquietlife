@@ -208,6 +208,19 @@ var namesMap = {};
 var stList = [];
 var stWeeklyList = [];
 	
+var yoloList = [];
+var yoloWeeklyList = [];
+var finvizGList = [];
+var finvizGWeeklyList = [];
+var finvizLList = [];
+var finvizLWeeklyList = [];
+var finvizVList = [];
+var finvizVWeeklyList = [];
+var wsbList = [];
+var wsbWeeklyList = [];
+	
+var endpointCounter = 0;
+	
 if (Notification.permission === "granted") activate(D('notificationButton'), "Notifications On");
 	
 if (!(screen.width <= 550 || screen.height <= 550)) {				
@@ -269,6 +282,12 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 		else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#07b'>${stock}</strong></a> `;							      
 	});
 	D('earnings').innerHTML = earningsString;
+	
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+		}
 });
 }
 updateEarnings();
@@ -629,6 +648,21 @@ function mergeAll() {
 	for (let i = 0; (i < stWeeklyList.length) && (i < 5); i++) {
 		if (!merge.includes(stWeeklyList[i])) merge.push(stWeeklyList[i]);						
 	}	
+	for (let i = 0; (i < finvizGWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(finvizGWeeklyList[i])) merge.push(finvizGWeeklyList[i]);						
+	}
+	for (let i = 0; (i < finvizLWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(finvizLWeeklyList[i])) merge.push(finvizLWeeklyList[i]);						
+	}
+	for (let i = 0; (i < finvizVWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(finvizVWeeklyList[i])) merge.push(finvizVWeeklyList[i]);						
+	}
+	for (let i = 0; (i < yoloWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(yoloWeeklyList[i])) merge.push(yoloWeeklyList[i]);						
+	}
+	for (let i = 0; (i < wsbWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(wsbWeeklyList[i])) merge.push(wsbWeeklyList[i]);						
+	}
 	for (let i = 0; (i < preEarnings.length) && (i < 10); i++) {
 		if (!merge.includes(preEarnings[i])) merge.push(preEarnings[i]);						
 	}
@@ -797,6 +831,12 @@ function updateStocktwits() {
 			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits");
 		});
 		D('stocktwits').innerHTML = stString;
+		
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+		}
 	});
 }
 
@@ -2529,11 +2569,10 @@ function updateFinvizG() {
 		});
 		D('finvizG').innerHTML = stString;
 		//D('finvizGButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
 			mergeAll();
 			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
 		}
 		}
 	});
@@ -2555,11 +2594,10 @@ function updateFinvizL() {
 		});
 		D('finvizL').innerHTML = stString;
 		//D('finvizLButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
 			mergeAll();
 			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
 		}
 		}
 	});
@@ -2581,11 +2619,10 @@ function updateFinvizV() {
 		});
 		D('finvizV').innerHTML = stString;
 		//D('finvizVButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
 			mergeAll();
 			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
 		}
 		}
 	});
@@ -2608,11 +2645,10 @@ function updateYolo() {
 		});
 		D('yolo').innerHTML = yoloString;
 		//D('yoloButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
 			mergeAll();
 			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
 		}
 	});
 }
@@ -2633,11 +2669,10 @@ function updateWSB() {
 		}
 		D('wsb').innerHTML = wsbString;
 		//D('wsbButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
+		endpointCounterX++;			
+		if (endpointCounterX == 7) {
 			mergeAll();
 			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
 		}
 	});
 }

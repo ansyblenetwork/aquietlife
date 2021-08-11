@@ -694,34 +694,26 @@ function generateRec(symbol, data, elt, override) {
                         });
 
                         if (candidate) {
-                              if (type == "call") {
-                                    if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice)) {
-                                          let defleg = buildli(altContract, data);
-                                          let offleg = buildli(candidate, data, defleg, altContract);
+                              if (override 
+                                  || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
+                                  || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
+                                    let defleg = buildli(altContract, data);
+                                    let offleg = buildli(candidate, data, defleg, altContract);
+                                    if (type == "call") {
                                           bag.insertBefore(defleg, referenceli);
                                           bag.insertBefore(offleg, referenceli);
-                                          createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
-                                          createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
-                                          return returnRate(candidate, altContract);
+                                    } else {
+                                          bag.appendChild(offleg);
+                                          bag.appendChild(defleg);
+                                          defleg.style.marginBottom = "30px";
                                     }
-                              }
-                              else {                              
-                                    if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice)) {
-                                          let putdefleg = buildli(altContract, data);
-                                          let putoffleg = buildli(candidate, data, putdefleg, altContract);
-                                          bag.appendChild(putoffleg);
-                                          bag.appendChild(putdefleg);
-                                          putdefleg.style.marginBottom = "30px";
-                                          createBuyOrder(putdefleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
-                                          createBuyOrder(putoffleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
-                                          return returnRate(candidate, altContract);
-                                    } 
-
+                                    createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                    createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
+                                    return returnRate(candidate, altContract);
                               }
                         }
                         return 0;
                   }
-
                   let callrate = filterChain("call");
                   let putrate = filterChain("put");
 

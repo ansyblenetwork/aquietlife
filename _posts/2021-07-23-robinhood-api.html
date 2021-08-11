@@ -405,7 +405,6 @@ function updateOptions(newOption) {
 			      });
 			}
 		  });
-		  return defContract.daysToExpiration;
 		}    
 		for (let contractDate in data.putExpDateMap) {
 			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate);
@@ -416,8 +415,8 @@ function updateOptions(newOption) {
 			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
 			D('optionslist').appendChild(referenceli);	
  
-                	let DTE = makeChain("put", contractDate, referenceli);
-			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
+                	makeChain("put", contractDate, referenceli);
+			addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
 		}	       	       
 	});								       
 }
@@ -646,99 +645,89 @@ function mergeAll() {
 	
 	
 function generateRec(symbol, data, elt, override) {	
-	for (let contractDate in data.callExpDateMap) {
-		
-		let candidateObj = {};	
-		
-	/////////////////////// CALLS //////////////////////////////////
-            function filterChain(type) {
-                  let chain = data.callExpDateMap[contractDate];
-                  if (type == "put") chain = data.putExpDateMap[contractDate];
-                  let pack = setDefLeg(chain);
-                  let defContract = pack.defContract;
-                  let altContract = pack.altContract;
-
-                  let tempArray = [];
-                  for (let contractStrike in chain) {
-                        let contract = chain[contractStrike][0];
-                        if (evalContract(contract, data, altContract)) {
-                              if (type == "call") tempArray.unshift(contract);
-                              else tempArray.push(contract);
-                        }
-                  }	       
-
-                  let cumVol = 0;
-                  tempArray.forEach(function(contract) {
-                        cumVol += contract.totalVolume;
-                        contract.totalVolume = cumVol;
-                  });
-                  
-                  let maxReturn = 0;
-                  let prevContract = altContract;
-                  let candidate;
-                  tempArray.forEach(function(contract) {	
-                        contract.totalVolume = inDollars(contract.totalVolume/cumVol);
-                        if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
-                        if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
-                              if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
-                              if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
-                              candidate = contract;
-                              prevContract = contract;
-                        }
-                        }
-                  });
-
-                  if (candidate) {
-                        if (type == "call") candidateObj.call = {contract:candidate, altContract:altContract};
-                        else candidateObj.put = {contract:candidate, altContract:altContract};
-                  }
-            }
-            
-            filterChain("call");
-            filterChain("put");
-		
-		// add to DOM //////////////////////////////////////////////////
+	for (let contractDate in data.callExpDateMap) {	
 		if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)]) {
-		let bag = make('li');	
-		let callrate = 0;
-		let putrate = 0;
-		////////////// build the table /////////////////////////////////				
+                  let bag = make('li');
 
-            if (candidateObj.call && (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(candidateObj.call.altContract.strikePrice - candidateObj.call.contract.strikePrice))) {
-                  let calldefleg = buildli(candidateObj.call.altContract, data);
-                  bag.appendChild(calldefleg);
-                  let calloffleg = buildli(candidateObj.call.contract, data, calldefleg, candidateObj.call.altContract);
-                  bag.appendChild(calloffleg);
-                  callrate = returnRate(candidateObj.call.contract, candidateObj.call.altContract);
-                  createBuyOrder(calldefleg, 'call', 'buy', 0, setBuyOrders(data.callExpDateMap[contractDate], candidateObj.call.altContract, contractDate, symbol), symbol);
-                  createBuyOrder(calloffleg, 'call', 'sell', 0, setSellOrders(data.callExpDateMap[contractDate], candidateObj.call.contract, contractDate, symbol), symbol);
-            }
+                  let referenceli = make('li');
+                  referenceli.style.textAlign = "center";
+                  referenceli.style.fontWeight = "bold";
+                  addCol("$" + round(data.underlyingPrice), "75px", referenceli);
+                  addCol(stLinkify(data.symbol, data.symbol, "#333") + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
+                  bag.appendChild(referenceli);
+                  
+                  function filterChain(type) {
+                        let chain = data.callExpDateMap[contractDate];
+                        if (type == "put") chain = data.putExpDateMap[contractDate];
+                        let pack = setDefLeg(chain);
+                        let defContract = pack.defContract;
+                        let altContract = pack.altContract;
 
-		/////////////////////// MIDDLE //////////////////////////////////
+                        let tempArray = [];
+                        for (let contractStrike in chain) {
+                              let contract = chain[contractStrike][0];
+                              if (evalContract(contract, data, altContract)) {
+                                    if (type == "call") tempArray.unshift(contract);
+                                    else tempArray.push(contract);
+                              }
+                        }	       
 
-            let referenceli = make('li');
-            referenceli.style.textAlign = "center";
-            referenceli.style.fontWeight = "bold";
-            addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-            addCol(stLinkify(data.symbol, data.symbol, "#333") + " " + defContract.daysToExpiration + " DTE", "675px", referenceli);
-            bag.appendChild(referenceli);	
+                        let cumVol = 0;
+                        tempArray.forEach(function(contract) {
+                              cumVol += contract.totalVolume;
+                              contract.totalVolume = cumVol;
+                        });
 
-		/////////////////////// PUTS //////////////////////////////////
+                        let maxReturn = 0;
+                        let prevContract = altContract;
+                        let candidate;
+                        tempArray.forEach(function(contract) {	
+                              contract.totalVolume = inDollars(contract.totalVolume/cumVol);
+                              if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
+                              if ((prevContract == altContract && maxReturn < returnRate(contract, prevContract)) || (prevContract != altContract && maxReturn < marginalRate(contract, prevContract))) {
+                                    if (prevContract == altContract) maxReturn = returnRate(contract, prevContract);
+                                    if (prevContract != altContract) maxReturn = marginalRate(contract, prevContract);
+                                    candidate = contract;
+                                    prevContract = contract;
+                              }
+                              }
+                        });
 
-            if (candidateObj.put && (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidateObj.put.contract.strikePrice - candidateObj.put.altContract.strikePrice))) {
-                  let putdefleg = buildli(candidateObj.put.altContract, data);
-                  bag.appendChild(putdefleg);
-                  putdefleg.style.marginBottom = "30px";
-                  let putoffleg = buildli(candidateObj.put.contract, data, putdefleg, candidateObj.put.altContract);
-                  bag.insertBefore(putoffleg, referenceli.nextElementSibling);
-                  putrate = returnRate(candidateObj.put.contract, candidateObj.put.altContract);
+                        if (candidate) {
+                              if (type == "call") {
+                                    if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice)) {
+                                          let defleg = buildli(altContract, data);
+                                          let offleg = buildli(candidate, data, defleg, altContract);
+                                          bag.insertBefore(defleg, referenceli);
+                                          bag.insertBefore(offleg, referenceli);
+                                          createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                          createBuyOrder(offleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
+                                          return returnRate(candidate, altContract);
+                                    }
+                              }
+                              else {                              
+                                    if (override || incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice)) {
+                                          let putdefleg = buildli(altContract, data);
+                                          let putoffleg = buildli(candidate, data, putdefleg, altContract);
+                                          bag.appendChild(putoffleg);
+                                          bag.appendChild(putdefleg);
+                                          putdefleg.style.marginBottom = "30px";
+                                          createBuyOrder(putdefleg, type, 'buy', 0, setBuyOrders(chain, altContract, contractDate, symbol), symbol);
+                                          createBuyOrder(putoffleg, type, 'sell', 0, setSellOrders(chain, candidate, contractDate, symbol), symbol);
+                                          return returnRate(candidate, altContract);
+                                    } 
 
-                  createBuyOrder(putdefleg, 'put', 'buy', 0, setBuyOrders(data.putExpDateMap[contractDate], candidateObj.put.altContract, contractDate, symbol), symbol);
-                  createBuyOrder(putoffleg, 'put', 'sell', 0, setSellOrders(data.putExpDateMap[contractDate], candidateObj.put.contract, contractDate, symbol), symbol);
-            } else referenceli.style.marginBottom = "30px";		
+                              }
+                        }
+                        return 0;
+                  }
 
-		bag.title = 0 - putrate - callrate;
-		addOrdered(bag, elt);	
+                  let callrate = filterChain("call");
+                  let putrate = filterChain("put");
+
+                  if (!referenceli.nextElementSibling) referenceli.style.marginBottom = "30px";	
+                  bag.title = 0 - putrate - callrate;
+                  addOrdered(bag, elt);	
 		}
 	}
 }	

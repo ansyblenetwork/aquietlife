@@ -420,8 +420,8 @@ else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);
 if (!accountURL) return false;
 tickerFetch.then(function() {
       let orders;
-      if (side == "sell") setSellOrders(chain, contract, contractDate, symbol);
-      else setBuyOrders(chain, contract, contractDate, symbol);
+      if (side == "sell") orders = setSellOrders(chain, contract, contractDate, symbol);
+      else orders = setBuyOrders(chain, contract, contractDate, symbol);
       let count = 0;
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
 function createBuyOrderInner(li, count, data) {

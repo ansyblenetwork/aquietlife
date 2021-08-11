@@ -354,17 +354,15 @@ function updateOptions(newOption) {
                   
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 
-		  let predefleg = buildli(pack.defContract, data);                               
-              if (type == "call") referenceli.parentNode.appendChild(predefleg, referenceli);
-              else referenceli.parentNode.insertBefore(predefleg, referenceli.nextElementSibling);
+		  let predefleg = buildli(pack.defContract, data); 
 
 		  if (type == "put") predefleg.style.marginBottom = "30px";
                   
 		  let defleg = buildli(altContract, data);
-		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch, referenceli);                     
+		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);                     
 		  tempArray.forEach(function(contract) {
                     let contractli = buildli(contract, data, defleg, altContract);
-                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch, referenceli);
+                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
 		  });
 		}    
             
@@ -414,9 +412,7 @@ function rhOption(symbol, expiration, type, strike) {
 	});
 }
 
-function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch, referenceli) {                 
-if (type == "call") referenceli.parentNode.insertBefore(li, referenceli);
-else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);
+function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch) {  
 if (!accountURL) return false;
 tickerFetch.then(function() {
       let orders;
@@ -678,9 +674,9 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let rhfetch = rhOption(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
                                     let defleg = buildli(altContract, data);
-                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch, referenceli);
+                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
                                     let offleg = buildli(candidate, data, defleg, altContract);
-                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch, referenceli);
+                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);
                                     
                                     return returnRate(candidate, altContract);
                               }
@@ -787,7 +783,7 @@ function setDefLeg(data, contractDate, symbol) {
 }	
 	
 
-function buildli(contract, data, defleg, altData) {
+function buildli(referenceli, contract, data, defleg, altData) {
 	let li = make('li');
 	li.style.textAlign = "center";		
 	let col = addCol("$" + contract.strikePrice, "75px", li);
@@ -854,7 +850,9 @@ function buildli(contract, data, defleg, altData) {
 		else if (rate < 16)  li.children[6].style.backgroundColor = "#0" + rate.toString(16) + "ffff";
 		else  li.children[6].style.backgroundColor = "#" + rate.toString(16) + "ffff";
 	}
-						   
+			                
+      if (contract.putCall == "CALL") referenceli.parentNode.insertBefore(li, referenceli);
+      else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);			   
 	return li;
 }	
 	

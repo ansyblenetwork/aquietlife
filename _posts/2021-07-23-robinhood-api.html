@@ -354,13 +354,13 @@ function updateOptions(newOption) {
 		  let tempArray = makeArray(chain, data, altContract, type);           
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 
-		  let predefleg = buildli(pack.defContract, data); 
+		  let predefleg = buildli(referenceli, pack.defContract, data); 
 		  if (type == "put") predefleg.style.marginBottom = "30px";
                   
-		  let defleg = buildli(altContract, data);
+		  let defleg = buildli(referenceli, altContract, data);
 		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);                     
 		  tempArray.forEach(function(contract) {
-                    let contractli = buildli(contract, data, defleg, altContract);
+                    let contractli = buildli(referenceli, contract, data, defleg, altContract);
                     createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
 		  });
 		}    
@@ -662,9 +662,9 @@ function generateRec(symbol, data, elt, override) {
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
                                     let rhfetch = rhOption(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
-                                    let defleg = buildli(altContract, data);
+                                    let defleg = buildli(referenceli, altContract, data);
                                     createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
-                                    let offleg = buildli(candidate, data, defleg, altContract);
+                                    let offleg = buildli(referenceli, candidate, data, defleg, altContract);
                                     createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);
                                     
                                     return returnRate(candidate, altContract);

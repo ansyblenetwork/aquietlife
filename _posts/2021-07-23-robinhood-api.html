@@ -366,10 +366,7 @@ function updateOptions(newOption) {
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);				
 		  let altDupe = altContract;
 
-		  rhfetch.then(function() {
-			let orders = setBuyOrders(chain, altDupe, contractDate, query);
-			createBuyOrder(defleg, type, 'buy', 0, orders, query);
-		  });
+		  rhfetch.then(function() { createBuyOrder(defleg, type, 'buy', 0, setBuyOrders(chain, altDupe, contractDate, query), query);  });
 
 		  let tempArray = [];
 		  for (let contractStrike in chain) {
@@ -399,10 +396,7 @@ function updateOptions(newOption) {
 			      if (type == "call") D('optionslist').appendChild(contractli);
 			      else D('optionslist').insertBefore(contractli, referenceli.nextElementSibling);
 
-			      rhfetch.then(function() {
-				    let sellOrders = setSellOrders(chain, contract, contractDate, query);
-				    createBuyOrder(contractli, type, 'sell', 0, sellOrders, query);
-			      });
+			      rhfetch.then(function() { createBuyOrder(contractli, type, 'sell', 0, setSellOrders(chain, contract, contractDate, query), query);});
 			}
 		  });
 		}    

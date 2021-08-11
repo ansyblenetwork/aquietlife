@@ -517,8 +517,9 @@ function setBuyOrders(data, altData, contractDate, symbol) {
 		let contract = data[contractStrike][0];
 		for (let i = bid + tick; i <= ask; i += tick) {
 			if (inDollars(contract.bid) < i) {
-				if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike))
-					orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike)) {
+					if (i == ask) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				}
 				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}
@@ -561,8 +562,9 @@ function setSellOrders(data, mainContract, contractDate, symbol) {
 		let contract = data[contractStrike][0];
 		for (let i = bid; i <= ask - tick; i += tick) {
 			if (inDollars(contract.ask) > i) {
-				if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike))
-					orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike)) {
+					if (i == bid) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+				}
 				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
 			}
 		}

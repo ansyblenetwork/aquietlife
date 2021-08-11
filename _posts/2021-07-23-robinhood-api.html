@@ -75,6 +75,48 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
 		</div>
 		
+		
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://yolostocks.live/'><strong style='color:#333'>YoloStocks</strong></a>
+			<br>
+			<span id="yolo">Trending <strong>(weeklys)</strong></span>
+			<br>
+			<button id="yoloButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateYolo(); else addAll(yoloWeeklyList);">Load</button>
+		</div>
+
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://dashboard.nbshare.io/apps/reddit/wallstreetbets/'><strong style='color:#333'>WSB</strong></a>
+			<br>
+			<span id="wsb">Trending <strong>(weeklys)</strong></span>
+			<br>
+			<button id="wsbButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateWSB(); else addAll(wsbWeeklyList);">Load</button>
+		</div>
+
+
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change'><strong style='color:#333'>Finviz Gainers</strong></a>
+			<br>
+			<span id="finvizG">Gainers <strong>(weeklys)</strong></span>
+			<br>
+			<button id="finvizGButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizG(); else addAll(finvizGWeeklyList);">Load</button>
+		</div>
+
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change'><strong style='color:#333'>Finviz Losers</strong></a>
+			<br>
+			<span id="finvizL">Losers <strong>(weeklys)</strong></span>
+			<br>
+			<button id="finvizLButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizL(); else addAll(finvizLWeeklyList);">Load</button>
+		</div>
+
+		<div style="margin:0px auto 20px auto; text-align:center">
+			<a target='_blank' href='https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change'><strong style='color:#333'>Finviz Volatile</strong></a>
+			<br>
+			<span id="finvizV">Volatile <strong>(weeklys)</strong></span>
+			<br>
+			<button id="finvizVButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizV(); else addAll(finvizVWeeklyList);">Load</button>
+		</div>
+		
 		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
 		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
 		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
@@ -2467,5 +2509,138 @@ function toggleNotifications(elt) {
 		}	
 	}
 }
+	
+	
+	
+function updateFinvizG() {
+	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+		if (data.length > 0) {
+		finvizGList = [];
+		let prevWeekly = finvizGWeeklyList;
+		finvizGWeeklyList = [];
+		let stString = "(" + new Date().toLocaleTimeString() + "): ";
+		data.forEach(function(stockData) {
+			stString += printWeekly(stockData, finvizGList, finvizGWeeklyList, prevWeekly, "Finviz gainers");
+		});
+		D('finvizG').innerHTML = stString;
+		//D('finvizGButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
+		}
+	});
+}
+function updateFinvizL() {
+	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+		if (data.length > 0) {
+		finvizLList = [];
+		let prevWeekly = finvizLWeeklyList;
+		finvizLWeeklyList = [];
+		let stString = "(" + new Date().toLocaleTimeString() + "): ";
+		data.forEach(function(stockData) {
+			stString += printWeekly(stockData, finvizLList, finvizLWeeklyList, prevWeekly, "Finviz losers");
+		});
+		D('finvizL').innerHTML = stString;
+		//D('finvizLButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
+		}
+	});
+}
+function updateFinvizV() {
+	let query = 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {
+		if (data.length > 0) {
+		finvizVList = [];
+		let prevWeekly = finvizVWeeklyList;
+		finvizVWeeklyList = [];
+		let stString = "(" + new Date().toLocaleTimeString() + "): ";
+		data.forEach(function(stockData) {
+			stString += printWeekly(stockData, finvizVList, finvizVWeeklyList, prevWeekly, "Finviz volatile");
+		});
+		D('finvizV').innerHTML = stString;
+		//D('finvizVButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
+		}
+	});
+}
+	
+function updateYolo() {
+	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+		return response.text();
+	}).then(function(data) {
+		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
+		yoloList = [];
+		let prevWeekly = yoloWeeklyList;
+		yoloWeeklyList = [];
+		let yoloString = "(" + new Date().toLocaleTimeString() + "): ";
+		preYoloList.forEach(function(symbol) {
+			if (symbol && /[A-Z]/.test(symbol[0])) yoloString += printWeekly(symbol, yoloList, yoloWeeklyList, prevWeekly, "YoloStocks");
+		});
+		D('yolo').innerHTML = yoloString;
+		//D('yoloButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
+	});
+}
+
+function updateWSB() {
+	let query = 'https://dashboard.nbshare.io/api/v1/apps/reddit';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+		return response.json();
+	}).then(function(data) {		
+		wsbList = [];
+		let prevWeekly = wsbWeeklyList;
+		wsbWeeklyList = [];
+		let wsbString = "(" + new Date().toLocaleTimeString() + "): ";
+		for (let i = 0; i < 15; i++) {
+			wsbString += printWeekly(data[i].ticker, wsbList, wsbWeeklyList, prevWeekly, "WSB");
+		}
+		D('wsb').innerHTML = wsbString;
+		//D('wsbButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) {
+			mergeAll();
+			if (active(D('soundButton'))) D('complete').play();
+			D('refreshButton').disabled = false;
+		}
+	});
+}
+			
 
 </script>

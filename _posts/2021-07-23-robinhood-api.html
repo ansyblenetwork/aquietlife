@@ -414,65 +414,54 @@ function rhOption(symbol, expiration, type, strike) {
 function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch) {  
 if (!accountURL) return false;
 tickerFetch.then(function() {
+      let count = 0;
       let orders;
       if (side == "sell") orders = setSellOrders(chain, contract, contractDate, symbol);
       else orders = setBuyOrders(chain, contract, contractDate, symbol);
-      let count = 0;
-rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
-      function createBuyOrderInner(li, count, data) {
+      function createBuyOrderInner(li, count, rhWait) {
             clickable(li.firstChild);
       li.firstChild.onclick = function() {
+            if (!rhWait) rhWait = rhOption(symbol,orders[count].expiration,type,orders[count].strike);
             let confMsg = "Buy this defensive " + type + "?";
             if (side == "sell") confMsg = "Open this " + type + "?";
-      if (confirm(confMsg)) {	
-            D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});				
-            function orderProceed(li, count, data) {
-                  let effect = 'open';
-                  if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
-                  if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
-                  fetchData('https://api.robinhood.com/options/orders/', 
-                          'POST', 
-                          { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
-                        let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
-                        if (!orderli) return false;
-                        let rhfetch;
-                        if (count + 1 < orders.length) rhfetch = rhOption(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
-                        orderli.lastElementChild.onclick = function() {		
-                              confMsg = "Cancel buying this defensive " + type + "?";
-                              if (side == "sell") confMsg = "Cancel opening this " + type + "?";
-                              if (confirm(confMsg)) {							
-                                    cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-                                          if (result && count + 1 < orders.length) {
-                                                rhfetch.then(function(data) {
-                                                      createBuyOrderInner(orderli, count + 1, data);
-                                                });
-                                          }
-                                    });
-                              }
-                        }
-                        if (active(D('autoButton'))) {
-                              setTimeout(function() {							
-                              cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-                                    if (result && count + 1 < orders.length) {
-                                          rhfetch.then(function(data) {
-                                                orderProceed(orderli, count + 1, data);
+      if (confirm(confMsg)) {
+            D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});
+            function orderProceed(li, count, innerwait) {
+                  innerwait.then(function(data) {			
+                        let effect = 'open';
+                        if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
+                        if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
+                        fetchData('https://api.robinhood.com/options/orders/', 
+                                  'POST', 
+                                  { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+                              let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
+                              if (!orderli) return false;
+                              let rhfetch;
+                              if (count + 1 < orders.length) rhfetch = rhOption(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
+                              orderli.lastElementChild.onclick = function() {		
+                                    confMsg = "Cancel buying this defensive " + type + "?";
+                                    if (side == "sell") confMsg = "Cancel opening this " + type + "?";
+                                    if (confirm(confMsg)) {							
+                                          cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                                if (result && count + 1 < orders.length) createBuyOrderInner(orderli, count + 1, rhfetch);
                                           });
                                     }
-                              });
+                              }
+                              setTimeout(function() {	
+                                    if (active(D('autoButton'))) {						
+                                          cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                                if (result && count + 1 < orders.length) orderProceed(orderli, count + 1, rhfetch);
+                                          });
+                                    } else orderli.click();
                               }, 3000);
-                        } else {
-                              setTimeout(function() {
-                                    orderli.click();
-                              }, 3000);
-                        }
+                        });
                   });
             }
-            orderProceed(li, count, data);
+            orderProceed(li, count, rhWait);
       }
       }
       }
-	createBuyOrderInner(li, count, data);
-});
+	createBuyOrderInner(li, count);
 });
 }
 	
@@ -1421,19 +1410,15 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 										if (result) createSingleOrder(orderli, contract, orderPrem - tick);
 									});
 								}
-								}								
-								if (active(D('autoButton')) && inDollars((orderPrem - tick)) > 0) {									
-									setTimeout(function() {							
-									cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-										if (result) singleOrderProceed(orderli, contract, orderPrem - tick);
-									});
-									}, 3000);
-								} else {
-									setTimeout(function() {
-										orderli.click();
-									}, 3000);
-								}
-							}
+								}	
+                                                setTimeout(function() {							
+                                                      if (active(D('autoButton')) && inDollars((orderPrem - tick)) > 0) {	
+                                                            cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                                                  if (result) singleOrderProceed(orderli, contract, orderPrem - tick);
+                                                            });
+                                                      } else orderli.click();
+                                                }, 3000);
+                                          }
 						});
 					}
 					singleOrderProceed(li, contract, orderPrem);
@@ -1550,17 +1535,13 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 							});
 						}
 
-						if (active(D('autoButton')) && count < 3) {
-							setTimeout(function() {							
-							cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-								if (result) orderProceed(orderli, contract, orderPrem + tick, count + 1);
-							});
-							}, 3000);
-						} else {
-							setTimeout(function() {
-								orderli.click();
-							}, 3000);
-						}
+                                    setTimeout(function() {				
+                                          if (active(D('autoButton')) && count < 3) {			
+                                                cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                                      if (result) orderProceed(orderli, contract, orderPrem + tick, count + 1);
+                                                });
+                                          } else orderli.click();
+                                    }, 3000);
 					});
 					}
 					orderProceed(li, contract, orderPrem, 1);

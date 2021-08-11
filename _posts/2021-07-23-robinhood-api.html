@@ -292,7 +292,6 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 });
 }
 updateEarnings();
-endpointCounterX = 0;
 	
 function linkClicker(symbol) {
 	if (!event.ctrlKey) {
@@ -2680,7 +2679,7 @@ function updateWSB() {
 }
 	
 function updateAll() {
-	endpointCounter = 0;
+	endpointCounterX = 0;
 	if (active(D('soundButton'))) D('starting').play();
 	updateStocktwits();
 	updateYolo();

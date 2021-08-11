@@ -348,14 +348,13 @@ function updateOptions(newOption) {
 		function makeChain(type, contractDate, referenceli) {
 		  let chain = data.putExpDateMap[contractDate];
 		  if (type == "call") chain = data.callExpDateMap[contractDate];
+                  
 		  let pack = setDefLeg(chain);
 		  let altContract = pack.altContract;
-		  let tempArray = makeArray(chain, data, altContract, type);
-                  
+		  let tempArray = makeArray(chain, data, altContract, type);           
 		  if (!rhfetch) rhfetch = rhOption(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 
 		  let predefleg = buildli(pack.defContract, data); 
-
 		  if (type == "put") predefleg.style.marginBottom = "30px";
                   
 		  let defleg = buildli(altContract, data);
@@ -420,58 +419,58 @@ tickerFetch.then(function() {
       else orders = setBuyOrders(chain, contract, contractDate, symbol);
       let count = 0;
 rhOption(symbol,orders[count].expiration,type,orders[count].strike).then(function(data) {
-function createBuyOrderInner(li, count, data) {
-	clickable(li.firstChild);
-li.firstChild.onclick = function() {
-	let confMsg = "Buy this defensive " + type + "?";
-	if (side == "sell") confMsg = "Open this " + type + "?";
-if (confirm(confMsg)) {	
-	D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});				
-	function orderProceed(li, count, data) {
-		let effect = 'open';
-		if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
-		if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
-		fetchData('https://api.robinhood.com/options/orders/', 
-			  'POST', 
-			  { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
-			let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
-			if (!orderli) return false;
-			let rhfetch;
-			if (count + 1 < orders.length) rhfetch = rhOption(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
-			orderli.lastElementChild.onclick = function() {		
-				confMsg = "Cancel buying this defensive " + type + "?";
-				if (side == "sell") confMsg = "Cancel opening this " + type + "?";
-				if (confirm(confMsg)) {							
-					cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-						if (result && count + 1 < orders.length) {
-							rhfetch.then(function(data) {
-								createBuyOrderInner(orderli, count + 1, data);
-							});
-						}
-					});
-				}
-			}
-			if (active(D('autoButton'))) {
-				setTimeout(function() {							
-				cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
-					if (result && count + 1 < orders.length) {
-						rhfetch.then(function(data) {
-							orderProceed(orderli, count + 1, data);
-						});
-					}
-				});
-				}, 3000);
-			} else {
-				setTimeout(function() {
-					orderli.click();
-				}, 3000);
-			}
-		});
-	}
-	orderProceed(li, count, data);
-}
-}
-}
+      function createBuyOrderInner(li, count, data) {
+            clickable(li.firstChild);
+      li.firstChild.onclick = function() {
+            let confMsg = "Buy this defensive " + type + "?";
+            if (side == "sell") confMsg = "Open this " + type + "?";
+      if (confirm(confMsg)) {	
+            D('orders').parentNode.scrollIntoView({behavior: "smooth", block: "nearest"});				
+            function orderProceed(li, count, data) {
+                  let effect = 'open';
+                  if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
+                  if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
+                  fetchData('https://api.robinhood.com/options/orders/', 
+                          'POST', 
+                          { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, optionsBySymbol[symbol].tick) }).then(function(data) {
+                        let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
+                        if (!orderli) return false;
+                        let rhfetch;
+                        if (count + 1 < orders.length) rhfetch = rhOption(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
+                        orderli.lastElementChild.onclick = function() {		
+                              confMsg = "Cancel buying this defensive " + type + "?";
+                              if (side == "sell") confMsg = "Cancel opening this " + type + "?";
+                              if (confirm(confMsg)) {							
+                                    cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                          if (result && count + 1 < orders.length) {
+                                                rhfetch.then(function(data) {
+                                                      createBuyOrderInner(orderli, count + 1, data);
+                                                });
+                                          }
+                                    });
+                              }
+                        }
+                        if (active(D('autoButton'))) {
+                              setTimeout(function() {							
+                              cancelSequence(data.cancel_url, data.id, orderli, li).then(function(result) {
+                                    if (result && count + 1 < orders.length) {
+                                          rhfetch.then(function(data) {
+                                                orderProceed(orderli, count + 1, data);
+                                          });
+                                    }
+                              });
+                              }, 3000);
+                        } else {
+                              setTimeout(function() {
+                                    orderli.click();
+                              }, 3000);
+                        }
+                  });
+            }
+            orderProceed(li, count, data);
+      }
+      }
+      }
 	createBuyOrderInner(li, count, data);
 });
 });
@@ -660,6 +659,7 @@ function generateRec(symbol, data, elt, override) {
                   function filterChain(type) {
                         let chain = data.callExpDateMap[contractDate];
                         if (type == "put") chain = data.putExpDateMap[contractDate];
+                        
                         let altContract = setDefLeg(chain).altContract;
                         let tempArray = makeArray(chain, data, altContract, type);
 

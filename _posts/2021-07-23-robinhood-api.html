@@ -59,6 +59,9 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<div style="padding-top:20px">Recommended condor completions:
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="recList"></ul>
 		</div>
+		<div style="padding-top:20px">Recommended new:
+		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
+		</div>
 		
 	<div id="explorationPage" style="text-align:center; display:none; border-bottom:solid;">		
 		<div style="width:max-content; margin:auto; margin-bottom:10px">
@@ -75,6 +78,7 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
 		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
 		<button id="stButton" style="margin:10px; margin-bottom:20px;" onclick="updateEarnings();">Load</button>
+		<button id="mergeButton" style="margin:10px; margin-bottom:20px;" onclick="mergeAll()">Rank</button>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:
@@ -576,7 +580,44 @@ function setSellOrders(data, mainContract, contractDate, symbol) {
 	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
 }	
 	
-function generateRec(symbol, data) {	
+	
+function mergeAll() {
+	let merge = [];
+	for (let i = 0; (i < stWeeklyList.length) && (i < 5); i++) {
+		if (!merge.includes(stWeeklyList[i])) merge.push(stWeeklyList[i]);						
+	}	
+	for (let i = 0; (i < preEarnings.length) && (i < 10); i++) {
+		if (!merge.includes(preEarnings[i])) merge.push(preEarnings[i]);						
+	}
+	for (let i = 0; (i < postEarnings.length) && (i < 10); i++) {
+		if (!merge.includes(postEarnings[i])) merge.push(postEarnings[i]);						
+	}
+	
+	clearDOM(D('exploreRecList'));
+	for (let i = 0; i < merge.length; i++) {
+		
+		
+		fetch("https://ansyble.herokuapp.com/cors/", 
+			{cache:'no-cache', headers: {'Target-Ticker': merge[i]  }}).then(function(response) {
+			return response.json();
+		}).then(function(quotedata) {			
+			optionsQuotes[merge[i]] = quotedata;
+			
+			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
+			return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+				+ merge[i] + "&range=OTM&toDate=" + d).then(function(response) {
+				return response.json();
+			}).then(function(data) {				
+				if (data.status != "SUCCESS") return false;
+			
+				generateRec(merge[i], data, D('exploreRecList'));	
+			});
+		})
+	}			 				 
+}	
+	
+	
+function generateRec(symbol, data, elt) {	
 	for (let contractDate in data.callExpDateMap) {
 		
 		let candidateObj = {};	
@@ -702,7 +743,7 @@ function generateRec(symbol, data) {
 			} else referenceli.style.marginBottom = "30px";		
 
 		bag.title = 0 - putrate - callrate;
-		addOrdered(bag, D('recList'));	
+		addOrdered(bag, elt);	
 		}
 	}
 }	
@@ -1614,7 +1655,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					return response.json();
 				}).then(function(quotedata) {
 					optionsQuotes[symbol] = quotedata;
-					generateRec(symbol, data);
+					generateRec(symbol, data, D('recList'));
 					endpointCounter++;			
 					if (endpointCounter == neededCounter) {
 						if (active(D('soundButton'))) D('complete').play();

@@ -383,6 +383,23 @@ function updateOptions(newOption) {
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
+function getVol(symbol) {
+      let theFetch = fetch("https://ansyble.herokuapp.com/cors/", {cache:'no-cache', headers: {'Target-Ticker': symbol }}).then(function(response) {
+            return response.json();
+      }).then(function(quotedata) {
+            return optionsQuotes[symbol] = quotedata;
+      });
+      if (optionsQuotes[symbol]) {
+		return new Promise (
+			function (resolve, reject) {
+				resolve(optionsQuotes[symbol]);
+			}
+		);
+      }
+      return theFetch;
+}
+
+
 function getTick(symbol, expiration, type, strike) {
       if (tickMap[symbol]) {    
 		return new Promise (
@@ -596,22 +613,14 @@ function mergeAll() {
 	}
 	
 	clearDOM(D('exploreRecList'));
-	for (let i = 0; i < merge.length; i++) {
-		
-		
-		fetch("https://ansyble.herokuapp.com/cors/", 
-			{cache:'no-cache', headers: {'Target-Ticker': merge[i]  }}).then(function(response) {
-			return response.json();
-		}).then(function(quotedata) {			
-			optionsQuotes[merge[i]] = quotedata;
-			
+	for (let i = 0; i < merge.length; i++) {	
+            getVol(merge[i]).then(function(quotedata) {
 			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
 			return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ merge[i] + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
 			}).then(function(data) {				
-				if (data.status != "SUCCESS") return false;
-			
+				if (data.status != "SUCCESS") return false;			
 				generateRec(merge[i], data, D('exploreRecList'), true);	
 			});
 		})
@@ -1595,11 +1604,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 					addOrdered(li, D('condorRelease'));
 				}
 				
-				fetch("https://ansyble.herokuapp.com/cors/", 
-					{cache:'no-cache', headers: {'Target-Ticker': symbol }}).then(function(response) {
-					return response.json();
-				}).then(function(quotedata) {
-					optionsQuotes[symbol] = quotedata;
+				getVol(symbol).then(function(quotedata) {
 					generateRec(symbol, data, D('recList'));
 					endpointCounter++;			
 					if (endpointCounter == neededCounter) {

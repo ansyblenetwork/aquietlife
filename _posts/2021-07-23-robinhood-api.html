@@ -2486,12 +2486,7 @@ function updateFinvizV() {
 }
 	
 function updateYolo() {
-	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.text();
-	}).then(function(data) {
+	fetchData('https://yolostocks.live/downloads/wallstreetbets.csv', 'GET').then(function(data) {
 		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
 		yoloList = [];
 		let prevWeekly = yoloWeeklyList;
@@ -2511,10 +2506,7 @@ function updateYolo() {
 }
 
 function updateWSB() {
-	let query = 'https://dashboard.nbshare.io/api/v1/apps/reddit';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+	fetch('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(response) {
 		return response.json();
 	}).then(function(data) {		
 		wsbList = [];

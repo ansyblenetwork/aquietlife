@@ -345,7 +345,7 @@ function updateOptions(newOption) {
 		currentOption = query;	
 		clearDOM(D('optionslist'));
 
-		let rhfetch;
+		let tickWait;
 		function makeChain(type, contractDate, referenceli) {
 		  let chain = data.putExpDateMap[contractDate];
 		  if (type == "call") chain = data.callExpDateMap[contractDate];
@@ -353,16 +353,16 @@ function updateOptions(newOption) {
 		  let pack = setDefLeg(chain);
 		  let altContract = pack.altContract;
 		  let tempArray = makeArray(chain, data, altContract, type);           
-		  if (!rhfetch) rhfetch = detailToURL(query, contractDate.substring(0, 10), type, altContract.strikePrice);
+		  if (!tickWait) tickWait = getTick(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 
 		  let predefleg = buildli(referenceli, pack.defContract, data); 
 		  if (type == "put") predefleg.style.marginBottom = "30px";
                   
 		  let defleg = buildli(referenceli, altContract, data);
-		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, rhfetch);                     
+		  createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, query, tickWait);                     
 		  tempArray.forEach(function(contract) {
                     let contractli = buildli(referenceli, contract, data, defleg, altContract);
-                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, rhfetch);
+                    createBuyOrder(contractli, type, 'sell', chain, contract, contractDate, query, tickWait);
 		  });
 		}    
             
@@ -382,6 +382,17 @@ function updateOptions(newOption) {
 	
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
+
+function getTick(symbol, expiration, type, strike) {
+      if (tickMap[symbol]) {    
+		return new Promise (
+			function (resolve, reject) {
+				resolve(tickMap[symbol]);
+			}
+		);
+      }      
+      return detailToURL(symbol, expiration, type, strike);
+}
 
 function URLtoDetail(url) {
       if (urlMap[url]) {            
@@ -672,11 +683,11 @@ function generateRec(symbol, data, elt, override) {
                               if (override 
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
-                                    let rhfetch = detailToURL(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
+                                    let tickWait = getTick(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
                                     let defleg = buildli(referenceli, altContract, data);
-                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
+                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, tickWait);
                                     let offleg = buildli(referenceli, candidate, data, defleg, altContract);
-                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, rhfetch);
+                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, tickWait);
                                     
                                     return returnRate(candidate, altContract);
                               }

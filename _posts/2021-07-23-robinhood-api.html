@@ -263,8 +263,8 @@ function updateEarningsF() {
             if (weeklys.includes(stockData.symbol)) {
             let birthday = new Date(stockData.date);
             let btime = birthday.getTime()/1000;
-            if (stockData.hour == "amc") btime -= 3*60*60;
-            else btime -= 9*60*60 + 30*60;
+            if (stockData.hour == "amc") btime -= 4*60*60;
+            else btime -= 10*60*60 + 30*60;
             stockData.earningsTimestamp = btime;
             stockData.earningsTimestampStart = btime;
             stockData.earningsTimestampEnd = btime;      

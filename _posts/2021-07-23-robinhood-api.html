@@ -75,6 +75,11 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<button onclick="updateAll();" id="refreshButton">Refresh and Rank</button>
 		<ul style="overflow:auto; max-height:50vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="exploreRecList"></ul>
 		</div>
+
+		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
+		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
+		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
+		<button id="stButton" style="margin:10px;" onclick="updateEarnings();">Load</button>
 		
 		<div style="margin:0px auto 0px auto; text-align:center">
 			<a target='_blank' href='https://yolostocks.live/'><strong style='color:#333'>YoloStocks</strong></a>
@@ -113,13 +118,8 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 			<br>
 			<span id="finvizV">Volatile <strong>(weeklys)</strong></span>
 			<br>
-			<button id="finvizVButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizV(); else addAll(finvizVWeeklyList);">Load</button>
+			<button id="finvizVButton" style="margin:10px; margin-bottom:20px" onclick="if (this.textContent == 'Load') updateFinvizV(); else addAll(finvizVWeeklyList);">Load</button>
 		</div>
-		
-		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
-		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
-		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
-		<button id="stButton" style="margin:10px; margin-bottom:20px;" onclick="updateEarnings();">Load</button>
 	</div>		
 		
 		<div style="padding-top:20px">Spread buybacks:

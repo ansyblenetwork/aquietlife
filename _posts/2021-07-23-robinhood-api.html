@@ -1652,9 +1652,9 @@ function findCallPair(symbol, defCall, shortCall) {
                 candidate = subject;
             } else {
                 if (callCollateral(defCall, shortCall) < subject.collateral && callCollateral(defCall, shortCall) > 0) {                        
-                    collateral = callCollateral(defCall, shortCall);
-                    waste = callWaste(defCall, shortCall);
-                    candidate = subject;
+                //    collateral = callCollateral(defCall, shortCall);
+                  //  waste = callWaste(defCall, shortCall);
+                  //  candidate = subject;
                 } else {
                     if (callWaste(defCall, shortCall) < subject.waste && callCollateral(defCall, shortCall) == 0) {                  
                  //      collateral = callCollateral(defCall, shortCall);

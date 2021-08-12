@@ -424,9 +424,64 @@ function detailToURL(symbol, expiration, type, strike) {
 
 function createBuyOrder(li, type, side, chain, contract, contractDate, symbol, tickerFetch) {  
 if (!accountURL) return false;
-tickerFetch.then(function() {
-      let count = 0;
-      let orders = setSellOrders(chain, contract, contractDate, symbol, side);
+    tickerFetch.then(function() {
+        let count = 0;
+        let ask = inDollars(contract.ask);
+        let bid = inDollars(contract.bid);
+        tick = inDollars(tickMap[symbol]);
+        let strike = contract.strikePrice;
+        let start = bid;
+        let end = ask - tick;
+        if (side == "buy") {
+            start = bid + tick;
+            end = ask;
+        }
+
+        let orders = [];
+        let atStrikeOrders = [];
+        for (let contractStrike in chain) {
+            let contract = chain[contractStrike][0];
+            for (let i = start; i <= end; i += tick) {
+                if (side == "sell" && inDollars(contract.ask) > i) {
+                    if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike)) {
+                        if (i == bid) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+                    }
+                    if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+                }
+                if (side == "buy" && inDollars(contract.bid) < i) {
+                    if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike)) {
+                        if (i == ask) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+                    }
+                    if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
+                }
+            }
+        }
+        
+        function rate(order) {
+            let cost = ask - order.premium;
+            if (side == "buy") cost = order.premium - bid;
+            let collateral = strike - order.strike;
+            if (collateral < 0) collateral = 0 - collateral;
+            if (collateral == 0) collateral = 0.0001;
+            return collateral / cost;
+        }
+
+        function processOrderList(orders, endpoint) {
+            if (orders.length <= 3) return orders;
+            let sparseOrders = [];
+            for (let i = 0; i < 3; i++) {
+                sparseOrders.push(orders[Math.round(i*orders.length/3)]);
+            }
+            if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
+            return sparseOrders;
+        }	
+        
+        orders.sort(function(y, x) {return rate(x) - rate(y);});
+        atStrikeOrders.sort(function(y, x) {return rate(x) - rate(y);});
+        orders = processOrderList(orders);
+        atStrikeOrders = processOrderList(atStrikeOrders, true);	
+        orders = orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
+        
       function createBuyOrderInner(li, count, rhWait) {
             clickable(li.firstChild);
       li.firstChild.onclick = function() {
@@ -473,65 +528,6 @@ tickerFetch.then(function() {
 	createBuyOrderInner(li, count);
 });
 }
-
-function processOrderList(orders, endpoint) {
-	if (orders.length <= 3) return orders;
-	let sparseOrders = [];
-	for (let i = 0; i < 3; i++) {
-		sparseOrders.push(orders[Math.round(i*orders.length/3)]);
-	}
-	if (endpoint && Math.round(2*orders.length/3) != (orders.length - 1)) sparseOrders.push(orders[orders.length - 1]);
-	return sparseOrders;
-}
-	
-	
-function setSellOrders(data, mainContract, contractDate, symbol, side) {
-	let ask = inDollars(mainContract.ask);
-	let bid = inDollars(mainContract.bid);
-	tick = inDollars(tickMap[symbol]);
-	let strike = mainContract.strikePrice;
-    let start = bid;
-    let end = ask - tick;
-    if (side == "buy") {
-        start = bid + tick;
-        end = ask;
-    }
-	
-	function rate(order) {
-		let cost = ask - order.premium;
-        if (side == "buy") cost = order.premium - bid;
-		let collateral = strike - order.strike;
-		if (collateral < 0) collateral = 0 - collateral;
-		if (collateral == 0) collateral = 0.0001;
-		return collateral / cost;
-	}
-    
-	let orders = [];
-	let atStrikeOrders = [];
-	for (let contractStrike in data) {
-		let contract = data[contractStrike][0];
-		for (let i = start; i <= end; i += tick) {
-			if (side == "sell" && inDollars(contract.ask) > i) {
-				if ((contract.putCall == "CALL" && contract.strikePrice > strike) || (contract.putCall == "PUT" && contract.strikePrice < strike)) {
-					if (i == bid) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-				}
-				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
-			if (side == "buy" && inDollars(contract.bid) < i) {
-				if ((contract.putCall == "CALL" && contract.strikePrice < strike) || (contract.putCall == "PUT" && contract.strikePrice > strike)) {
-					if (i == ask) orders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-				}
-				if (contract.strikePrice == strike) atStrikeOrders.push({expiration:contractDate.substring(0, 10), strike: contract.strikePrice,  premium: i });
-			}
-		}
-	}
-	orders.sort(function(y, x) {return rate(x) - rate(y);});
-	atStrikeOrders.sort(function(y, x) {return rate(x) - rate(y);});
-	orders = processOrderList(orders);
-	atStrikeOrders = processOrderList(atStrikeOrders, true);	
-	return orders.concat(atStrikeOrders).sort(function(y, x) {return rate(x) - rate(y);});
-}	
-	
 	
 function mergeAll() {
 	let merge = [];
@@ -821,36 +817,20 @@ function contractAboveVolatility(contract, data) {
 	return (optionsQuotes[data.symbol] && Math.sqrt(weeksToExp) * (1 + parseFloat(optionsQuotes[data.symbol].volatility.split('% ')[0])) * 2 < margin(contract, data));
 }
 
-function interestRate(contract, defData) {
-	if (contract.ask <= defData.ask) return 0;
-	if (contract.putCall == "CALL")	return 100*(contract.ask - defData.ask)*365*1000*60*60*24
-			/((defData.strikePrice - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-	else return 100*(contract.ask - defData.ask)*365*1000*60*60*24
-			/((contract.strikePrice - defData.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-}
-	
-function marginalRate(contract, defData) {	
-	if (!defData) return 0;
-	if (contract.bid <= defData.bid) return 0;
-	if (contract.putCall == "CALL")	return 100*(contract.bid - defData.bid)*365*1000*60*60*24
-			/((defData.strikePrice - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-	else return 100*(contract.bid - defData.bid)*365*1000*60*60*24
-			/((contract.strikePrice - defData.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-}
-	
-function returnRate(contract, defData) {
-	if (!defData) return 0;
-	if (contract.bid <= defData.ask) return 0;
-	if (contract.putCall == "CALL")	return 100*(contract.bid - defData.ask)*365*1000*60*60*24
-			/((defData.strikePrice - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-	else return 100*(contract.bid - defData.ask)*365*1000*60*60*24
-			/((contract.strikePrice - defData.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
+function rateCalc(contract, defData, premium) {
+    if (premium <= 0) return 0;
+    let rate = 100*premium*365*1000*60*60*24/((defData.strikePrice - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
+	if (contract.putCall == "CALL")	return rate;
+	else return 0 - rate;
 }
 
+function interestRate(contract, defData) { return rateCalc(contract, defData, contract.ask - defData.ask);}	
+function marginalRate(contract, defData) { return rateCalc(contract, defData, contract.bid - defData.bid);}	
+function returnRate(contract, defData) { return rateCalc(contract, defData, contract.bid - defData.ask);}
+
 function margin(contract, data) {
-	let returnMargin;
-	if (contract.putCall == "CALL") returnMargin = 100*(contract.strikePrice - data.underlyingPrice)/data.underlyingPrice;
-	else returnMargin = 100*(data.underlyingPrice - contract.strikePrice)/data.underlyingPrice;
+	let returnMargin = 100*(data.underlyingPrice - contract.strikePrice)/data.underlyingPrice;
+	if (contract.putCall == "CALL") returnMargin = 0 - returnMargin;
 	if (returnMargin < 2) return round(returnMargin, true);
 	else return Math.round(returnMargin);
 }
@@ -973,7 +953,6 @@ function submitMFAForm() {
 		});
 	});
 }
-	
 
 	
 ///// Positions analysis code //////////////////////////////////////////////////////

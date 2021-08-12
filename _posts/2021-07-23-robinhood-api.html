@@ -2502,7 +2502,12 @@ function updateFinvizV() {
 }
 	
 function updateYolo() {
-	fetchData('https://yolostocks.live/downloads/wallstreetbets.csv', 'GET').then(function(data) {
+	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';
+		
+	fetch("https://ansyble.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
+		return response.text();
+	}).then(function(data) {
 		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
 		yoloList = [];
 		let prevWeekly = yoloWeeklyList;

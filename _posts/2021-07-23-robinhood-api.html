@@ -670,21 +670,21 @@ function generateRec(symbol, data, elt, override) {
 
                         let candidate;
                         tempArray.forEach(function(contract) {
-                              if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) candidate = contract;
+                              if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
+                              if (override 
+                                  || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
+                                  || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice)))
+                                candidate = contract;
+                              }
                         });
 
                         if (candidate) {
-                              if (override 
-                                  || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
-                                  || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
-                                    let tickWait = getTick(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
-                                    let defleg = buildli(referenceli, altContract, data);
-                                    createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, tickWait);
-                                    let offleg = buildli(referenceli, candidate, data, defleg, altContract);
-                                    createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, tickWait);
-                                    
-                                    return returnRate(candidate, altContract);
-                              }
+                          let tickWait = getTick(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
+                          let defleg = buildli(referenceli, altContract, data);
+                          createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, tickWait);
+                          let offleg = buildli(referenceli, candidate, data, defleg, altContract);
+                          createBuyOrder(offleg, type, 'sell', chain, candidate, contractDate, symbol, tickWait);
+                          return returnRate(candidate, altContract);
                         }
                         return 0;
                   }

@@ -481,8 +481,7 @@ tickerFetch.then(function() {
 function setBuyOrders(data, altData, contractDate, symbol) {
 	let ask = inDollars(altData.ask);
 	let bid = inDollars(altData.bid);
-	let tick = 1;
-	if (optionsBySymbol[symbol]) tick = inDollars(optionsBySymbol[symbol].tick);
+	let tick = inDollars(optionsBySymbol[symbol].tick);
 	let strike = altData.strikePrice;
 
 	function rate(order) {

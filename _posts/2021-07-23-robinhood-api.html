@@ -6,7 +6,6 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 
 
 
-
 <div style="margin-top:30px">
 	<div id="monitorPage" style="text-align:center; display:none; border-bottom:solid; margin-bottom:20px">	
 		<button onclick="toggleSound(this);" id="soundButton" class="active">Sound On</button>
@@ -93,7 +92,6 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 			<button id="wsbButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateWSB(); else addAll(wsbWeeklyList);">Load</button>
 		</div>
 
-
 		<div style="margin:0px auto 0px auto; text-align:center">
 			<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change'><strong style='color:#333'>Finviz Gainers</strong></a>
 			<br>
@@ -134,7 +132,6 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 		<ul style="overflow:auto; max-height:30vh; list-style-type:none; padding-left:0px;margin-bottom:20px;" id="ncRelease"></ul>
 		</div>		
 	</div>
-
 	
 	<div id="loginPage" style="display:none;">	
 	
@@ -642,8 +639,6 @@ function makeArray(chain, data, altContract, type) {
       });
 
       let finalArray = [];
-
-
       let maxReturn = 0;
       let prevContract = altContract;
       tempArray.forEach(function(contract) {
@@ -653,7 +648,6 @@ function makeArray(chain, data, altContract, type) {
                   prevContract = contract;
                   contract.totalVolume = inDollars(contract.totalVolume/cumVol);
                   finalArray.push(contract);
-
             }
       });
       return finalArray;

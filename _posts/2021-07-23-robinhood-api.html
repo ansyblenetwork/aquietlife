@@ -179,7 +179,7 @@ var optionsPositions = [];
 	
 // map from Robinhood option URL to contract type
 var urlMap = {};
-var reverseMap = {};
+var detailMap = {};
 var dteMap = {};
 var tickMap = {};
 	
@@ -353,7 +353,7 @@ function updateOptions(newOption) {
 		  let pack = setDefLeg(chain);
 		  let altContract = pack.altContract;
 		  let tempArray = makeArray(chain, data, altContract, type);           
-		  if (!rhfetch) rhfetch = getURL(query, contractDate.substring(0, 10), type, altContract.strikePrice);
+		  if (!rhfetch) rhfetch = detailToURL(query, contractDate.substring(0, 10), type, altContract.strikePrice);
 
 		  let predefleg = buildli(referenceli, pack.defContract, data); 
 		  if (type == "put") predefleg.style.marginBottom = "30px";
@@ -383,28 +383,28 @@ function updateOptions(newOption) {
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
-function reverseURL(url, symbol) {
+function URLtoDetail(url) {
       if (urlMap[url]) {            
 		return new Promise (
 			function (resolve, reject) {
-                        tickMap[symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
+                        tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
 				resolve(urlMap[url]);
 			}
 		);
       }
       return fetchData(url, 'GET').then(function(getData) {
             urlMap[url] = getData;
-            tickMap[symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
+            tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
             return getData;
       });
 }
 
-function getURL(symbol, expiration, type, strike) {
-	if (reverseMap[symbol+expiration+type+strike]) {
+function detailToURL(symbol, expiration, type, strike) {
+	if (detailMap[symbol+expiration+type+strike]) {
 		return new Promise (
 			function (resolve, reject) {
-                        tickMap[symbol] = reverseMap[symbol+expiration+type+strike].min_ticks.below_tick;
-				resolve(reverseMap[symbol+expiration+type+strike]);
+                        tickMap[symbol] = detailMap[symbol+expiration+type+strike].min_ticks.below_tick;
+				resolve(detailMap[symbol+expiration+type+strike]);
 			}
 		);
 	}
@@ -417,9 +417,9 @@ function getURL(symbol, expiration, type, strike) {
 			'state': 'active'
 		};
 	return fetchData('https://api.robinhood.com/options/instruments/' + '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&'), 'GET').then(function(data) {
-		reverseMap[symbol+expiration+type+strike] = data.results[0];
-            tickMap[symbol] = reverseMap[symbol+expiration+type+strike].min_ticks.below_tick;
-		return reverseMap[symbol+expiration+type+strike];
+		detailMap[symbol+expiration+type+strike] = data.results[0];
+            tickMap[symbol] = detailMap[symbol+expiration+type+strike].min_ticks.below_tick;
+		return detailMap[symbol+expiration+type+strike];
 	});	
 	});
 }
@@ -434,7 +434,7 @@ tickerFetch.then(function() {
       function createBuyOrderInner(li, count, rhWait) {
             clickable(li.firstChild);
       li.firstChild.onclick = function() {
-            if (!rhWait) rhWait = getURL(symbol,orders[count].expiration,type,orders[count].strike);
+            if (!rhWait) rhWait = detailToURL(symbol,orders[count].expiration,type,orders[count].strike);
             let confMsg = "Buy this defensive " + type + "?";
             if (side == "sell") confMsg = "Open this " + type + "?";
       if (confirm(confMsg)) {
@@ -450,7 +450,7 @@ tickerFetch.then(function() {
                               let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
                               if (!orderli) return false;
                               let rhfetch;
-                              if (count + 1 < orders.length) rhfetch = getURL(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
+                              if (count + 1 < orders.length) rhfetch = detailToURL(symbol,orders[count + 1].expiration,type,orders[count + 1].strike);
                               orderli.lastElementChild.onclick = function() {		
                                     confMsg = "Cancel buying this defensive " + type + "?";
                                     if (side == "sell") confMsg = "Cancel opening this " + type + "?";
@@ -672,7 +672,7 @@ function generateRec(symbol, data, elt, override) {
                               if (override 
                                   || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - candidate.strikePrice))
                                   || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(candidate.strikePrice - altContract.strikePrice))) {
-                                    let rhfetch = getURL(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
+                                    let rhfetch = detailToURL(symbol, contractDate.substring(0, 10), type, altContract.strikePrice);
                                     let defleg = buildli(referenceli, altContract, data);
                                     createBuyOrder(defleg, type, 'buy', chain, altContract, contractDate, symbol, rhfetch);
                                     let offleg = buildli(referenceli, candidate, data, defleg, altContract);
@@ -915,7 +915,7 @@ function logout() {
 	optionsPositions = [];
 	urlMap = {};
       tickMap = {};
-	reverseMap = {};
+	detailMap = {};
 	tickerList = [];
 	incompleteCondorList = {};
 	
@@ -1225,7 +1225,7 @@ fetchData('https://api.robinhood.com/options/orders/', 'GET', { headers:authHead
 					});
 				}
 			}
-                  reverseURL(data.results[i].legs[0].option, symbol).then(function(optionData) {                        
+                  URLtoDetail(data.results[i].legs[0].option).then(function(optionData) {                        
 				createGenericOrder(optionData);
                   })
 		}
@@ -1246,7 +1246,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
             }
             
             taskBySymbol[optionsPositions[i].chain_symbol].push(
-                  reverseURL(optionsPositions[i].option, optionsPositions[i].chain_symbol).then(function(optionData) {
+                  URLtoDetail(optionsPositions[i].option).then(function(optionData) {
                         let quantity = parseInt(optionsPositions[i].quantity);
                         for (let j = 0; j < quantity; j++) {
                               let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};

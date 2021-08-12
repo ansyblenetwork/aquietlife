@@ -1653,14 +1653,14 @@ function findCallPair(symbol, defCall, shortCall) {
                 candidate = subject;
             } else {
                 if (callCollateral(defCall, shortCall) < subject.friend.collateral && callCollateral(defCall, shortCall) > 0) {                        
-                    collateral = callCollateral(defCall, shortCall);
-                    waste = callWaste(defCall, shortCall);
-                    candidate = subject;
+               //     collateral = callCollateral(defCall, shortCall);
+               //     waste = callWaste(defCall, shortCall);
+               //     candidate = subject;
                 } else {
                     if (callWaste(defCall, shortCall) < subject.friend.waste && callCollateral(defCall, shortCall) == 0) {                  
-                        collateral = callCollateral(defCall, shortCall);
-                        waste = callWaste(defCall, shortCall);
-                        candidate = subject;
+                 //      collateral = callCollateral(defCall, shortCall);
+                //        waste = callWaste(defCall, shortCall);
+                //        candidate = subject;
                     }
                 }
             }

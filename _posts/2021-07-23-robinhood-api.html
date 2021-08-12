@@ -749,6 +749,7 @@ function buildli(referenceli, contract, data, defleg, altData) {
 	else col = addCol("-" + margin(contract, data) + "%", "75px", li);
 
 	let collat = "x";
+	let rate = 295;
 	if (altData) {
 		if (contract.putCall == "CALL") collat = 100*(altData.strikePrice - contract.strikePrice);
 		else collat = 100*(contract.strikePrice - altData.strikePrice);		
@@ -758,13 +759,14 @@ function buildli(referenceli, contract, data, defleg, altData) {
 			col.style.backgroundColor = "#ddf";
 			col2.style.backgroundColor = "#ddf";
 		}
+        let colstring = Math.round(returnRate(contract, altData)) + "%";
+        col = addCol(colstring, "100px", li);
+        rate = 295 - 2*Math.round(returnRate(contract, altData));
+	} else {
+        addCol("x", "75px", li);
+        col = addCol("x", "100px", li);
+    }
 
-	} else addCol("x", "75px", li);
-
-	let colstring = Math.round(returnRate(contract, altData)) + "%";
-	col = addCol(colstring, "100px", li);
-
-	let rate = 295 - 2*Math.round(returnRate(contract, altData));
 	if (rate < 0) col.style.backgroundColor = "#00ffff";
 	else if (rate < 16) col.style.backgroundColor = "#0" + rate.toString(16) + "ffff";
 	else col.style.backgroundColor = "#" + rate.toString(16) + "ffff";

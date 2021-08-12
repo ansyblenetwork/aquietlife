@@ -202,19 +202,13 @@ var weeklys = ["NEGG","HOOD","AA","AAL","AAOI","AAPL","ABBV","ABC","ABNB","ABT",
 var earnings = [];
 var preEarnings = [];
 var postEarnings = [];
-var namesMap = {};	
-var stList = [];
+var namesMap = {};
 var stWeeklyList = [];
 	
-var yoloList = [];
 var yoloWeeklyList = [];
-var finvizGList = [];
 var finvizGWeeklyList = [];
-var finvizLList = [];
 var finvizLWeeklyList = [];
-var finvizVList = [];
 var finvizVWeeklyList = [];
-var wsbList = [];
 var wsbWeeklyList = [];
 	
 var endpointCounterX = 0;
@@ -705,13 +699,12 @@ function generateRec(symbol, data, elt, override) {
 					      
 function updateStocktwits() {
 	fetchData('https://api.stocktwits.com/api/2/trending/symbols/equities.json', "GET").then(function(data) {
-		stList = [];
 		let prevWeekly = stWeeklyList;
 		stWeeklyList = [];
 		let stString = "(" + new Date().toLocaleTimeString() + "): ";
 		data.symbols.forEach(function(stockData) {
 			namesMap[stockData.symbol] = stockData.title;			
-			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits");
+			stString += printWeekly(stockData.symbol, stWeeklyList, prevWeekly, "Stocktwits");
 		});
 		D('stocktwits').innerHTML = stString;
 		
@@ -720,8 +713,7 @@ function updateStocktwits() {
 	});
 }
 
-function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
-	stList.push(symbol);
+function printWeekly(symbol, stWeeklyList, prevWeekly, sitename) {
 	if (weeklys.includes(symbol)) {
 		stWeeklyList.push(symbol);
 		if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
@@ -2403,12 +2395,11 @@ function updateFinvizG() {
 		return response.json();
 	}).then(function(data) {
 		if (data.length > 0) {
-		finvizGList = [];
 		let prevWeekly = finvizGWeeklyList;
 		finvizGWeeklyList = [];
 		let stString = "(" + new Date().toLocaleTimeString() + "): ";
 		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizGList, finvizGWeeklyList, prevWeekly, "Finviz gainers");
+			stString += printWeekly(stockData, finvizGWeeklyList, prevWeekly, "Finviz gainers");
 		});
 		D('finvizG').innerHTML = stString;
 		//D('finvizGButton').textContent = "Monitor Weeklys";
@@ -2425,12 +2416,11 @@ function updateFinvizL() {
 		return response.json();
 	}).then(function(data) {
 		if (data.length > 0) {
-		finvizLList = [];
 		let prevWeekly = finvizLWeeklyList;
 		finvizLWeeklyList = [];
 		let stString = "(" + new Date().toLocaleTimeString() + "): ";
 		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizLList, finvizLWeeklyList, prevWeekly, "Finviz losers");
+			stString += printWeekly(stockData, finvizLWeeklyList, prevWeekly, "Finviz losers");
 		});
 		D('finvizL').innerHTML = stString;
 		//D('finvizLButton').textContent = "Monitor Weeklys";
@@ -2447,12 +2437,11 @@ function updateFinvizV() {
 		return response.json();
 	}).then(function(data) {
 		if (data.length > 0) {
-		finvizVList = [];
 		let prevWeekly = finvizVWeeklyList;
 		finvizVWeeklyList = [];
 		let stString = "(" + new Date().toLocaleTimeString() + "): ";
 		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizVList, finvizVWeeklyList, prevWeekly, "Finviz volatile");
+			stString += printWeekly(stockData, finvizVWeeklyList, prevWeekly, "Finviz volatile");
 		});
 		D('finvizV').innerHTML = stString;
 		//D('finvizVButton').textContent = "Monitor Weeklys";
@@ -2470,12 +2459,11 @@ function updateYolo() {
 		return response.text();
 	}).then(function(data) {
 		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
-		yoloList = [];
 		let prevWeekly = yoloWeeklyList;
 		yoloWeeklyList = [];
 		let yoloString = "(" + new Date().toLocaleTimeString() + "): ";
 		preYoloList.forEach(function(symbol) {
-			if (symbol && /[A-Z]/.test(symbol[0])) yoloString += printWeekly(symbol, yoloList, yoloWeeklyList, prevWeekly, "YoloStocks");
+			if (symbol && /[A-Z]/.test(symbol[0])) yoloString += printWeekly(symbol, yoloWeeklyList, prevWeekly, "YoloStocks");
 		});
 		D('yolo').innerHTML = yoloString;
 		//D('yoloButton').textContent = "Monitor Weeklys";
@@ -2485,13 +2473,12 @@ function updateYolo() {
 }
 
 function updateWSB() {
-	fetchData('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(data) {		
-		wsbList = [];
+	fetchData('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(data) {	
 		let prevWeekly = wsbWeeklyList;
 		wsbWeeklyList = [];
 		let wsbString = "(" + new Date().toLocaleTimeString() + "): ";
 		for (let i = 0; i < 15; i++) {
-			wsbString += printWeekly(data[i].ticker, wsbList, wsbWeeklyList, prevWeekly, "WSB");
+			wsbString += printWeekly(data[i].ticker, wsbWeeklyList, prevWeekly, "WSB");
 		}
 		D('wsb').innerHTML = wsbString;
 		//D('wsbButton').textContent = "Monitor Weeklys";

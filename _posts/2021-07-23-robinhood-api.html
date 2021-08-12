@@ -78,6 +78,8 @@ title: "Options Tools III: Options collateral analysis via the Robinhood API"
 
 		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
 		<button id="stButton" style="margin:10px;" onclick="updateEarnings();">Load</button>
+		<div id="earningsF">Finnhub earnings within a week <strong>(weeklys only)</strong></div>
+		<button id="stButton" style="margin:10px;" onclick="updateEarningsF();">Load</button>
 		<div id="stocktwits">Trending on Stocktwits <strong>(weeklys)</strong></div>
 		<button id="stButton" style="margin:10px" onclick="updateStocktwits();">Load</button>
 		
@@ -236,6 +238,56 @@ if (typeof(Storage) !== "undefined") {
 	}
 	else showDiv('loginPage');
 } 	
+
+
+
+
+
+
+
+
+function updateEarningsF() {  
+  let prev = new Date(Date.now() - 1000*60*60*24*2).toISOString();	
+  let next = new Date(Date.now() + 1000*60*60*24*2).toISOString();	
+  fetch("https://finnhub.io/api/v1/calendar/earnings?from=" + prev + "&to=" + next + "&token=c4amniaad3ie5svp7h40").then(function(response) {
+    return response.json();
+  }).then(function(data) {
+    if (!data) return false;
+    earningsF = [];
+    preEarningsF = [];
+    postEarningsF = [];
+    let earningsTime = {};
+    let earningsString = "";
+    data.forEach(function(stockData) {
+      let birthday = new Date(stockData.date);
+      let btime = birthday.getTime()/1000;
+      if (stockData.hour == "amc") btime -= 3*60*60;
+      else btime -= 9*60*60 + 30*60;
+      stockData.earningsTimestamp = btime;
+      stockData.earningsTimestampStart = btime;
+      stockData.earningsTimestampEnd = btime;      
+      if ((stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60) ||
+          (stockData.earningsTimestamp - Date.now()/1000 >= 0 
+           && stockData.earningsTimestampStart == stockData.earningsTimestampEnd && stockData.earningsTimestamp - Date.now()/1000 < 2*24*60*60)) {
+        earningsF.push(stockData.symbol);
+        earningsTime[stockData.symbol] = stockData.earningsTimestamp;
+      }
+      if (stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60)
+        postEarningsF.push(stockData.symbol);
+      if (stockData.earningsTimestamp - Date.now()/1000 >= 0 
+          && stockData.earningsTimestampStart == stockData.earningsTimestampEnd && stockData.earningsTimestamp - Date.now()/1000 < 2*24*60*60)
+        preEarningsF.push(stockData.symbol);
+    });	      
+    earningsF.sort(function(x, y) { return earningsTime[x]- earningsTime[y];	});    
+    preEarningsF.sort(function(x, y) { return earningsTime[x]- earningsTime[y]; });
+    postEarningsF.sort(function(x, y) { return  earningsTime[y] - earningsTime[x];	});
+    earningsF.forEach(function(stock) {
+      if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#94b'>${stock}</strong></a> `;
+      else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#07b'>${stock}</strong></a> `;							      
+    });
+    D('earningsF').innerHTML = earningsString;	
+  });
+}
 	
 function updateEarnings() {		
 let weeklyQuery = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + weeklys.join();
@@ -273,6 +325,7 @@ fetchData(weeklyQuery, 'GET').then(function(data) {
 });
 }
 updateEarnings();
+updateEarningsF();
 	
 function linkClicker(symbol) {
 	if (!event.ctrlKey) {
@@ -2407,6 +2460,8 @@ function updateAll() {
 	setTimeout(function() { updateFinvizV(); }, 3000);
 	updateWSB();
 	updateEarnings();
+  
+updateEarningsF();
 }
 			
 

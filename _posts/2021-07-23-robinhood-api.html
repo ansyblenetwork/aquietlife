@@ -672,8 +672,8 @@ function generateRec(symbol, data, elt, override) {
                         tempArray.forEach(function(contract) {
                               if (contractAboveVolatility(contract, data) && contract.totalVolume < 11) {
                               if (override 
-                                  || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 75*(altContract.strikePrice - contract.strikePrice))
-                                  || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 75*(contract.strikePrice - altContract.strikePrice)))
+                                  || (type == "call" && incompleteCondorList[symbol][contractDate.substring(0, 10)].call > 70*(altContract.strikePrice - contract.strikePrice))
+                                  || (type == "put" && incompleteCondorList[symbol][contractDate.substring(0, 10)].put > 70*(contract.strikePrice - altContract.strikePrice)))
                                 candidate = contract;
                               }
                         });

@@ -1650,7 +1650,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 	
 function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
-	let maxGain = 0;
 	let collateral = Infinity;
 	let candidate = null;
 	let seeker = defCall;
@@ -1669,9 +1668,7 @@ function findCallPair(symbol, defCall, shortCall) {
 	function evaluate(defCall, shortCall, subject) {
 		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
 			if (!subject.friend || (seeker == defCall && subject.friend.expiration >= seeker.expiration)
-			   || (seeker == shortCall && subject.friend.expiration <= seeker.expiration)
-			   ) {
-			maxGain = callGain(defCall, shortCall, subject);
+			   || (seeker == shortCall && subject.friend.expiration <= seeker.expiration)) {
 			collateral = callCollateral(defCall, shortCall);
 			candidate = subject;
 			}
@@ -1681,11 +1678,6 @@ function findCallPair(symbol, defCall, shortCall) {
 	function callCollateral(defCall, shortCall) {	
 		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
 		return 0;
-	}
-
-	function callGain(defCall, shortCall, subject) {
-		if (!subject.friend) return Infinity;
-		return subject.collateral - callCollateral(defCall, shortCall);
 	}
 	
 	if (candidate) {
@@ -1712,7 +1704,6 @@ function clearOption(option) {
 	
 function findPutPair(symbol, defPut, shortPut) {	
 	let data = optionsBySymbol[symbol];
-	let maxGain = 0;
 	let release = 0;
 	let candidate = null;
 	let seeker = defPut;
@@ -1731,9 +1722,7 @@ function findPutPair(symbol, defPut, shortPut) {
 	function evaluate(defPut, shortPut, subject) {
 		if (defPut.expire >= shortPut.expire && putRelease(defPut, shortPut) > release) {			
 			if (!subject.friend || (seeker == defPut && subject.friend.expiration >= seeker.expiration)
-			   || (seeker == shortPut && subject.friend.expiration <= seeker.expiration)
-			   ) {
-			maxGain = putGain(defPut, shortPut, subject);
+			   || (seeker == shortPut && subject.friend.expiration <= seeker.expiration)) {
 			release = putRelease(defPut, shortPut);
 			candidate = subject;
 			}
@@ -1743,11 +1732,6 @@ function findPutPair(symbol, defPut, shortPut) {
 	function putRelease(defPut, shortPut) {		
 		if (defPut.strike < shortPut.strike) return defPut.strike;
 		return shortPut.strike;		
-	}
-
-	function putGain(defPut, shortPut, subject) {
-		if (!subject.friend) return putRelease(defPut, shortPut);
-		return putRelease(defPut, shortPut) - subject.release;
 	}
 
 	if (candidate) {
@@ -2410,8 +2394,6 @@ function toggleNotifications(elt) {
 		}	
 	}
 }
-	
-	
 	
 function updateFinvizG() {
 	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change';

@@ -2311,7 +2311,7 @@ function toggleNotifications(elt) {
 	}
 }
 
-function updateFinviz(mainarray, query) {
+function updateFinviz(elt, mainarray, query) {
     return fetch("https://ansyble.herokuapp.com/cors/", 
                  {cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
         return response.json();
@@ -2323,7 +2323,7 @@ function updateFinviz(mainarray, query) {
             data.forEach(function(stockData) {
                 stString += printWeekly(stockData, newWeekly, prevWeekly, "Finviz gainers");
             });
-            D('finvizG').innerHTML = stString;
+            elt.innerHTML = stString;
             endpointCounterX++;			
             if (endpointCounterX == 7) mergeAll();
             return newWeekly;
@@ -2331,17 +2331,17 @@ function updateFinviz(mainarray, query) {
     });
 }	
 function updateFinvizG() {
-    updateFinviz(finvizGWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change').then(function(data) {
+    updateFinviz(D('finvizG'), finvizGWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change').then(function(data) {
         if (data) finvizGWeeklyList = data;
     });
 }
 function updateFinvizL() {
-    updateFinviz(finvizLWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change').then(function(data) {
+    updateFinviz(D('finvizL'), finvizLWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change').then(function(data) {
         if (data) finvizLWeeklyList = data;
     });
 }
 function updateFinvizV() {
-	updateFinviz(finvizVWeeklyList, 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change').then(function(data) {
+	updateFinviz(D('finvizV'), finvizVWeeklyList, 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change').then(function(data) {
         if (data) finvizVWeeklyList = data;
     });
 }

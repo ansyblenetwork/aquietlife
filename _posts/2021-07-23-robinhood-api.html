@@ -2517,7 +2517,7 @@ function updateYolo() {
 }
 
 function updateWSB() {
-	fetch('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(data) {		
+	fetchData('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(data) {		
 		wsbList = [];
 		let prevWeekly = wsbWeeklyList;
 		wsbWeeklyList = [];

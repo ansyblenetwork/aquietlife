@@ -403,7 +403,7 @@ function getURL(symbol, expiration, type, strike) {
 	if (reverseMap[symbol+expiration+type+strike]) {
 		return new Promise (
 			function (resolve, reject) {
-                        tickMap[symbol] = reverseMap[symbol+expiration+type+strike].results[0].min_ticks.below_tick;
+                        tickMap[symbol] = reverseMap[symbol+expiration+type+strike].min_ticks.below_tick;
 				resolve(reverseMap[symbol+expiration+type+strike]);
 			}
 		);
@@ -417,9 +417,9 @@ function getURL(symbol, expiration, type, strike) {
 			'state': 'active'
 		};
 	return fetchData('https://api.robinhood.com/options/instruments/' + '?' + Object.keys(optionForm).map(key => key + '=' + optionForm[key]).join('&'), 'GET').then(function(data) {
-		reverseMap[symbol+expiration+type+strike] = data;
-            tickMap[symbol] = reverseMap[symbol+expiration+type+strike].results[0].min_ticks.below_tick;
-		return data;
+		reverseMap[symbol+expiration+type+strike] = data.results[0];
+            tickMap[symbol] = reverseMap[symbol+expiration+type+strike].min_ticks.below_tick;
+		return reverseMap[symbol+expiration+type+strike];
 	});	
 	});
 }
@@ -442,11 +442,11 @@ tickerFetch.then(function() {
             function orderProceed(li, count, innerwait) {
                   innerwait.then(function(data) {			
                         let effect = 'open';
-                        if (side == 'buy' && checkOption(data.results[0].id, 'short')) effect = 'close';
-                        if (side == 'sell' && checkOption(data.results[0].id, 'long')) effect = 'close';
+                        if (side == 'buy' && checkOption(data.id, 'short')) effect = 'close';
+                        if (side == 'sell' && checkOption(data.id, 'long')) effect = 'close';
                         fetchData('https://api.robinhood.com/options/orders/', 
                                   'POST', 
-                                  { headers:authHeader, json:makeOrderForm(effect, side, data.results[0].url, orders[count].premium/100, tickMap[symbol]) }).then(function(data) {
+                                  { headers:authHeader, json:makeOrderForm(effect, side, data.url, orders[count].premium/100, tickMap[symbol]) }).then(function(data) {
                               let orderli = makeOrderli(symbol, {type: type, expire:orders[count].expiration, strike:inDollars(orders[count].strike) }, data, li);
                               if (!orderli) return false;
                               let rhfetch;

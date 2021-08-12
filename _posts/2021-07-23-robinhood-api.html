@@ -1623,7 +1623,6 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
 	let collateral = Infinity;
-  let waste = 0;
 	let candidate = null;
 	let seeker = defCall;
 	if (!seeker) seeker = shortCall;
@@ -1637,40 +1636,16 @@ function findCallPair(symbol, defCall, shortCall) {
 			evaluate(data.defCall[j], shortCall, data.defCall[j]);
 		}
 	}
-  
+	
 	function evaluate(defCall, shortCall, subject) {
-    if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral ||
-        (callCollateral(defCall, shortCall) == collateral && callWaste(defCall, shortCall) < waste)) {
-        if (!subject.friend) {
-            collateral = callCollateral(defCall, shortCall);
-            waste = callWaste(defCall, shortCall);
-            candidate = subject;                
-        } else {
-            if ((seeker == defCall && subject.friend.expiration > seeker.expiration) || (seeker == shortCall && subject.friend.expiration < seeker.expiration)) {
-                collateral = callCollateral(defCall, shortCall);
-                waste = callWaste(defCall, shortCall);
-                candidate = subject;
-            } else {
-                if (callCollateral(defCall, shortCall) < subject.collateral && callCollateral(defCall, shortCall) > 0) {                        
-                //    collateral = callCollateral(defCall, shortCall);
-                  //  waste = callWaste(defCall, shortCall);
-                  //  candidate = subject;
-                } else {
-                    if (callWaste(defCall, shortCall) < subject.waste && callCollateral(defCall, shortCall) == 0) {                  
-                 //      collateral = callCollateral(defCall, shortCall);
-                //        waste = callWaste(defCall, shortCall);
-                //        candidate = subject;
-                    }
-                }
-            }
-        }
-    }
-}
-
-function callWaste(defCall, shortCall) {	    
-		if (defCall.strike < shortCall.strike) return shortCall.strike - defCall.strike;
-		return 0;
-}
+		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
+			if (!subject.friend || (seeker == defCall && subject.friend.expiration >= seeker.expiration)
+			   || (seeker == shortCall && subject.friend.expiration <= seeker.expiration)) {
+			collateral = callCollateral(defCall, shortCall);
+			candidate = subject;
+			}
+		}
+	}
 
 	function callCollateral(defCall, shortCall) {	
 		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
@@ -1685,8 +1660,6 @@ function callWaste(defCall, shortCall) {
 		seeker.friend = candidate;
 		candidate.collateral = collateral;
 		seeker.collateral = collateral;
-    candidate.waste = waste;
-    seeker.waste = waste;
 
 		if (orphan) {
 			if (defCall) findCallPair(symbol, orphan);
@@ -1699,7 +1672,6 @@ function clearOption(option) {
 	delete option.friend;
 	delete option.release;
 	delete option.collateral;
-	delete option.waste;
 }
 	
 function findPutPair(symbol, defPut, shortPut) {	

@@ -370,59 +370,42 @@ function updateOptions(newOption) {
 	
 ///// Recommenation for condors //////////////////////////////////////////////////////
 
+function shortPromise(val) {
+    return new Promise ( function (resolve, reject) { resolve(val); });
+}
+
 function getVol(symbol) {
       let theFetch = fetch("https://ansyble.herokuapp.com/cors/", {cache:'no-cache', headers: {'Target-Ticker': symbol }}).then(function(response) {
             return response.json();
       }).then(function(quotedata) {
             return optionsQuotes[symbol] = quotedata;
       });
-      if (optionsQuotes[symbol]) {
-		return new Promise (
-			function (resolve, reject) {
-				resolve(optionsQuotes[symbol]);
-			}
-		);
-      }
+      if (optionsQuotes[symbol]) return shortPromise(optionsQuotes[symbol]);
       return theFetch;
 }
 
-
 function getTick(symbol, expiration, type, strike) {
-      if (tickMap[symbol]) {    
-		return new Promise (
-			function (resolve, reject) {
-				resolve(tickMap[symbol]);
-			}
-		);
-      }      
+      if (tickMap[symbol]) return shortPromise(tickMap[symbol]);
       return detailToURL(symbol, expiration, type, strike);
 }
 
 function URLtoDetail(url) {
-      if (urlMap[url]) {            
-		return new Promise (
-			function (resolve, reject) {
-                        tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
-				resolve(urlMap[url]);
-			}
-		);
-      }
-      return fetchData(url, 'GET').then(function(getData) {
-            urlMap[url] = getData;
-            tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
-            return getData;
-      });
+    if (urlMap[url]) {   
+        tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
+        return shortPromise(urlMap[url]);
+    }
+    return fetchData(url, 'GET').then(function(getData) {
+        urlMap[url] = getData;
+        tickMap[urlMap[url].chain_symbol] = parseFloat(urlMap[url].min_ticks.below_tick);
+        return getData;
+    });
 }
 
 function detailToURL(symbol, expiration, type, strike) {
-	if (detailMap[symbol+expiration+type+strike]) {
-		return new Promise (
-			function (resolve, reject) {
-                        tickMap[symbol] = detailMap[symbol+expiration+type+strike].min_ticks.below_tick;
-				resolve(detailMap[symbol+expiration+type+strike]);
-			}
-		);
-	}
+    if (detailMap[symbol+expiration+type+strike]) {
+        tickMap[symbol] = detailMap[symbol+expiration+type+strike].min_ticks.below_tick;
+        return shortPromise(detailMap[symbol+expiration+type+strike]); 
+    }
 	return fetchData('https://api.robinhood.com/instruments/?symbol=' + symbol, 'GET').then(function(data) {
 		let optionForm = {
 			'chain_id': data.results[0].tradable_chain_id,

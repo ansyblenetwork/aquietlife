@@ -653,23 +653,6 @@ function generateRec(symbol, data, elt, override) {
 	}
 }	
 	
-					      
-function updateStocktwits() {
-	fetchData('https://api.stocktwits.com/api/2/trending/symbols/equities.json', "GET").then(function(data) {
-		let prevWeekly = stWeeklyList;
-		stWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.symbols.forEach(function(stockData) {
-			namesMap[stockData.symbol] = stockData.title;			
-			stString += printWeekly(stockData.symbol, stWeeklyList, prevWeekly, "Stocktwits");
-		});
-		D('stocktwits').innerHTML = stString;
-		
-		endpointCounterX++;			
-		if (endpointCounterX == 7) mergeAll();
-	});
-}
-
 function printWeekly(symbol, stWeeklyList, prevWeekly, sitename) {
 	if (weeklys.includes(symbol)) {
 		stWeeklyList.push(symbol);
@@ -2327,74 +2310,44 @@ function toggleNotifications(elt) {
 		}	
 	}
 }
-	
+
+function updateFinviz(mainarray, query) {
+    return fetch("https://ansyble.herokuapp.com/cors/", 
+                 {cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data.length > 0) {
+            let prevWeekly = mainarray;
+            let newWeekly = [];
+            let stString = "(" + new Date().toLocaleTimeString() + "): ";
+            data.forEach(function(stockData) {
+                stString += printWeekly(stockData, newWeekly, prevWeekly, "Finviz gainers");
+            });
+            D('finvizG').innerHTML = stString;
+            endpointCounterX++;			
+            if (endpointCounterX == 7) mergeAll();
+            return newWeekly;
+        }
+    });
+}	
 function updateFinvizG() {
-	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		let prevWeekly = finvizGWeeklyList;
-		finvizGWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizGWeeklyList, prevWeekly, "Finviz gainers");
-		});
-		D('finvizG').innerHTML = stString;
-		//D('finvizGButton').textContent = "Monitor Weeklys";
-		endpointCounterX++;			
-		if (endpointCounterX == 7) mergeAll();
-		}
-	});
+    updateFinviz(finvizGWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change').then(function(data) {
+        if (data) finvizGWeeklyList = data;
+    });
 }
 function updateFinvizL() {
-	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		let prevWeekly = finvizLWeeklyList;
-		finvizLWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizLWeeklyList, prevWeekly, "Finviz losers");
-		});
-		D('finvizL').innerHTML = stString;
-		//D('finvizLButton').textContent = "Monitor Weeklys";
-		endpointCounterX++;			
-		if (endpointCounterX == 7) mergeAll();
-		}
-	});
+    updateFinviz(finvizLWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change').then(function(data) {
+        if (data) finvizLWeeklyList = data;
+    });
 }
 function updateFinvizV() {
-	let query = 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		let prevWeekly = finvizVWeeklyList;
-		finvizVWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizVWeeklyList, prevWeekly, "Finviz volatile");
-		});
-		D('finvizV').innerHTML = stString;
-		//D('finvizVButton').textContent = "Monitor Weeklys";
-		endpointCounterX++;			
-		if (endpointCounterX == 7) mergeAll();
-		}
-	});
+	updateFinviz(finvizVWeeklyList, 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change').then(function(data) {
+        if (data) finvizVWeeklyList = data;
+    });
 }
 	
 function updateYolo() {
-	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';
-		
+	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';		
 	fetch("https://ansyble.herokuapp.com/cors/", 
 		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
 		return response.text();
@@ -2423,6 +2376,22 @@ function updateWSB() {
 		}
 		D('wsb').innerHTML = wsbString;
 		//D('wsbButton').textContent = "Monitor Weeklys";
+		endpointCounterX++;			
+		if (endpointCounterX == 7) mergeAll();
+	});
+}
+				      
+function updateStocktwits() {
+	fetchData('https://api.stocktwits.com/api/2/trending/symbols/equities.json', "GET").then(function(data) {
+		let prevWeekly = stWeeklyList;
+		stWeeklyList = [];
+		let stString = "(" + new Date().toLocaleTimeString() + "): ";
+		data.symbols.forEach(function(stockData) {
+			namesMap[stockData.symbol] = stockData.title;			
+			stString += printWeekly(stockData.symbol, stWeeklyList, prevWeekly, "Stocktwits");
+		});
+		D('stocktwits').innerHTML = stString;
+		
 		endpointCounterX++;			
 		if (endpointCounterX == 7) mergeAll();
 	});

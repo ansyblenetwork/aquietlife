@@ -1854,7 +1854,7 @@ function condor(symbol, build) {
 		if (build && pcsOnly[expiration] > 0) {
 			let li = makeli(symbol);
 			li.title = 0 - pcsOnly[expiration];	
-			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
+			if (dteMap[expiration] !== undefined) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("PCS", "50px", li);
 			addCol("$" + total, "100px", li);
@@ -1879,7 +1879,7 @@ function condor(symbol, build) {
 		if (build && expirePuts > 0) {
 			let li = makeli(symbol);
 			li.title = 0 - expirePuts;	
-			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
+			if (dteMap[expiration] !== undefined) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("call", "50px", li);
 			addCol("$" + total, "100px", li);
@@ -1905,7 +1905,7 @@ function condor(symbol, build) {
 		if (build && expireCalls > 0) {
 			let li = makeli(symbol);
 			li.title = 0 - expireCalls;
-			if (dteMap[expiration]) addCol(dteMap[expiration] + " DTE", "75px", li);	
+			if (dteMap[expiration] !== undefined) addCol(dteMap[expiration] + " DTE", "75px", li);	
 			else addCol(expiration.substring(5, 10), "75px", li);	
 			addCol("put", "50px", li);
 			addCol("$" + total, "100px", li);
@@ -1935,7 +1935,7 @@ function makeli(symbol, contract) {
 	li.style.textAlign = "center";	
 	addCol(symbol, "75px", li);	
 	if (contract) {
-		if (dteMap[contract.expire]) addCol(dteMap[contract.expire] + " DTE", "75px", li);	
+		if (dteMap[contract.expire] !== undefined) addCol(dteMap[contract.expire] + " DTE", "75px", li);	
 		else addCol(contract.expire.substring(5, 10), "75px", li);	
 		addCol(contract.type, "50px", li);
 		addCol("$" + contract.strike/100, "75px", li);

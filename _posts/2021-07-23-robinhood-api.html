@@ -1650,14 +1650,12 @@ function findCallPair(symbol, defCall, shortCall) {
 	}
 	
 	function evaluate(defCall, shortCall, subject, strict) {
-		if (defCall.expire >= shortCall.expire) {
-			if (callCollateral(defCall, shortCall, strict) < collateral) {
-				if (!subject.friend 
-					|| (seeker == defCall && subject.friend.expire >= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))
-					|| (seeker == shortCall && subject.friend.expire <= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))) {
-					collateral = callCollateral(defCall, shortCall, strict);
-					candidate = subject;
-				}
+		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall, strict) < collateral) {
+			if (!subject.friend 
+				|| (seeker == defCall && subject.friend.expire >= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))
+				|| (seeker == shortCall && subject.friend.expire <= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))) {
+				collateral = callCollateral(defCall, shortCall, strict);
+				candidate = subject;
 			}
 		}
 	}
@@ -1719,14 +1717,12 @@ function findPutPair(symbol, defPut, shortPut) {
 	}
 	
 	function evaluate(defPut, shortPut, subject, strict) {
-		if (defPut.expire >= shortPut.expire) {
-			if (putRelease(defPut, shortPut, strict) > release) {	
-				if (!subject.friend 
-					|| (seeker == defPut && subject.friend.expire >= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)
-					|| (seeker == shortPut && subject.friend.expire <= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)) {
-					release = putRelease(defPut, shortPut, strict);
-					candidate = subject;
-				}
+		if (defPut.expire >= shortPut.expire && putRelease(defPut, shortPut, strict) > release) {	
+			if (!subject.friend 
+				|| (seeker == defPut && subject.friend.expire >= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)
+				|| (seeker == shortPut && subject.friend.expire <= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)) {
+				release = putRelease(defPut, shortPut, strict);
+				candidate = subject;
 			}
 		}
 	}

@@ -374,7 +374,7 @@ function updateOptions(newOption) {
 		}
 	});
 	
-	let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();								       
+	let d = new Date(Date.now() + 1000*60*60*24*19).toISOString();								       
 	fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 		+ query + "&range=OTM&toDate=" + d).then(function(response) {
 		return response.json();
@@ -615,7 +615,7 @@ function mergeAll() {
 	clearDOM(D('exploreRecList'));
 	for (let i = 0; i < merge.length; i++) {	
             getVol(merge[i]).then(function(quotedata) {
-			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
+			let d = new Date(Date.now() + 1000*60*60*24*19).toISOString();	
 			return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ merge[i] + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();
@@ -1357,7 +1357,7 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 				findCallPair(symbol, null, me);
 			}
 			
-			let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();	
+			let d = new Date(Date.now() + 1000*60*60*24*19).toISOString();	
 			return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
 				+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
 				return response.json();

@@ -1620,35 +1620,51 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 });
 }	
 	
+
 function findCallPair(symbol, defCall, shortCall) {	
 	let data = optionsBySymbol[symbol];
 	let collateral = Infinity;
 	let candidate = null;
+	
 	let seeker = defCall;
 	if (!seeker) seeker = shortCall;
 	if (defCall) {
 		for (let j = 0; j < data.shortCall.length; j++) {
-			evaluate(defCall, data.shortCall[j], data.shortCall[j]);
+			evaluate(defCall, data.shortCall[j], data.shortCall[j], true);
+		}
+		if (!candidate) {
+			for (let j = 0; j < data.shortCall.length; j++) {
+				evaluate(defCall, data.shortCall[j], data.shortCall[j], false);
+			}		
 		}
 	}
 	if (shortCall) {
 		for (let j = 0; j < data.defCall.length; j++) {
-			evaluate(data.defCall[j], shortCall, data.defCall[j]);
+			evaluate(data.defCall[j], shortCall, data.defCall[j], true);
+		}
+		if (!candidate) {		
+			for (let j = 0; j < data.defCall.length; j++) {
+				evaluate(data.defCall[j], shortCall, data.defCall[j], false);
+			}
 		}
 	}
 	
-	function evaluate(defCall, shortCall, subject) {
-		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall) < collateral) {
-			if (!subject.friend || (seeker == defCall && subject.friend.expiration >= seeker.expiration)
-			   || (seeker == shortCall && subject.friend.expiration <= seeker.expiration)) {
-			collateral = callCollateral(defCall, shortCall);
-			candidate = subject;
+	function evaluate(defCall, shortCall, subject, strict) {
+		if (defCall.expire >= shortCall.expire) {
+			if (callCollateral(defCall, shortCall, strict) < collateral) {
+				if (!subject.friend 
+					|| (seeker == defCall && subject.friend.expire >= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))
+					|| (seeker == shortCall && subject.friend.expire <= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))) {
+					collateral = callCollateral(defCall, shortCall, strict);
+					candidate = subject;
+				}
 			}
 		}
 	}
 
-	function callCollateral(defCall, shortCall) {	
+	function callCollateral(defCall, shortCall, strict) {	
 		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
+		if (strict) return Infinity;
 		return 0;
 	}
 	
@@ -1678,31 +1694,46 @@ function findPutPair(symbol, defPut, shortPut) {
 	let data = optionsBySymbol[symbol];
 	let release = 0;
 	let candidate = null;
+	
 	let seeker = defPut;
 	if (!seeker) seeker = shortPut;
 	if (defPut) {
 		for (let j = 0; j < data.shortPut.length; j++) {
-			evaluate(defPut, data.shortPut[j], data.shortPut[j]);
+			evaluate(defPut, data.shortPut[j], data.shortPut[j], true);
+		}
+		if (!candidate) {		
+			for (let j = 0; j < data.shortPut.length; j++) {
+				evaluate(defPut, data.shortPut[j], data.shortPut[j], false);
+			}
 		}
 	}
 	if (shortPut) {
 		for (let j = 0; j < data.defPut.length; j++) {
-			evaluate(data.defPut[j], shortPut, data.defPut[j]);
+			evaluate(data.defPut[j], shortPut, data.defPut[j], true);
 		}
-	}
-	
-	function evaluate(defPut, shortPut, subject) {
-		if (defPut.expire >= shortPut.expire && putRelease(defPut, shortPut) > release) {			
-			if (!subject.friend || (seeker == defPut && subject.friend.expiration >= seeker.expiration)
-			   || (seeker == shortPut && subject.friend.expiration <= seeker.expiration)) {
-			release = putRelease(defPut, shortPut);
-			candidate = subject;
+		if (!candidate) {		
+			for (let j = 0; j < data.defPut.length; j++) {
+				evaluate(data.defPut[j], shortPut, data.defPut[j], false);
 			}
 		}
 	}
 	
-	function putRelease(defPut, shortPut) {		
+	function evaluate(defPut, shortPut, subject, strict) {
+		if (defPut.expire >= shortPut.expire) {
+			if (putRelease(defPut, shortPut, strict) > release) {	
+				if (!subject.friend 
+					|| (seeker == defPut && subject.friend.expire >= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)
+					|| (seeker == shortPut && subject.friend.expire <= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)) {
+					release = putRelease(defPut, shortPut, strict);
+					candidate = subject;
+				}
+			}
+		}
+	}
+	
+	function putRelease(defPut, shortPut, strict) {		
 		if (defPut.strike < shortPut.strike) return defPut.strike;
+		if (strict) return 0;
 		return shortPut.strike;		
 	}
 
@@ -1730,7 +1761,7 @@ function noCondorCalls(symbol) {
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
 		if (contract.collateral !== undefined) totalCalls += contract.collateral;
-		else console.log("CALL CONTRACT LACKS COLLATERAL");
+		else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
 	});	
 	return totalCalls;
 }
@@ -1759,7 +1790,7 @@ function condor(symbol, build) {
 		if (contract.collateral !== undefined) {
 			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
 			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
-		} else console.log("CALL CONTRACT LACKS COLLATERAL");
+		} else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
 	});
 	
 	data.shortPut.forEach(function(contract) {

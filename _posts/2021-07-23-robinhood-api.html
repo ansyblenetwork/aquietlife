@@ -1231,12 +1231,19 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
                         for (let j = 0; j < quantity; j++) {
                               let dat = {url:optionData.url, type: optionData.type, expire:optionData.expiration_date, strike:inDollars(parseFloat(optionData.strike_price))};
                               if (optionsPositions[i].type == "short") {
+									dat.short = true;
                                     if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].shortCall.push(dat);
-                                    else optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
+                                    else {
+										dat.put = true;
+										optionsBySymbol[optionData.chain_symbol].shortPut.push(dat);
+									}
                               }
                               if (optionsPositions[i].type == "long") {
                                     if (optionData.type == "call") optionsBySymbol[optionData.chain_symbol].defCall.push(dat);
-                                    else optionsBySymbol[optionData.chain_symbol].defPut.push(dat);
+                                    else {
+										dat.put = true;
+										optionsBySymbol[optionData.chain_symbol].defPut.push(dat);
+									}
                               }
                         }
                   })
@@ -1288,10 +1295,10 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 			});
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
-				findPutPair(symbol, null, optionsBySymbol[symbol].shortPut[i]);
+				findPutPair(symbol, optionsBySymbol[symbol].shortPut[i]);
 			}
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
-				findCallPair(symbol, null, optionsBySymbol[symbol].shortCall[i]);
+				findPutPair(symbol, optionsBySymbol[symbol].shortCall[i]);
 			}
 			let totalCollateral = condor(symbol, true);
 			let totalPutCollateral = noCondorPuts(symbol);
@@ -1299,62 +1306,48 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortPut.length; i++) {
 				let me = optionsBySymbol[symbol].shortPut[i];
-				let myStrike = me.strike;
 				let friend = me.friend;
-				if (friend) {
-					clearOption(friend);
-					clearOption(me);
-					me.strike = 0;
-
+				if (friend) {			
+					hideContract(me);
 					findPutPair(symbol, friend);
 					me.closeRelease = totalCollateral - condor(symbol);
 					me.ncRelease = totalPutCollateral - noCondorPuts(symbol);
 
-					me.strike = myStrike;
-					findPutPair(symbol, null, me);
+					unpair(me);
+					findPutPair(symbol, me);
 				} else {
-					me.closeRelease = myStrike;
-					me.ncRelease = myStrike;
+					me.closeRelease = me.strike;
+					me.ncRelease = me.strike;
 				}
 			}
 
 			for (let i = 0; i < optionsBySymbol[symbol].shortCall.length; i++) {
 				let me = optionsBySymbol[symbol].shortCall[i];
-				let myExpire = me.expire;
 				let friend = me.friend;
-
-				clearOption(friend);
-				clearOption(me);
-				me.expire = "neverplus";
-				me.collateral = 0;
-
-				findCallPair(symbol, friend);			
+				hideContract(me);
+				findPutPair(symbol, friend);
 				me.closeRelease = totalCollateral - condor(symbol);
 				me.ncRelease = totalCallCollateral - noCondorCalls(symbol);
 
 				me.condorPair = [];
 				for (let j = 0; j < optionsBySymbol[symbol].shortPut.length; j++) {
 					let mypair = optionsBySymbol[symbol].shortPut[j];
-					if (myExpire == mypair.expire) {
-						let myPairStrike = mypair.strike;
+					if (me.expire == mypair.expire) {
 						let pairFriend = mypair.friend;
 						if (pairFriend) {
-							clearOption(pairFriend);
-							clearOption(mypair);
-							mypair.strike = 0;
+							hideContract(mypair);
 
 							findPutPair(symbol, pairFriend);
 							me.condorPair.push({condorPair:mypair, condorRelease:totalCollateral - condor(symbol)});
 
-							mypair.strike = myPairStrike;
-							findPutPair(symbol, null, mypair);
+							unpair(mypair);
+							findPutPair(symbol, mypair);
 						}
 					}
 				}
 
-				me.expire = myExpire;
-				delete me.collateral;
-				findCallPair(symbol, null, me);
+				unpair(me);
+				findPutPair(symbol, me);
 			}
 			
 			let d = new Date(Date.now() + 1000*60*60*24*19).toISOString();	
@@ -1621,134 +1614,189 @@ fetchData("https://api.robinhood.com/options/positions/?nonzero=True", 'GET', { 
 }	
 	
 
-function findCallPair(symbol, defCall, shortCall) {	
-	let data = optionsBySymbol[symbol];
-	let collateral = Infinity;
-	let candidate = null;
+function calcRelease(a, b, strict) {
+	let defPut, shortPut;
+	if (!b) {
+		b = a.friend;
+		if (!b) return 0;
+	}
+	if (a.put && a.short) shortPut = a;
+	if (a.put && !a.short) defPut = a;
+	if (b.put && b.short) shortPut = b;
+	if (b.put && !b.short) defPut = b;
 	
-	let seeker = defCall;
-	if (!seeker) seeker = shortCall;
-	if (defCall) {
-		for (let j = 0; j < data.shortCall.length; j++) {
-			evaluate(defCall, data.shortCall[j], data.shortCall[j], true);
-		}
-		if (!candidate) {
-			for (let j = 0; j < data.shortCall.length; j++) {
-				evaluate(defCall, data.shortCall[j], data.shortCall[j], false);
-			}		
-		}
-	}
-	if (shortCall) {
-		for (let j = 0; j < data.defCall.length; j++) {
-			evaluate(data.defCall[j], shortCall, data.defCall[j], true);
-		}
-		if (!candidate) {		
-			for (let j = 0; j < data.defCall.length; j++) {
-				evaluate(data.defCall[j], shortCall, data.defCall[j], false);
-			}
-		}
-	}
+	if (!defPut || !shortPut) console.error({msg:"Trying to release two contracts that are not puts: ", a:a, b:b});
 	
-	function evaluate(defCall, shortCall, subject, strict) {
-		if (defCall.expire >= shortCall.expire && callCollateral(defCall, shortCall, strict) < collateral) {
-			if (!subject.friend 
-				|| (seeker == defCall && subject.friend.expire >= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))
-				|| (seeker == shortCall && subject.friend.expire <= seeker.expire && subject.friend.collateral > callCollateral(defCall, shortCall, strict))) {
-				collateral = callCollateral(defCall, shortCall, strict);
-				candidate = subject;
-			}
-		}
-	}
+	if (defPut.strike < shortPut.strike) return defPut.strike;
+	if (strict) return 0;
+	return shortPut.strike;		
+}
 
-	function callCollateral(defCall, shortCall, strict) {	
-		if (defCall.strike > shortCall.strike) return defCall.strike - shortCall.strike;
-		if (strict) return Infinity;
+function calcCollateral(a, b, strict) {
+	let defPut, shortPut, defCall, shortCall;
+	if (!b) {
+		b = a.friend;
+		if (!b) {
+			if (!a.short) return 0;
+			if (a.put) return a.strike;
+			return Infinity;
+		}
+	}
+	if (a.put && a.short) shortPut = a;
+	if (a.put && !a.short) defPut = a;
+	if (!a.put && a.short) shortCall = a;
+	if (!a.put && !a.short) defCall = a;
+	if (b.put && b.short) shortPut = b;
+	if (b.put && !b.short) defPut = b;
+	if (!b.put && b.short) shortCall = b;
+	if (!b.put && !b.short) defCall = b;
+	
+	if (shortCall && defCall) {	
+		if (compatible(a, b)) {
+			if (defCall.strike >= shortCall.strike) return defCall.strike - shortCall.strike;
+			if (strict) return Infinity;
+			return 0;
+		} else return -1;
+	}
+	if (shortPut && defPut) {
+		if (compatible(a, b)) {
+			if (defPut.strike <= shortPut.strike) return shortPut.strike - defPut.strike;
+			if (strict) return Infinity;
+			return 0;	
+		} else return shortPut.strike;
+	}	
+	console.error({msg:"Trying to collateralize two contracts that are not compatible: ", a:a, b:b});
+}
+
+
+function calcWaste(a, b) {
+	let defPut, shortPut, defCall, shortCall;
+	if (!b) {
+		b = a.friend;
+		if (!b) {
+			if (a.short) return 0;
+			if (a.put) return a.strike;
+			return Infinity;
+		}
+	}
+	if (a.put && a.short) shortPut = a;
+	if (a.put && !a.short) defPut = a;
+	if (!a.put && a.short) shortCall = a;
+	if (!a.put && !a.short) defCall = a;
+	if (b.put && b.short) shortPut = b;
+	if (b.put && !b.short) defPut = b;
+	if (!b.put && b.short) shortCall = b;
+	if (!b.put && !b.short) defCall = b;
+	
+	if (shortCall && defCall) {	
+		if (defCall.strike <= shortCall.strike) return shortCall.strike - defCall.strike;
 		return 0;
 	}
-	
-	if (candidate) {
-		let orphan = candidate.friend;
-		if (orphan) clearOption(orphan);
-		
-		candidate.friend = seeker;
-		seeker.friend = candidate;
-		candidate.collateral = collateral;
-		seeker.collateral = collateral;
-
-		if (orphan) {
-			if (defCall) findCallPair(symbol, orphan);
-			else if (shortCall) findCallPair(symbol, null, orphan);
-		}
+	if (shortPut && defPut) {
+		if (defPut.strike >= shortPut.strike) return defPut.strike - shortPut.strike;
+		return 0;	
 	}	
+	console.error({msg:"Trying to calculate waste on two contracts that are not compatible: ", a:a, b:b});
+}
+
+
+
+function hideContract(contract) {
+	unpair(contract, contract.friend);	
+	newContract = {strike:contract.strike, expire:contract.expire};
+	if (contract.put) newContract.put = true;
+	if (!contract.short) newContract.short = true;
+	pair(contract, newContract);
 }
 	
-function clearOption(option) {
-	delete option.friend;
-	delete option.release;
-	delete option.collateral;
+function pair(a, b) {
+	a.friend = b;
+	b.friend = a;
 }
+
+function unpair(a, b) {
+	if (!b) b = a.friend;
+	delete a.friend;
+	if (b) delete b.friend;
+}
+
+function compatible(a, b) {
+	if (a.short && !b.short) return b.expire >= a.expire;
+	if (!a.short && b.short) return a.expire >= b.expire;	
+	console.error({msg:"Trying to collateralize two contracts that are both short or both long: ", a:a, b:b});	
+	return false;
+}
+
 	
-function findPutPair(symbol, defPut, shortPut) {	
+function findPutPair(symbol, seeker) {	
 	let data = optionsBySymbol[symbol];
-	let release = 0;
+	
+	if (!seeker) console.error(symbol);
+
+	let candidateList;
+	if (!seeker.short && seeker.put) candidateList = data.shortPut;
+	if (seeker.short && seeker.put) candidateList = data.defPut;
+	if (seeker.short && !seeker.put) candidateList = data.defCall;
+	if (!seeker.short && !seeker.put) candidateList = data.shortCall;
+
 	let candidate = null;
+	let collateral = Infinity;
+	let waste = 0;
 	
-	let seeker = defPut;
-	if (!seeker) seeker = shortPut;
-	if (defPut) {
-		for (let j = 0; j < data.shortPut.length; j++) {
-			evaluate(defPut, data.shortPut[j], data.shortPut[j], true);
-		}
-		if (!candidate) {		
-			for (let j = 0; j < data.shortPut.length; j++) {
-				evaluate(defPut, data.shortPut[j], data.shortPut[j], false);
-			}
-		}
-	}
-	if (shortPut) {
-		for (let j = 0; j < data.defPut.length; j++) {
-			evaluate(data.defPut[j], shortPut, data.defPut[j], true);
-		}
-		if (!candidate) {		
-			for (let j = 0; j < data.defPut.length; j++) {
-				evaluate(data.defPut[j], shortPut, data.defPut[j], false);
-			}
-		}
-	}
+	for (let j = 0; j < candidateList.length; j++) {
+		evaluate(candidateList[j]);
+	}	
 	
-	function evaluate(defPut, shortPut, subject, strict) {
-		if (defPut.expire >= shortPut.expire && putRelease(defPut, shortPut, strict) > release) {	
+	function evaluate(subject, strict) {
+		if (compatible(seeker, subject) && 
+		(calcCollateral(seeker, subject, strict) < collateral || (calcCollateral(seeker, subject, strict) == collateral && calcWaste(seeker, subject) < waste))) {		
+			// better or less wasteful
+		
 			if (!subject.friend 
-				|| (seeker == defPut && subject.friend.expire >= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)
-				|| (seeker == shortPut && subject.friend.expire <= seeker.expire && putRelease(defPut, shortPut, strict) > subject.release)) {
-				release = putRelease(defPut, shortPut, strict);
-				candidate = subject;
+				||(calcCollateral(subject) >= calcCollateral(seeker, subject, strict) &&
+				(!seeker.short && subject.friend.expire >= seeker.expire || seeker.short && subject.friend.expire <= seeker.expire))) {				
+				// no friend, or strictly better than the friend
+				
+				if (!subject.friend || subject.friend && subject.friend.expire != seeker.expire || calcCollateral(subject) != calcCollateral(seeker, subject, strict)) {				
+					// different from the friend 
+
+					collateral = calcCollateral(seeker, subject);
+					waste = calcWaste(seeker, subject);
+					candidate = subject;
+				}
 			}
 		}
 	}
 	
-	function putRelease(defPut, shortPut, strict) {		
-		if (defPut.strike < shortPut.strike) return defPut.strike;
-		if (strict) return 0;
-		return shortPut.strike;		
+	if (!candidate) {
+	
+	for (let j = 0; j < candidateList.length; j++) {
+		evaluateTwice(candidateList[j]);
+		
+		function evaluateTwice(subject, strict) {
+			if (compatible(seeker, subject) && 
+			(calcCollateral(seeker, subject, strict) < collateral || (calcCollateral(seeker, subject, strict) == collateral && calcWaste(seeker, subject) < waste))) {		
+				// better or less wasteful
+			
+				if (subject.friend && calcCollateral(subject) > calcCollateral(seeker, subject, strict)) {				
+					// no friend, or strictly better than the friend
+
+					collateral = calcCollateral(seeker, subject);
+					waste = calcWaste(seeker, subject);
+					candidate = subject;
+					
+				}
+			}
+		}
+	}
+	
 	}
 
 	if (candidate) {
 		let orphan = candidate.friend;
-		if (orphan) clearOption(orphan);
-		
-		candidate.friend = seeker;
-		seeker.friend = candidate;
-		candidate.release = release;
-		seeker.release = release;
-		
-		candidate.collateral = candidate.strike - candidate.release;
-		seeker.collateral = seeker.strike - seeker.release;
-		
-		if (orphan) {
-			if (defPut) findPutPair(symbol, orphan);
-			else if (shortPut) findPutPair(symbol, null, orphan);
-		}
+		if (orphan) unpair(candidate, candidate.friend);
+		pair(candidate, seeker);		
+		if (orphan) findPutPair(symbol, orphan);
 	}	
 }
 	
@@ -1756,8 +1804,11 @@ function noCondorCalls(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalCalls = 0;
 	data.shortCall.forEach(function(contract) {
-		if (contract.collateral !== undefined) totalCalls += contract.collateral;
-		else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
+		if (contract.friend) totalCalls += calcCollateral(contract);
+		else {
+			console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
+			return Infinity;
+		}
 	});	
 	return totalCalls;
 }
@@ -1766,7 +1817,7 @@ function noCondorPuts(symbol) {
 	let data = optionsBySymbol[symbol];
 	let totalPuts = 0;	
 	data.shortPut.forEach(function(contract) {
-		if (contract.collateral !== undefined) totalPuts += contract.collateral;
+		if (contract.friend) totalPuts += calcCollateral(contract);
 		else totalPuts += contract.strike;
 	});	
 	return totalPuts;
@@ -1783,9 +1834,9 @@ function condor(symbol, build) {
 					putExpireTypes[contract.expire] = {};
 					pcsOnly[contract.expire] = 0;
 		}
-		if (contract.collateral !== undefined) {
-			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = contract.collateral;
-			else callExpireTypes[contract.expire][contract.strike] += contract.collateral;
+		if (contract.friend) {
+			if (!callExpireTypes[contract.expire][contract.strike]) callExpireTypes[contract.expire][contract.strike] = calcCollateral(contract);
+			else callExpireTypes[contract.expire][contract.strike] += calcCollateral(contract);
 		} else console.log("CALL CONTRACT LACKS COLLATERAL " + symbol);
 	});
 	
@@ -1794,9 +1845,9 @@ function condor(symbol, build) {
 			putExpireTypes[contract.expire] = {};
 			pcsOnly[contract.expire] = 0;
 		}
-		if (contract.collateral !== undefined) {
-			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.collateral;
-			else putExpireTypes[contract.expire][contract.strike] += contract.collateral;
+		if (contract.friend) {
+			if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = calcCollateral(contract);
+			else putExpireTypes[contract.expire][contract.strike] += calcCollateral(contract);
 		}
 		else {
 		//	if (!putExpireTypes[contract.expire][contract.strike]) putExpireTypes[contract.expire][contract.strike] = contract.strike;

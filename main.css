@@ -246,11 +246,11 @@ button {
 }
 
 button.active {
-  background-color: #aaa;	
+  background-color: #b4b7b7;	
 }
 
 button:hover:enabled {  
-  background-color: white;  
+  background-color: #d4d7d7;
 }
 
 h1 {     

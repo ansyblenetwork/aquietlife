@@ -44,7 +44,7 @@ Algorithmic trading is also just a lot more enjoyable. It helps automate many ca
 
 This brings us to the last comment about winning medals. What decisions do really matter? What wins medals?
 
-I honestly thought, before building my applet, that it would basically guarantee profitable trades.
+I honestly thought, before building my applet, that it would basically guarantee profitable trades on average.
 
 This might not be too far from the truth. It makes transparent how one might maintain profitable trading, or even beat the major indicies. But the possibility that this rosy picture deviates even a little from the truth, given so much effort, requires some careful deliberation. The problem with options trading is that 
 
@@ -54,4 +54,4 @@ This might not be too far from the truth. It makes transparent how one might mai
 
 The last of these, a bit counterintuitively, is perhaps the most dangerous feature. It is hard to see whether a trading strategy is destined to be profitable in the long run, because losses are statistical anomalies in the short run. How does one know that one's strategy is worthwhile against opportunity costs - namely, passive investing?
 
-I think the unsatisfying answer is inevitable: One cannot know. But the great thing about thesis-driven, incrementally-automated trading is that it ratchets. A strategy or applet which surfaces relevant, timely, information, and reduces the workload of the trader, cannot be a bad thing.
+I think the unsatisfying answer is inevitable: One cannot know. But the great thing about thesis-driven, incrementally-automated trading is that it ratchets. A strategy or applet which systematically surfaces relevant, timely, information, and reduces the workload of the trader, cannot be a bad thing.

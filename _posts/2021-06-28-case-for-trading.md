@@ -9,7 +9,7 @@ This is my case for taking on the riskiest trade of all: Shorting options contra
 
 The core idea is that governments and corporations, in aggregate, produce more than they consume. 
 
-Is there reason to believe this to be true? I think yes: This is a rough corollary of the axiom that humanity is not coming to an end, and that the earth has not run dry. For if people (in aggregate) are consuming more than they produce, then humanity's inventory of goods will quickly deplete and that will be that. And since there is no reason to believe that humans consume exactly as much as they produce, we arrive at the claim.
+Is there reason to believe this to be true? I think yes: This is a rough corollary of the axiom that humanity is not coming to an end, and that the earth is not running dry. For if people (in aggregate) are consuming more than they produce, then humanity's inventory of goods will quickly deplete and that will be that. And since there is no reason to believe that humans consume exactly as much as they produce, we arrive at the claim.
 
 The claim has empirical support. The typical observation is that the SP500 index appreciates at about a rate of 7% per year in the US, after inflation.
 

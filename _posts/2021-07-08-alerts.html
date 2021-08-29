@@ -104,27 +104,21 @@ id="tickerInput" onfocus="this.select()" type="text" style="margin-left:10px; ma
 	
 </div>
 
-
 <script> ////////////////////////////////////////////////////////////////
 
 var fixedInterestRate = 10;
+var fixedReturnRate = 20;
 var namesMap = {};
 	
-var stList = [];
 var stWeeklyList = [];
-var yoloList = [];
 var yoloWeeklyList = [];
-var finvizGList = [];
 var finvizGWeeklyList = [];
-var finvizLList = [];
 var finvizLWeeklyList = [];
-var finvizVList = [];
 var finvizVWeeklyList = [];
-var wsbList = [];
 var wsbWeeklyList = [];
-var earnings = [];
 var preEarnings = [];
 var postEarnings = [];
+var earningsTime = {};
 	
 var optionsData = {};
 var optionsQuotes = {};	
@@ -160,95 +154,45 @@ if (!(screen.width <= 550 || screen.height <= 550)) {
 }
 	
 
-function generateRec(symbol) {
+
+function generateRec(symbol, eltname) {
 	let data = optionsData[symbol];
-	
-	for (let contractDate in data.callExpDateMap) {
-		
-		let candidateObj = {};	
-		
-	/////////////////////// CALLS //////////////////////////////////
+	for (let contractDate in data.callExpDateMap) {	
+		let bag = make('li');
+		let referenceli = makeReference(data, contractDate);
+		bag.appendChild(referenceli);                
 
-		let defData = {strike:0, premium:0, contract:""};
-		let altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
-	
-		let callArray = [];
-		for (let contractStrike in data.callExpDateMap[contractDate]) {
-			let contract = data.callExpDateMap[contractDate][contractStrike][0];
-			if (evalContract(contract, data, altData) && contractAboveVolatility(contract, data)) callArray.unshift(contract);
-		}	       
+		function filterChain(type) {
+			let chain = data.callExpDateMap[contractDate];
+			if (type == "put") chain = data.putExpDateMap[contractDate];
+			
+			let altContract = setDefLeg(chain).altContract;
+			let tempArray = makeArray(chain, altContract);
 
-		let maxReturn = 0;
-		let candidate;
-		callArray.forEach(function(contract) {
-			if (maxReturn < returnRate(contract, altData)) {
-				candidate = contract;
-				maxReturn = returnRate(contract, altData);
+			let candidate;
+			tempArray.forEach(function(contract) {
+				  if (contractAboveVolatility(contract, data) 
+				  && contract.adjustedVolume < 11) candidate = contract;
+			});
+
+			if (candidate) {
+				let defleg = buildli(referenceli, altContract, data);
+				let offleg = buildli(referenceli, candidate, data, defleg, altContract);
+				return returnRate(candidate, altContract);
 			}
-		});
-		if (candidate) candidateObj.call = {contract:candidate, altData:altData};
-
-	/////////////////////// PUTS //////////////////////////////////
-
-		defData = {strike:0, premium:0, contract:""};
-		altData = {strike:0, premium:0, contract:""};
-		setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
-	
-		let putArray = [];
-		for (let contractStrike in data.putExpDateMap[contractDate]) {
-			let contract = data.putExpDateMap[contractDate][contractStrike][0];
-			if (evalContract(contract, data, altData) && contractAboveVolatility(contract, data)) putArray.push(contract);
+			return 0;
 		}
-
-		maxReturn = 0;
-		candidate = null;
-		putArray.forEach(function(contract) {
-			if (maxReturn < returnRate(contract, altData)) {
-				candidate = contract;
-				maxReturn = returnRate(contract, altData);
-			}
-		});	
-		if (candidate) candidateObj.put = {contract:candidate, altData:altData};
-		
-	////////////// build the table /////////////////////////////////
-	
-		let bag = make('li');	
-		let callrate = 0;
-		let putrate = 0;
-							    
-		if (candidateObj.call) {
-			let calldefleg2 = buildli(candidateObj.call.altData.contract, data);
-			bag.appendChild(calldefleg2);
-			let calloffleg = buildli(candidateObj.call.contract, data, calldefleg2, candidateObj.call.altData);
-			bag.appendChild(calloffleg);
-			callrate = returnRate(candidateObj.call.contract, candidateObj.call.altData);
+		let callrate = filterChain("call");
+		let putrate = filterChain("put");  
+		if (putrate + callrate > 0) {
+			bag.title = 0 - putrate - callrate;
+			addOrdered(bag, D(eltname));					
+			if (bag.previousElementSibling) bag.style.marginTop = "30px";
+			if (bag.nextElementSibling) bag.nextElementSibling.style.marginTop = "30px";
 		}
-
-	/////////////////////// MIDDLE //////////////////////////////////
-
-			let referenceli = make('li');
-			referenceli.style.textAlign = "center";
-			referenceli.style.fontWeight = "bold";
-			addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-			let col = addCol(stLinkify(symbol, symbol, "#333") + " " + defData.contract.daysToExpiration + " DTE", "675px", referenceli);
-			bag.appendChild(referenceli);	
-		
-	/////////////////////// PUTS //////////////////////////////////
-
-		if (candidateObj.put) {			
-			let putdefleg2 = buildli(candidateObj.put.altData.contract, data);
-			bag.appendChild(putdefleg2);
-			putdefleg2.style.marginBottom = "30px";
-			let putoffleg = buildli(candidateObj.put.contract, data, putdefleg2, candidateObj.put.altData);
-			bag.insertBefore(putoffleg, referenceli.nextElementSibling);
-			putrate = returnRate(candidateObj.put.contract, candidateObj.put.altData);			    
-		} else referenceli.style.marginBottom = "30px";	
-	
-		bag.title = 0 - putrate - callrate;
-		addOrdered(bag, D('recList'));	
 	}
 }
+
 	
 function addOrdered(li, element) {
 	let toAdd = true;
@@ -262,7 +206,7 @@ function addOrdered(li, element) {
 	if (toAdd) element.appendChild(li);
 }
 	
-function setDefLeg(defData, altData, data) {      
+function setDefLegOld(defData, altData, data) {      
 	for (let contractStrike in data) {	
 		let contract = data[contractStrike][0];
 
@@ -321,7 +265,7 @@ function addCol(text, width, li) {
 	return col;
 }		
 
-function buildli(contract, data, defleg, altData) {
+function buildli(referenceli, contract, data, defleg, altData) {
 	let li = make('li');
 	li.style.textAlign = "center";		
 	let col = addCol("$" + contract.strikePrice, "75px", li);
@@ -331,28 +275,30 @@ function buildli(contract, data, defleg, altData) {
 	else col = addCol("-" + margin(contract, data) + "%", "75px", li);
 
 	let collat = "x";
+	let rate = 295;
 	if (altData) {
-		if (contract.putCall == "CALL") collat = 100*(altData.strike - contract.strikePrice);
-		else collat = 100*(contract.strikePrice - altData.strike);		
+		if (contract.putCall == "CALL") collat = 100*(altData.strikePrice - contract.strikePrice);
+		else collat = 100*(contract.strikePrice - altData.strikePrice);		
 		let col2 = addCol( "$" + collat, "75px", li);
-		col.title = margin(contract, data);
+		col.title = margin(contract, data, true);
 		if (contractAboveVolatility(contract, data))  {	
 			col.style.backgroundColor = "#ddf";
 			col2.style.backgroundColor = "#ddf";
 		}
+        let colstring = Math.round(returnRate(contract, altData)) + "%";
+        col = addCol(colstring, "100px", li);
+        rate = 295 - 2*Math.round(returnRate(contract, altData));
+	} else {
+        addCol("x", "75px", li);
+        col = addCol("x", "100px", li);
+    }
 
-	} else addCol("x", "75px", li);
-
-	let colstring = Math.round(returnRate(contract, altData)) + "%";
-	col = addCol(colstring, "100px", li);
-
-	let rate = 295 - 2*Math.round(returnRate(contract, altData));
 	if (rate < 0) col.style.backgroundColor = "#00ffff";
 	else if (rate < 16) col.style.backgroundColor = "#0" + rate.toString(16) + "ffff";
 	else col.style.backgroundColor = "#" + rate.toString(16) + "ffff";
 
 	let premdiff = "x.xx";
-	if (altData) premdiff = (contract.bid - altData.premium).toFixed(2);
+	if (altData) premdiff = (contract.bid - altData.ask).toFixed(2);
 	col = addCol(premdiff, "50px", li);		   
 	if (rate < 0) col.style.backgroundColor = "#00ffff";
 	else if (rate < 16) col.style.backgroundColor = "#0" + rate.toString(16) + "ffff";						   
@@ -364,14 +310,18 @@ function buildli(contract, data, defleg, altData) {
 	else col.style.backgroundColor = "#" + rate.toString(16) + "ffff";
 
 	col = addCol(contract.ask.toFixed(2) + ' x ' + contract.askSize, "100px", li);
-
-	if (contract.askSize > 5*contract.bidSize && contract.ask < contract.bid + 0.06) col.style.backgroundColor = "#ddf";
+	
+	if (demandCondition(data.symbol, contract)) col.style.backgroundColor = "#ddf";
 
 	addCol(contract.last.toFixed(2), "50px", li);							
 	let lastTrade = "x";
 	if (contract.tradeTimeInLong) lastTrade = Math.round((Date.now() - contract.tradeTimeInLong)/60000);			       
 	addCol(lastTrade + "m", "75px", li);
-	addCol(contract.totalVolume, "50px", li);
+	if (altData) {
+		col = addCol(contract.adjustedVolume + "%", "50px", li);
+		if (contract.adjustedVolume < 11) col.style.backgroundColor = "#ddf";
+	}
+	else addCol(contract.totalVolume, "50px", li);
 	li.classList.add("libold");
 
 	if (defleg) {
@@ -384,30 +334,35 @@ function buildli(contract, data, defleg, altData) {
 		else if (rate < 16)  li.children[6].style.backgroundColor = "#0" + rate.toString(16) + "ffff";
 		else  li.children[6].style.backgroundColor = "#" + rate.toString(16) + "ffff";
 	}
-						   
+			                
+      if (contract.putCall == "CALL") referenceli.parentNode.insertBefore(li, referenceli);
+      else referenceli.parentNode.insertBefore(li, referenceli.nextElementSibling);			   
 	return li;
-}	
+}
 	
 function contractAboveVolatility(contract, data) {
 	let weeksToExp = (1 + (contract.expirationDate-Date.now())/(1000*60*60*24))/7;
 	return (optionsQuotes[data.symbol] && Math.sqrt(weeksToExp) * (1 + parseFloat(optionsQuotes[data.symbol].volatility.split('% ')[0])) * 2 < margin(contract, data));
 }
 
-function interestRate(contract, defData) {
-	if (contract.ask <= defData.premium) return 0;
-	if (contract.putCall == "CALL")	return 100*(contract.ask - defData.premium)*365*1000*60*60*24
-			/((defData.strike - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-	else return 100*(contract.ask - defData.premium)*365*1000*60*60*24
-			/((contract.strikePrice - defData.strike)*(1000*60*60*66 + contract.expirationDate-Date.now()));
+function rateCalc(contract, defData, premium) {
+	if (contract.putCall == "CALL" && defData.strikePrice <= contract.strikePrice) return 0;
+	if (contract.putCall == "PUT" && defData.strikePrice >= contract.strikePrice) return 0;
+    // if (premium <= 0) return 0;
+    let rate = 100*premium*365*1000*60*60*24/((defData.strikePrice - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
+	if (contract.putCall == "CALL")	return rate;
+	else return 0 - rate;
 }
-	
-function returnRate(contract, defData) {
-	if (!defData) return 0;
-	if (contract.bid <= defData.premium) return 0;
-	if (contract.putCall == "CALL")	return 100*(contract.bid - defData.premium)*365*1000*60*60*24
-			/((defData.strike - contract.strikePrice)*(1000*60*60*66 + contract.expirationDate-Date.now()));
-	else return 100*(contract.bid - defData.premium)*365*1000*60*60*24
-			/((contract.strikePrice - defData.strike)*(1000*60*60*66 + contract.expirationDate-Date.now()));
+					
+
+function interestRate(contract, defData) { return rateCalc(contract, defData, contract.ask - defData.ask);}	
+function marginalRate(contract, defData) { return rateCalc(contract, defData, contract.bid - defData.bid);}	
+function returnRate(contract, defData) { return rateCalc(contract, defData, contract.bid - defData.ask);}
+
+
+function demandCondition(symbol, contract) {
+	let mytick = 0.01;
+	return contract.askSize > 3*contract.bidSize && contract.ask <= contract.bid + mytick;
 }
 
 function margin(contract, data) {
@@ -421,14 +376,86 @@ function margin(contract, data) {
 function evalContract(contract, data, altData) {
 	return (returnRate(contract, altData) > 19);
 }
+
+
+	
+function setDefLeg(data) {  
+	let orderedChain = orderChain(data);
+	
+	let defContract = orderedChain[0];
+	for (let i = 0; i < orderedChain.length; i++) {
+		let contract = orderedChain[i];
+		if (defContract.ask == 0 || (contract.ask > 0 && contract.ask <= defContract.ask)) defContract = contract;	
+	}
+	
+	let altContract = defContract;
+	for (let i = 0; i < orderedChain.length; i++) {
+		if (interestRate(orderedChain[i], altContract) <= fixedInterestRate) altContract = orderedChain[i];	
+	}
+	
+	return {defContract:defContract, altContract:altContract};
+}
+
+		
+
+function makeReference(tdaData, contractDate) {
+	let referenceli = make('li');
+	referenceli.style.textAlign = "center";
+	referenceli.style.fontWeight = "bold";
+	addCol("$" + round(tdaData.underlyingPrice), "75px", referenceli);			
+	let expdate;
+	let chain = tdaData.callExpDateMap[contractDate];
+	if (!chain) source = tdaData.putExpDateMap[contractDate];
+	for (let strike in chain) {
+		expdate = chain[strike][0].expirationDate;
+		break;
+	}
+	addCol(earningsLinkify(tdaData.symbol, tdaData.symbol, "#333", expdate) + " " + contractDate.substring(11) + " DTE", "675px", referenceli);
+	return referenceli;
+}	
+		
+function orderChain(chain) {
+	let tempArray = [];
+	for (let contractStrike in chain) {
+		let contract = chain[contractStrike][0];
+		if (contract.putCall == "CALL") tempArray.unshift(contract);
+		else tempArray.push(contract);
+	}	
+	return tempArray;
+}
+
+function makeArray(chain, altContract) {
+	let orderedChain = orderChain(chain);
+	let tempArray = [];
+	for (let i = 0; i < orderedChain.length; i++) {
+		if (returnRate(orderedChain[i], altContract) >= fixedReturnRate) tempArray.push(orderedChain[i]);	
+	}
+
+	let cumVol = 0;
+	tempArray.forEach(function(contract) {
+		cumVol += contract.totalVolume;
+		contract.adjustedVolume = cumVol;
+	});
+	if (cumVol == 0) cumVol = 1;
+
+	let finalArray = [];
+	let maxReturn = 0;
+	tempArray.forEach(function(contract) {
+		if (returnRate(contract, altContract) > maxReturn) {
+			  maxReturn = returnRate(contract, altContract);
+			  contract.adjustedVolume = inDollars(contract.adjustedVolume/cumVol);
+			  finalArray.push(contract);
+		}
+	});
+	return finalArray;
+}
 							       
 function updateOptions(newOption) {	
 	let query = currentOption;
 	if (newOption) query = D('optionsInput').value.toUpperCase();
 	if (!query) return false;
 		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Ticker': query }}).then(function(response) {
+	fetch("https://chatscrypt.herokuapp.com/cors/", {cache:'no-cache', headers: {'Target-Ticker': query }}).then(function(response) {
 		return response.json();
 	}).then(function(data) {
 		optionsQuotes[query] = data;
@@ -442,94 +469,42 @@ function updateOptions(newOption) {
 		}
 	});
 	
-	let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();								       
-	fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
-		+ query + "&range=OTM&toDate=" + d).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		console.log(data);
-		if (data.status == "SUCCESS") {	
-			optionsData[query] = data;
-			if (query != currentOption) D('optionslist').scrollTo(0, 0); 	
-			// if (currentOption && query != currentOption && D('optionsPrice').children.length > 0) D('stocklist').appendChild(D('optionsPrice').firstChild);
-			currentOption = query;
-			submitTicker(currentOption);
-	
-			D('optionslist').textContent = "";
-					
-			for (let contractDate in data.putExpDateMap) {
-						   
-			/////////////////////// CALLS //////////////////////////////////
-				
-				let DTE = 0;
-				if (data.callExpDateMap[contractDate]) {
-				
-				let defData = {strike:0, premium:0, contract:""};
-				let altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
-	
-				let calldefleg = buildli(defData.contract, data);
-				D('optionslist').appendChild(calldefleg);
-				let calldefleg2 = buildli(altData.contract, data);
-				D('optionslist').appendChild(calldefleg2);
-				       
-				let callArray = [];
-				for (let contractStrike in data.callExpDateMap[contractDate]) {
-					let contract = data.callExpDateMap[contractDate][contractStrike][0];
-					if (evalContract(contract, data, altData)) callArray.unshift(contract);
-				}	       
-	
-				let maxReturn = 0;
-				callArray.forEach(function(contract) {				
-					if (maxReturn < returnRate(contract, altData)) {
-						maxReturn = returnRate(contract, altData);
-						D('optionslist').appendChild(buildli(contract, data, calldefleg2, altData));
-					}
-				});
-				
-				DTE = defData.contract.daysToExpiration;
-				} else {
-					for (let strikes in data.putExpDateMap[contractDate]) {
-						DTE = data.putExpDateMap[contractDate][strikes][0].daysToExpiration;
-					}
-				}
-	
-			/////////////////////// MIDDLE //////////////////////////////////
-	
-				let referenceli = make('li');
-				referenceli.style.textAlign = "center";
-				referenceli.style.fontWeight = "bold";
-				addCol("$" + round(data.underlyingPrice), "75px", referenceli);
-				addCol(stLinkify(data.symbol, data.symbol, "#333")  + " " + DTE + " DTE", "675px", referenceli);
-				D('optionslist').appendChild(referenceli);
-	
-			/////////////////////// PUTS //////////////////////////////////
-	
-				defData = {strike:0, premium:0, contract:""};
-				altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);
-				
-				let putdefleg2 = buildli(altData.contract, data);
-				D('optionslist').appendChild(putdefleg2);
-				let putdefleg = buildli(defData.contract, data);
-				D('optionslist').appendChild(putdefleg);
-				putdefleg.style.marginBottom = "30px";
-	
-				let putArray = [];
-				for (let contractStrike in data.putExpDateMap[contractDate]) {
-					let contract = data.putExpDateMap[contractDate][contractStrike][0];
-					if (evalContract(contract, data, altData)) putArray.push(contract);
-				}
-	
-				maxReturn = 0;
-				putArray.forEach(function(contract) {				
-					if (maxReturn < returnRate(contract, altData)) {
-						maxReturn = returnRate(contract, altData);
-						D('optionslist').insertBefore(buildli(contract, data, putdefleg2, altData), referenceli.nextElementSibling);
-					}
-				});
-			}
-		} else D('msg').textContent = "No options data found.";				       	       
+	tdaFetch(query).then(function(data) {
+		console.log(data);		
+		if (data.status != "SUCCESS") {
+			D('msg').textContent = "No options data found.";
+			return false;
+		}
+		optionsData[query] = data;
+		if (query != currentOption) D('optionslist').scrollTo(0, 0); 	
+		// if (currentOption && query != currentOption && D('optionsPrice').children.length > 0) D('stocklist').appendChild(D('optionsPrice').firstChild);
+		currentOption = query;
+		submitTicker(currentOption);
+
+		D('optionslist').textContent = "";
+		
+		
+		function makeChain(type, contractDate, referenceli) {
+		  let chain = data.putExpDateMap[contractDate];
+		  if (type == "call") chain = data.callExpDateMap[contractDate];
+                  
+		  let pack = setDefLeg(chain);
+		  let tempArray = makeArray(chain, pack.altContract);
+		  let predefleg = buildli(referenceli, pack.defContract, data); 
+		  if (type == "put") predefleg.style.marginBottom = "30px";
+                  
+		  let defleg = buildli(referenceli, pack.altContract, data);                    
+		  tempArray.forEach(function(contract) {
+				let contractli = buildli(referenceli, contract, data, defleg, pack.altContract);
+		  });
+		}    
+            
+		for (let contractDate in data.putExpDateMap) {
+			let referenceli = makeReference(data, contractDate);
+			D('optionslist').appendChild(referenceli);                  
+			if (data.callExpDateMap[contractDate]) makeChain("call", contractDate, referenceli); 
+            makeChain("put", contractDate, referenceli);
+		}		       	       
 	});								       
 }
 	
@@ -574,26 +549,20 @@ function mergeAll() {
 	 D('recList').textContent = "";
 	for (let i = 0; i < merge.length; i++) {
 					 
-	fetch("https://ansyble.herokuapp.com/cors/", 
+	fetch("https://chatscrypt.herokuapp.com/cors/", 
 		{cache:'no-cache', headers: {'Target-Ticker': merge[i] }}).then(function(response) {
 		return response.json();
 	}).then(function(data) {
 		optionsQuotes[merge[i]] = data;
-		if (optionsData[merge[i]]) generateRec(merge[i]);
+		if (optionsData[merge[i]]) generateRec(merge[i], 'recList');
 	});
 	
-	let d = new Date(Date.now() + 1000*60*60*24*21).toISOString();
 	promises.push(
-	fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol="
-						+ merge[i]
-						+ "&range=OTM&toDate="
-						+ d).then(function(response) {
-		return response.json();
-	}).then(function(data) {
+	tdaFetch(merge[i]).then(function(data) {
 		console.log(data);
 		if (data.status == "SUCCESS") {
 			optionsData[merge[i]] = data;
-			if (optionsQuotes[merge[i]]) generateRec(merge[i]);
+			if (optionsQuotes[merge[i]]) generateRec(merge[i], 'recList');
 			maxdata[i] = {symbol:merge[i], call:0, put:0};
 			for (let contractDate in data.putExpDateMap) {
 						   
@@ -601,7 +570,7 @@ function mergeAll() {
 						   
 				let defData = {strike:0, premium:0, contract:""};
 				let altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.callExpDateMap[contractDate]);
+				setDefLegOld(defData, altData, data.callExpDateMap[contractDate]);
 								       
 				for (let contractStrike in data.callExpDateMap[contractDate]) {
 					let contract = data.callExpDateMap[contractDate][contractStrike][0];
@@ -613,7 +582,7 @@ function mergeAll() {
 				
 				defData = {strike:0, premium:0, contract:""};
 				altData = {strike:0, premium:0, contract:""};
-				setDefLeg(defData, altData, data.putExpDateMap[contractDate]);	
+				setDefLegOld(defData, altData, data.putExpDateMap[contractDate]);	
 								       
 				for (let contractStrike in data.putExpDateMap[contractDate]) {
 					contract = data.putExpDateMap[contractDate][contractStrike][0];
@@ -644,253 +613,47 @@ function mergeAll() {
 			mergeString += stLinkify("<strong>" + maxdata[i].symbol + "</strong>", maxdata[i].symbol, "#333") + " ";
 		}				
 		if (mergeString) D('merge').innerHTML = mergeString;
-	});				 				 
+	});		
+
+	if (active(D('soundButton'))) D('complete').play();
+	D('refreshButton').disabled = false;	
 }	
 	
 	
-///// Trending stocks script /////////////////////////////////////////////////
 	
-function updateEarnings() {
-	let weeklyQuery = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + weeklys.join();
 
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': weeklyQuery }}).then(function(response) {
-		return response.json();
-	}).then(function(data) { 
-		if (data.quoteResponse.result) {			
-			earnings = [];
-			preEarnings = [];
-			postEarnings = [];
-			let earningsTime = {};
-			let earningsString = "";
-			data.quoteResponse.result.forEach(function(stockData) {
-				if ((stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60) ||
-				(stockData.earningsTimestamp - Date.now()/1000 >= 0 
-				&& stockData.earningsTimestampStart == stockData.earningsTimestampEnd && stockData.earningsTimestamp - Date.now()/1000 < 2*24*60*60)) {
-					earnings.push(stockData.symbol);
-					earningsTime[stockData.symbol] = stockData.earningsTimestamp;
-					namesMap[stockData.symbol] = stockData.longName;
-				}
-				if (stockData.earningsTimestamp - Date.now()/1000 < 0 && stockData.earningsTimestamp - Date.now()/1000 > -2*24*60*60)
-					postEarnings.push(stockData.symbol);
-				if (stockData.earningsTimestamp - Date.now()/1000 >= 0 
-				&& stockData.earningsTimestampStart == stockData.earningsTimestampEnd && stockData.earningsTimestamp - Date.now()/1000 < 2*24*60*60)
-					preEarnings.push(stockData.symbol);
-			});	      
-			earnings.sort(function(x, y) {
-				return earningsTime[x]- earningsTime[y];
-			});    
-			preEarnings.sort(function(x, y) {
-				return earningsTime[x]- earningsTime[y];
-			});
-			postEarnings.sort(function(x, y) {
-				return  earningsTime[y] - earningsTime[x];
-			});
-			earnings.forEach(function(stock) {
-				if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#94b'>${stock}</strong></a> `;
-				else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#07b'>${stock}</strong></a> `;							      
-			});
-			D('earnings').innerHTML = earningsString;
-			//D('earningsButton').textContent = "Monitor All";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-		}
-	});
-}
-	
-function updateFinvizG() {
-	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		finvizGList = [];
-		let prevWeekly = finvizGWeeklyList;
-		finvizGWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizGList, finvizGWeeklyList, prevWeekly, "Finviz gainers");
-		});
-		D('finvizG').innerHTML = stString;
-		//D('finvizGButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-		}
-	});
-}
-function updateFinvizL() {
-	let query = 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		finvizLList = [];
-		let prevWeekly = finvizLWeeklyList;
-		finvizLWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizLList, finvizLWeeklyList, prevWeekly, "Finviz losers");
-		});
-		D('finvizL').innerHTML = stString;
-		//D('finvizLButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-		}
-	});
-}
-function updateFinvizV() {
-	let query = 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		if (data.length > 0) {
-		finvizVList = [];
-		let prevWeekly = finvizVWeeklyList;
-		finvizVWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.forEach(function(stockData) {
-			stString += printWeekly(stockData, finvizVList, finvizVWeeklyList, prevWeekly, "Finviz volatile");
-		});
-		D('finvizV').innerHTML = stString;
-		//D('finvizVButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-		}
-	});
-}
-	
-function updateYolo() {
-	let query = 'https://yolostocks.live/downloads/wallstreetbets.csv';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.text();
-	}).then(function(data) {
-		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
-		yoloList = [];
-		let prevWeekly = yoloWeeklyList;
-		yoloWeeklyList = [];
-		let yoloString = "(" + new Date().toLocaleTimeString() + "): ";
-		preYoloList.forEach(function(symbol) {
-			if (symbol && /[A-Z]/.test(symbol[0])) yoloString += printWeekly(symbol, yoloList, yoloWeeklyList, prevWeekly, "YoloStocks");
-		});
-		D('yolo').innerHTML = yoloString;
-		//D('yoloButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-	});
-}
-
-function updateWSB() {
-	let query = 'https://dashboard.nbshare.io/api/v1/apps/reddit';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {		
-		wsbList = [];
-		let prevWeekly = wsbWeeklyList;
-		wsbWeeklyList = [];
-		let wsbString = "(" + new Date().toLocaleTimeString() + "): ";
-		for (let i = 0; i < 15; i++) {
-			wsbString += printWeekly(data[i].ticker, wsbList, wsbWeeklyList, prevWeekly, "WSB");
-		}
-		D('wsb').innerHTML = wsbString;
-		//D('wsbButton').textContent = "Monitor Weeklys";
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-	});
-}
-					      
-function updateStocktwits() {
-	let query = 'https://api.stocktwits.com/api/2/trending/symbols/equities.json';
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
-		stList = [];
-		let prevWeekly = stWeeklyList;
-		stWeeklyList = [];
-		let stString = "(" + new Date().toLocaleTimeString() + "): ";
-		data.symbols.forEach(function(stockData) {
-			namesMap[stockData.symbol] = stockData.title;			
-			stString += printWeekly(stockData.symbol, stList, stWeeklyList, prevWeekly, "Stocktwits");
-		});
-		D('stocktwits').innerHTML = stString;
-		//D('stButton').textContent = "Monitor Weeklys";
-		
-		endpointCounter++;			
-		if (endpointCounter == 7) {
-			mergeAll();
-			if (active(D('soundButton'))) D('complete').play();
-			D('refreshButton').disabled = false;
-		}
-	});
-}
-
-function printWeekly(symbol, stList, stWeeklyList, prevWeekly, sitename) {
-	if (monthlys.includes(symbol) || weeklys.includes(symbol)) {
-		stList.push(symbol);
-		if (weeklys.includes(symbol)) {
-			stWeeklyList.push(symbol);
-			if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
-				if (active(D('soundButton'))) D('starting').play();
-				if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
-				return stLinkify("<strong>" + symbol + "</strong>", symbol, "blue") + " ";
-			} else return stLinkify("<strong>" + symbol + "</strong>", symbol, "#333") + " ";
-		} else return stLinkify(symbol, symbol) + " ";
-	} else return "";
-}	
-	
-function stLinkify(str, stock, color) {
+function earningsLinkify(str, stock, color, expiration) {
 	let thistitle = "";
 	if (namesMap[stock]) thistitle = namesMap[stock];
 	let colorInsert = `style=''`;
 	if (color) colorInsert = `style='color:${color}'`;
+	if (expiration/1000 >= earningsTime[stock] && earningsTime[stock] > Date.now()/1000) colorInsert = `style='color:#07b'`;
 	if (postEarnings.includes(stock)) colorInsert = `style='color:#94b'`;
-	if (preEarnings.includes(stock)) colorInsert = `style='color:#07b'`;
-	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://stocktwits.com/symbol/${stock}'>${str}</a>`;
+	//if (preEarnings.includes(stock)) colorInsert = `style='color:#07b'`;
+	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'>${str}</a>`;
+}				
+
+
+function fetchData(url, method, data, text) {
+	let stringified = "";
+	if (data) stringified = JSON.stringify(data);
+	return fetch("https://chatscrypt.herokuapp.com/cors/", 
+		{cache:'no-cache', headers: {method: method, url: url, 'json-data': stringified }}).then(function(response) {
+		if (text) return response.text();
+		else return response.json();
+	});
 }
+
+function inDollars(num) { return Math.round(num*100); }
 	
-function linkClicker(symbol) {
-	if (!event.ctrlKey) {
-		event.preventDefault();		
-		D('optionsInput').value = symbol; 
-		updateOptions(true);
-		D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
-		D('optionslist').scrollTo(0, 0); 	
-	}
+	
+
+function tdaFetch(symbol) {
+	let d = new Date(Date.now() + 1000*60*60*24*19).toISOString();	
+	return fetch("https://api.tdameritrade.com/v1/marketdata/chains?apikey=T1V8GYUYK3GKC7HG3L23O9XBJ5OH1C4F&symbol=" 
+		+ symbol + "&range=OTM&toDate=" + d).then(function(response) {
+		return response.json();
+	});			
 }
 	
 ///// Toggle buttons script /////////////////////////////////////////////////
@@ -1025,17 +788,10 @@ function updateDisplay(stock, fixed) {
 
 function update() {
 	if (tickerList.length > 0) {
-	let query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + tickerList.join();
-		
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) { 
-	
+	fetchData('https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + tickerList.join(), 'GET').then(function(data) { 	
 	if (data.quoteResponse.result) {
 		d = new Date();
-		D('msg').textContent = d.toLocaleTimeString();
-	
+		D('msg').textContent = d.toLocaleTimeString();	
 		data.quoteResponse.result.forEach(function(stockData) {
 			let stock = stockData.symbol;
 			let price = stockData.regularMarketPrice;
@@ -1122,10 +878,7 @@ function update() {
 function submitTicker(myQuery) {
 	let query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + D('tickerInput').value.replaceAll(" ", ",");	
 	if (myQuery) query = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + myQuery.replaceAll(" ", ",");	
-	fetch("https://ansyble.herokuapp.com/cors/", 
-		{cache:'no-cache', headers: {'Target-URL': query }}).then(function(response) {
-		return response.json();
-	}).then(function(data) {
+	fetchData(query, 'GET').then(function(data) {
 	
 	if (data.quoteResponse.result.length > 0) {
 	for (let i = data.quoteResponse.result.length - 1; i > -1; i--) {
@@ -1359,10 +1112,163 @@ var weeklys = ["NEGG","HOOD","AA","AAL","AAOI","AAPL","ABBV","ABC","ABNB","ABT",
 	
 	
 var monthlys = ["A","AAIC","AAN","AAON","AAP","AAT","AAU","AAWW","AB","ABB","ABCB","ABCL","ABEO","ABEV","ABG","ABIO","ABM","ABMD","ABR","ABST","ABTX","ABUS","ACA","ACC","ACCD","ACCO","ACEL","ACER","ACET","ACEV","ACGL","ACH","ACHC","ACI","ACIC","ACIU","ACIW","ACLS","ACM","ACMR","ACOR","ACR","ACRE","ACRS","ACRX","ACTG","ACVA","ACWI","ADAP","ADC","ADCT","ADMA","ADMP","ADMS","ADN","ADNT","ADPT","ADT","ADTN","ADTX","ADUS","ADV","ADVM","AEE","AEG","AEIS","AEL","AEM","AEMD","AEP","AER","AERI","AES","AEVA","AEZS","AFG","AFI","AFIB","AFIN","AFMD","AFRM","AFYA","AGC","AGCB","AGCO","AGEN","AGFS","AGG","AGI","AGIO","AGL","AGLE","AGM","AGO","AGR","AGRO","AGRX","AGS","AGTC","AGX","AGYS","AGZ","AHCO","AHH","AHT","AI","AIMC","AIN","AINV","AIR","AIRC","AIRG","AIT","AIV","AIZ","AJAX","AJG","AJRD","AJX","AKBA","AKR","AKRO","AKTS","AL","ALB","ALBO","ALC","ALDX","ALE","ALEC","ALEX","ALG","ALGM","ALGT","ALHC","ALIT","ALK","ALKS","ALL","ALLE","ALLK","ALLO","ALLT","ALLY","ALNY","ALPN","ALRM","ALSK","ALSN","ALT","ALTG","ALTO","ALTR","ALTU","ALV","ALVR","ALXN","ALXO","AM","AMBC","AMCR","AMCX","AME","AMED","AMEH","AMG","AMH","AMKR","AMN","AMNB","AMOT","AMP","AMPE","AMPH","AMPY","AMR","AMRC","AMRX","AMSC","AMSF","AMSWA","AMTI","AMTX","AMWD","AMWL","AMX","AMZA","AN","ANAB","ANAT","ANDE","ANGI","ANGO","ANIK","ANIP","ANIX","ANSS","ANTE","AON","AOS","AOSL","AOUT","AP","APAM","APD","APEI","APEN","APG","APH","API","APLE","APLS","APLT","APOG","APP","APPF","APPN","APRE","APRN","APTO","APTS","APTV","APTX","APYX","AQB","AQMS","AQN","AQST","AQUA","AR","ARAV","ARAY","ARC","ARCB","ARCC","ARCH","ARCO","ARCT","ARD","ARDX","ARE","AREC","ARES","ARGX","ARI","ARKO","ARLO","ARLP","ARMK","ARNA","ARNC","AROC","AROW","ARQT","ARR","ARRY","ARVN","ARW","ARWR","ASA","ASAI","ASAN","ASB","ASC","ASGN","ASH","ASIX","ASLN","ASMB","ASND","ASO","ASPN","ASPS","ASPU","ASR","ASRT","ASRV","ASTE","ASTR","ASTS","ASUR","ASXC","ASYS","ATAI","ATAX","ATCO","ATEC","ATEN","ATER","ATEX","ATGE","ATH","ATHA","ATHM","ATHX","ATI","ATIP","ATKR","ATLC","ATNF","ATNI","ATNM","ATNX","ATO","ATOM","ATR","ATRA","ATRC","ATRO","ATRS","ATSG","ATUS","AU","AUB","AUD","AUDC","AUMN","AUPH","AUTO","AVA","AVAH","AVAV","AVB","AVCT","AVD","AVDL","AVEO","AVID","AVIR","AVLR","AVNS","AVNT","AVNW","AVO","AVPT","AVRO","AVT","AVTR","AVY","AVYA","AWH","AWI","AWK","AWR","AWRE","AX","AXAS","AXDX","AXGN","AXL","AXLA","AXNX","AXON","AXS","AXSM","AXTA","AXTI","AXU","AY","AYI","AYRO","AYTU","AYX","AZEK","AZPN","AZUL","AZZ","B","BAH","BALY","BAM","BANC","BAND","BANF","BANR","BAP","BARK","BATRA","BATRK","BBAR","BBD","BBDC","BBH","BBIG","BBIO","BBL","BBSI","BBU","BBVA","BBW","BC","BCAB","BCBP","BCC","BCDA","BCE","BCEI","BCEL","BCLI","BCO","BCOR","BCOV","BCPC","BCRX","BCS","BCSF","BDC","BDN","BDSI","BDSX","BDTX","BE","BEAM","BECN","BEEM","BEKE","BELFB","BEN","BEP","BEPC","BERY","BEST","BF.A","BF.B","BFAM","BFI","BFLY","BG","BGCP","BGFV","BGNE","BGS","BHE","BHF","BHLB","BHP","BHR","BHVN","BIG","BIGC","BILL","BIO","BIOC","BIOX","BIP","BIPC","BITF","BJ","BJRI","BKCC","BKD","BKE","BKEP","BKH","BKI","BKR","BKU","BKYI","BL","BLD","BLDE","BLDP","BLDR","BLFS","BLI","BLKB","BLL","BLMN","BLRX","BLU","BLUE","BLX","BMA","BMBL","BMI","BMO","BMRA","BMRN","BMTC","BMTX","BNED","BNFT","BNGO","BNL","BNS","BNTC","BOCH","BODY","BOH","BOKF","BOOM","BOOT","BOWX","BOX","BPMC","BPMP","BPOP","BPT","BPY","BPYU","BQ","BR","BRBR","BRC","BREZ","BRFS","BRG","BRK.B","BRKL","BRKR","BRKS","BRMK","BRO","BRP","BRSP","BRX","BRY","BSAC","BSBR","BSET","BSGM","BSIG","BSM","BSMX","BSQR","BSRR","BSY","BTAI","BTAQ","BTBT","BTCM","BTE","BTG","BTI","BTN","BTNB","BTRS","BTU","BTWN","BUR","BUSE","BV","BVN","BW","BWA","BWAC","BWEN","BWX","BWXT","BXC","BXMT","BXP","BXRX","BXS","BYD","BYSI","BZH","BZUN","CAAP","CAAS","CABA","CAC","CACC","CACI","CADE","CAE","CAI","CAJ","CAKE","CAL","CALA","CALM","CALX","CAMP","CAMT","CAN","CANO","CAP","CAPL","CAPR","CAR","CARA","CARG","CARR","CARS","CASA","CASH","CASS","CASY","CATB","CATO","CATY","CB","CBAT","CBAY","CBB","CBD","CBIO","CBLI","CBRE","CBRL","CBSH","CBT","CBU","CBZ","CCAC","CCCC","CCEP","CCI","CCK","CCLP","CCMP","CCNE","CCO","CCOI","CCRN","CCS","CCV","CCXI","CD","CDAY","CDE","CDEV","CDK","CDLX","CDMO","CDNA","CDNS","CDR","CDTX","CDW","CDXC","CDXS","CDZI","CE","CECE","CEIX","CELH","CELJF","CEMI","CENT","CENTA","CENX","CEQP","CERC","CERE","CERN","CERS","CERT","CEVA","CFAC","CFB","CFFN","CFG","CFLT","CFR","CFRX","CFX","CG","CGAU","CGBD","CGEN","CGNT","CGNX","CGRN","CHCO","CHD","CHDN","CHE","CHEF","CHGG","CHH","CHK","CHKP","CHL","CHMA","CHNG","CHRA","CHRS","CHRW","CHS","CHT","CHU","CHUY","CHX","CIA","CIB","CIG","CIGI","CIM","CINF","CIO","CIR","CIT","CIVB","CIXX","CKPT","CLAR","CLB","CLBK","CLBS","CLDT","CLDX","CLFD","CLH","CLI","CLIR","CLLS","CLMT","CLNE","CLPS","CLPT","CLS","CLSD","CLSK","CLSN","CLVR","CLVT","CLW","CLXT","CM","CMA","CMC","CMCM","CMCO","CMI","CMLF","CMO","CMP","CMPR","CMPS","CMRE","CMRX","CMS","CMTL","CNA","CNCE","CNDT","CNET","CNHI","CNI","CNK","CNMD","CNNE","CNO","CNOB","CNQ","CNR","CNS","CNSL","CNTY","CNX","CNXC","CNXN","CO","CODI","COGT","COHR","COHU","COLB","COLD","COLL","COLM","COMM","COMP","COMS","CONE","CONN","CONX","COO","COOP","COR","CORE","CORR","CORT","COUR","COWN","CP","CPA","CPE","CPF","CPG","CPK","CPLG","CPLP","CPNG","CPPRQ","CPRT","CPRX","CPS","CPSH","CPSI","CPSS","CPT","CPUH","CQP","CR","CRAI","CRBP","CRC","CRD.A","CRDF","CRESY","CRH","CRHC","CRI","CRIS","CRK","CRL","CRMD","CRMT","CRNC","CRNT","CROX","CRS","CRSR","CRTO","CRTX","CRU","CRUS","CRVL","CRVS","CRWS","CRY","CS","CSAN","CSBR","CSGP","CSGS","CSII","CSL","CSLT","CSOD","CSPR","CSR","CSTE","CSTL","CSV","CSWC","CTAS","CTBI","CTG","CTIC","CTLP","CTLT","CTMX","CTOS","CTRE","CTRM","CTRN","CTS","CTSO","CTST","CTT","CTVA","CTXR","CUBE","CUBI","CUE","CUK","CULP","CURI","CURO","CUTR","CUZ","CVA","CVAC","CVBF","CVCO","CVCY","CVE","CVEO","CVET","CVGI","CVGW","CVI","CVLG","CVLT","CVM","CW","CWCO","CWEN","CWK","CWST","CWT","CX","CXDC","CXM","CXP","CXW","CYBE","CYCC","CYCN","CYD","CYTK","CZNC","D","DAC","DADA","DAKT","DALN","DAN","DAO","DAR","DBA","DBB","DBC","DBD","DBI","DBRG","DBV","DBVT","DCBO","DCI","DCO","DCOM","DCP","DCPH","DCRB","DCRC","DCT","DDS","DEA","DECK","DEH","DEI","DELL","DEM","DEN","DENN","DEO","DESP","DFH","DFIN","DGICA","DGII","DGLY","DGNR","DGNS","DGX","DHC","DHR","DHT","DHX","DIA","DIN","DIOD","DISCA","DISCK","DK","DKL","DLB","DLHC","DLNG","DLO","DLR","DLTH","DLX","DM","DMAC","DMLP","DMRC","DMTK","DMYI","DNB","DNLI","DNMR","DNN","DNOW","DNUT","DOC","DOCN","DOCS","DOFSQ","DOMO","DOOO","DOOR","DORM","DOV","DOX","DOYU","DPW","DQ","DRD","DRE","DRH","DRI","DRIO","DRNA","DRQ","DRRX","DRVN","DS","DSEY","DSGX","DSKE","DSPG","DSX","DT","DTE","DTEA","DTIL","DUK","DV","DVA","DVAX","DVY","DX","DXC","DXCM","DXPE","DXYN","DY","DYAI","DYN","DZSI","E","EAF","EAR","EARS","EAT","EB","EBC","EBF","EBIX","EBON","EBS","EBSB","EC","ECH","ECHO","ECL","ECOL","ECOM","ECPG","EDAP","EDR","EDU","EEFT","EEM","EEX","EFA","EFC","EFSC","EFX","EGAN","EGBN","EGLX","EGO","EGP","EGRX","EGY","EH","EHC","EHTH","EIG","EIGR","EIX","EKSO","EL","ELAN","ELDN","ELF","ELMD","ELMS","ELOX","ELP","ELS","ELVT","ELY","ELYS","EMAN","EMB","EME","EMKR","EMN","EMX","ENB","ENBL","ENG","ENIA","ENIC","ENLC","ENLV","ENOB","ENR","ENS","ENSG","ENTA","ENTG","ENTX","ENV","ENVA","ENVX","ENZ","EOLS","EOSE","EPAC","EPAM","EPAY","EPC","EPHY","EPM","EPP","EPR","EPRT","EPZM","EQ","EQC","EQH","EQIX","EQNR","EQOS","EQR","EQT","EQX","ERF","ERIC","ERIE","ERII","ERJ","ES","ESCA","ESE","ESGC","ESI","ESNT","ESPR","ESRT","ESS","ESSC","ESTA","ESTC","ESTE","ETH","ETNB","ETON","ETR","ETRN","ETWO","EURN","EVA","EVBG","EVC","EVER","EVFM","EVGN","EVGO","EVH","EVLO","EVOK","EVOP","EVR","EVRG","EVRI","EVTC","EWA","EWBC","EWD","EWG","EWH","EWI","EWJ","EWL","EWM","EWP","EWQ","EWS","EWU","EWY","EWZ","EXC","EXEL","EXK","EXLS","EXP","EXPD","EXPI","EXPO","EXR","EXTN","EXTR","EYE","EYEN","EYES","EYPT","EZA","EZPW","EZU","FAF","FANG","FANH","FARM","FARO","FAS","FAST","FATE","FAZ","FBC","FBHS","FBIO","FBIZ","FBK","FBNC","FBP","FBRX","FC","FCBC","FCF","FCFS","FCN","FCPT","FCRD","FDMT","FDN","FDP","FDS","FDUS","FE","FELE","FENC","FENG","FF","FFBC","FFIC","FFIN","FFNW","FGEN","FGNA","FHB","FHI","FHN","FI","FIBK","FICO","FIGS","FINV","FIS","FISI","FIT","FITB","FIVN","FIX","FIXX","FIZZ","FLDM","FLGT","FLIC","FLL","FLMN","FLNT","FLO","FLOW","FLS","FLT","FLUX","FLWS","FLXN","FLY","FMAC","FMBI","FMC","FMNB","FMS","FMTX","FMX","FN","FNB","FND","FNF","FNHC","FNKO","FNLC","FNV","FOA","FOCS","FOE","FOLD","FOR","FORM","FORR","FOUR","FOX","FOXF","FPAC","FPH","FPI","FR","FRBK","FRC","FREE","FREQ","FRG","FRGI","FRHC","FRME","FRO","FROG","FRPT","FRSX","FRT","FRTA","FSK","FSM","FSP","FSS","FST","FSTR","FSTX","FSV","FTAI","FTCH","FTCV","FTDR","FTEK","FTFT","FTI","FTK","FTNT","FTRCQ","FTS","FTV","FUL","FULT","FUN","FUSE","FUSN","FUV","FVE","FVRR","FWONA","FWONK","FWRD","FXI","FYBR","G","GABC","GAIA","GAIN","GALT","GAN","GASS","GATO","GATX","GAU","GB","GBCI","GBDC","GBIO","GBOX","GBT","GBX","GCI","GCO","GCP","GDDY","GDEN","GDOT","GDRX","GDS","GDYN","GEF","GEL","GENE","GENI","GENN","GEO","GEOS","GERN","GES","GEVO","GFF","GFI","GFL","GGAL","GGB","GGG","GH","GHL","GHM","GHVI","GIB","GIC","GIFI","GIII","GIL","GILT","GIS","GKOS","GL","GLAD","GLBS","GLD","GLDD","GLMD","GLNG","GLOB","GLOP","GLP","GLPG","GLPI","GLRE","GLT","GLYC","GMAB","GMBL","GMDA","GMED","GMF","GMRE","GMS","GMTX","GNCA","GNE","GNK","GNL","GNLN","GNOG","GNPK","GNPX","GNRC","GNRS","GNSS","GNTX","GO","GOCO","GOED","GOGL","GOGO","GOL","GOLF","GOOD","GORO","GOSS","GOTU","GPC","GPI","GPK","GPL","GPMT","GPN","GPOR","GPP","GPRE","GPRK","GPX","GRA","GRAY","GRBK","GRC","GRFS","GRMN","GROW","GROY","GRSV","GRTS","GRUB","GSAH","GSAT","GSBC","GSG","GSHD","GSIT","GSKY","GSM","GSS","GTBP","GTE","GTES","GTHX","GTIM","GTLS","GTN","GTS","GTTN","GTX","GTY","GTYH","GVA","GWAC","GWB","GWRE","GWRS","GWW","GXGX","H","HA","HAAC","HAE","HAFC","HAIN","HALL","HALO","HARP","HASI","HAYN","HAYW","HBAN","HBIO","HBM","HBNC","HBP","HCAT","HCC","HCCI","HCHC","HCI","HCKT","HCM","HCSG","HDB","HDSN","HE","HEAR","HEES","HEI","HEI.A","HELE","HEP","HEPA","HESM","HEXO","HFWA","HGEN","HGV","HHC","HI","HIBB","HII","HIL","HIMS","HITI","HIW","HJLI","HLI","HLIO","HLIT","HLMN","HLNE","HLT","HLX","HMC","HMHC","HMN","HMST","HMTV","HMY","HNGR","HNI","HNP","HNST","HOFT","HOFV","HOLI","HOLX","HOMB","HOME","HONE","HOOK","HOPE","HP","HPP","HQY","HR","HRB","HRC","HRI","HRMY","HROW","HRTG","HRTX","HRZN","HSC","HSIC","HSII","HSKA","HST","HSTM","HT","HTA","HTBI","HTBK","HTBX","HTGC","HTH","HTHT","HTLD","HTLF","HTOO","HUBB","HUBG","HUBS","HUGE","HUN","HURN","HUT","HVT","HWC","HWKN","HWM","HXL","HY","HYFM","HYG","HYMC","HYRE","HZN","HZNP","HZO","HZON","IAA","IAC","IAG","IART","IAU","IBB","IBCP","IBIO","IBKR","IBN","IBOC","IBP","IBRX","IBTX","ICAD","ICE","ICF","ICFI","ICHR","ICLK","ICLR","ICMB","ICON","ICPT","ICUI","IDA","IDCC","IDEX","IDN","IDRA","IDT","IDV","IDXX","IDYA","IEA","IEC","IEF","IEP","IEX","IFN","IFRX","IGAC","IGC","IGE","IGIB","IGMS","IGSB","IGT","IHRT","III","IIIN","IIIV","IIN","IIPR","IIVI","IJH","IJJ","IJK","IJR","IJS","IJT","ILF","ILPT","IMAB","IMAX","IMBI","IMGN","IMH","IMKTA","IMMP","IMMR","IMNM","IMO","IMOS","IMTX","IMUX","IMV","IMVT","INCY","INDB","INDI","INFI","INFO","INFU","INFY","ING","INGN","INGR","INMB","INMD","INN","INOD","INOV","INSE","INSG","INSM","INSP","INSW","INT","INTEQ","INTZ","INVA","INVE","INVH","INVZ","IO","IONS","IOSP","IOVA","IPA","IPAR","IPG","IPGP","IPI","IPOD","IPOF","IQV","IR","IRDM","IRIX","IRM","IRT","IRTC","IRWD","IS","ISBC","ISEE","ISIG","ISUN","IT","ITCI","ITGR","ITI","ITP","ITRI","ITRN","ITT","ITUB","IVAC","IVC","IVV","IVZ","IWD","IWF","IWM","IWN","IWO","IWP","IWR","IWS","IYE","IYR","IYW","IZEA","J","JACK","JAGX","JAMF","JAX","JAZZ","JBGS","JBHT","JBI","JBL","JBLU","JBSS","JBT","JCOM","JEF","JELD","JFIN","JG","JHG","JJSF","JKHY","JKS","JLL","JMP","JNCE","JNK","JOAN","JOBS","JOE","JP","JRVR","JW.A","JYNT","K","KAI","KALA","KALU","KALV","KAMN","KAR","KB","KBAL","KBH","KBNT","KBR","KC","KCAC","KDMN","KDNY","KDP","KE","KELYA","KEP","KERN","KEX","KEYS","KFRC","KFY","KIDS","KIM","KIN","KIRK","KL","KLDO","KLIC","KLR","KMDA","KMPH","KMPR","KMT","KN","KNBE","KNDI","KNL","KNOP","KNSA","KNSL","KNX","KOD","KOF","KOP","KOPN","KOS","KPLT","KPTI","KRA","KRC","KREF","KRG","KRMD","KRNT","KRNY","KRO","KRON","KRP","KRTX","KRYS","KT","KTB","KTCC","KTOS","KURA","KVHI","KW","KWR","KYMR","KZIA","KZR","L","LAC","LAD","LADR","LAKE","LAMR","LANC","LAND","LASR","LAUR","LAZ","LBAI","LBRDA","LBRDK","LBRT","LBTYA","LC","LCA","LCI","LCII","LCNB","LCTX","LCUT","LDL","LDOS","LE","LEA","LEAP","LECO","LEE","LEG","LEGH","LEGN","LEJU","LESL","LEU","LEV","LEVI","LFC","LFMD","LFST","LFT","LFTR","LFUS","LFVN","LGF.A","LGF.B","LGHL","LGIH","LGND","LH","LHCG","LHDX","LHX","LIFE","LII","LILA","LILAK","LIN","LINC","LIND","LIVN","LIVX","LIZI","LJPC","LKFN","LKNCY","LKQ","LMACA","LMAT","LMNL","LMNR","LMRK","LNC","LNDC","LNN","LNT","LNTH","LOB","LOCO","LODE","LOGC","LOGI","LOMA","LOOP","LOPE","LORL","LOTZ","LOV","LOVE","LPCN","LPG","LPI","LPL","LPLA","LPRO","LPSN","LPX","LQD","LQDA","LQDT","LRMR","LRN","LSCC","LSI","LSPD","LSTR","LSXMA","LSXMK","LTC","LTCH","LTHM","LTPZ","LTRN","LTRPA","LU","LUNA","LUNG","LUXA","LVOX","LW","LX","LXFR","LXP","LXRX","LXU","LYB","LYG","LYTS","LYV","LZ","LZB","MAA","MAC","MACK","MAG","MAGS","MAIN","MAN","MANH","MANT","MANU","MAPS","MARK","MAS","MASI","MATW","MATX","MAX","MAXN","MAXR","MBB","MBI","MBIO","MBT","MBUU","MBWM","MC","MCBC","MCF","MCFE","MCFT","MCMJ","MCO","MCRB","MCRI","MCS","MCY","MD","MDC","MDCA","MDGL","MDLA","MDP","MDRX","MDU","MDXG","ME","MED","MEDP","MEG","MEI","MEIP","MEOH","MERC","MESA","MESO","MFA","MFC","MFG","MFGP","MFH","MFIN","MG","MGA","MGEE","MGI","MGIC","MGLN","MGNI","MGNX","MGP","MGPI","MGRC","MGTA","MGTX","MGY","MHK","MHLD","MHO","MIC","MIDD","MILE","MIME","MIND","MIST","MITK","MITT","MIXT","MKC","MKFG","MKL","MKSI","MKTX","MLCO","MLHR","MLI","MLM","MLNTQ","MLR","MLSS","MMAT","MMC","MMI","MMLP","MMP","MMS","MMSI","MMX","MMYT","MN","MNDY","MNKKQ","MNMD","MNOV","MNR","MNRL","MNRO","MNSO","MNTV","MNTX","MOD","MODN","MODV","MOG.A","MOGO","MOH","MORN","MOV","MOXC","MP","MPAA","MPLN","MPLX","MPW","MPWR","MPX","MQ","MRC","MRCC","MRCY","MREO","MRIN","MRKR","MRLN","MRNS","MRSN","MRTN","MRTX","MRVI","MSA","MSB","MSCI","MSEX","MSGE","MSGS","MSI","MSM","MSON","MSP","MTA","MTB","MTD","MTDR","MTEM","MTG","MTH","MTL","MTLS","MTN","MTOR","MTRN","MTRX","MTSI","MTW","MTX","MTZ","MUB","MUDS","MUFG","MUR","MUSA","MUX","MVO","MWA","MX","MXIM","MXL","MYE","MYGN","MYMD","MYOV","MYPS","MYRG","NAK","NAPA","NARI","NAT","NATI","NAUT","NAVB","NAVI","NBHC","NBIX","NBR","NBRV","NBSE","NBTB","NCMI","NCNO","NCR","NCTY","NDAQ","NDLS","NDSN","NEBC","NEE","NEGG","NEO","NEOG","NEP","NEPT","NERV","NESR","NEU","NEW","NEWR","NEWT","NEX","NEXA","NEXT","NFBK","NFE","NFG","NG","NGAC","NGD","NGG","NGL","NGM","NGS","NGVC","NGVT","NH","NHC","NHI","NHIC","NHTC","NI","NICE","NINE","NIU","NJR","NKTX","NL","NLOK","NLS","NLSN","NLTX","NM","NMFC","NMG","NMIH","NMM","NMR","NMRD","NMRK","NMTR","NNA","NNBR","NNDM","NNI","NNN","NNVC","NOA","NOAH","NOG","NOMD","NOVA","NOVN","NOVT","NP","NPO","NPTN","NR","NRBO","NRG","NRIX","NRP","NRT","NRZ","NS","NSA","NSH","NSIT","NSP","NSPR","NSSC","NSTB","NSTG","NTCO","NTCT","NTGR","NTLA","NTP","NTRA","NTRS","NTUS","NTWK","NUAN","NUS","NUVA","NUVB","NVCR","NVEE","NVGS","NVMI","NVO","NVRO","NVS","NVST","NVT","NVTA","NVVE","NWBI","NWE","NWG","NWL","NWN","NWPX","NWS","NWSA","NX","NXE","NXGN","NXRT","NXST","NXTC","NXTD","NYCB","NYMT","NYMX","NYT","O","OAS","OBLG","OBSV","OC","OCDX","OCFC","OCFT","OCN","OCSL","OCUL","OCUP","OCX","ODFL","ODP","ODT","OEC","OEG","OESX","OFC","OFG","OFIX","OGE","OGI","OGS","OHI","OI","OIH","OII","OIS","OLLI","OLMA","OLO","OLP","OM","OMAB","OMC","OMCL","OMER","OMEX","OMF","OMI","OMP","ONB","ONCR","ONCS","ONCT","ONEM","ONTO","ONTX","OOMA","OPCH","OPEN","OPI","OPRA","OPRX","OPTN","OPTT","OPY","OR","ORA","ORAN","ORBC","ORC","ORCC","ORGN","ORGO","ORGS","ORI","ORIC","ORLA","ORLY","ORMP","ORN","ORPH","ORTX","OSBC","OSCR","OSG","OSH","OSIS","OSK","OSPN","OSS","OSUR","OSW","OTEX","OTIC","OTIS","OTLY","OTRK","OTTR","OUST","OUT","OVID","OVV","OWL","OWLT","OXM","OXSQ","OZK","OZON","PAAS","PACB","PACE","PACK","PACW","PAE","PAG","PAGP","PAGS","PAHC","PAM","PANL","PAR","PARR","PASG","PATH","PATK","PAVM","PAX","PAYA","PAYC","PAYO","PAYS","PAYX","PB","PBA","PBCT","PBF","PBFX","PBH","PBI","PBPB","PBR.A","PBT","PBYI","PCAR","PCH","PCOM","PCOR","PCRX","PCSB","PCT","PCTI","PCTY","PCVX","PCY","PCYG","PCYO","PD","PDAC","PDCE","PDCO","PDFS","PDLI","PDM","PDS","PDSB","PEAK","PEB","PEBO","PEG","PEGA","PEI","PEN","PEO","PERI","PESI","PETQ","PETS","PFBC","PFC","PFF","PFG","PFGC","PFLT","PFMT","PFPT","PFS","PFSI","PFSW","PGC","PGEN","PGNY","PGR","PGRE","PGTI","PGX","PH","PHAS","PHAT","PHG","PHIO","PHR","PHX","PI","PID","PII","PIN","PINC","PING","PIPP","PIPR","PIRS","PIXY","PJT","PK","PKE","PKG","PKI","PKOH","PKX","PLAB","PLAN","PLBY","PLCE","PLD","PLG","PLL","PLMR","PLNT","PLOW","PLRX","PLSE","PLTK","PLUS","PLX","PLXP","PLXS","PLYA","PMT","PMVP","PNFP","PNM","PNNT","PNR","PNTG","PNW","PODD","POLY","POOL","POR","POSH","POST","POWI","POWW","PPBI","PPBT","PPC","PPD","PPL","PQG","PRA","PRAA","PRAX","PRCH","PRDO","PRFT","PRG","PRGO","PRGS","PRI","PRIM","PRK","PRLB","PRMW","PRO","PROF","PROG","PRPB","PRPH","PRPL","PRPO","PRQR","PRSR","PRTA","PRTK","PRTS","PRTY","PRU","PRVB","PSA","PSB","PSEC","PSFE","PSMT","PSN","PSNL","PSO","PSP","PSTG","PSTI","PSTX","PTC","PTCT","PTE","PTEN","PTGX","PTMN","PTPI","PTR","PTRA","PTVE","PUBM","PUK","PUMP","PVAC","PVG","PVH","PVL","PWFL","PWP","PWR","PXLW","PYX","PZN","QADA","QCRH","QD","QELL","QFIN","QGEN","QIWI","QLGN","QLYS","QMCO","QNST","QQQ","QRHC","QRTEA","QRVO","QSI","QSR","QTNT","QTRX","QTS","QTT","QTWO","QUAD","QUIK","QUMU","QUOT","QURE","R","RAAC","RAAS","RADA","RADI","RAIL","RAMP","RAPT","RARE","RAVE","RAVN","RBA","RBAC","RBBN","RBC","RBCAA","RC","RCEL","RCI","RCII","RCKT","RCM","RCMT","RCON","RCUS","RDFN","RDHL","RDI","RDN","RDNT","RDS.A","RDS.B","RDUS","RDWR","RDY","RE","REAL","REDU","REED","REFR","REG","REGI","REI","REKR","RELL","RENN","REPH","REPL","RES","RESN","RETA","REV","REVG","REXR","REYN","REZI","RF","RFIL","RFL","RFP","RGA","RGEN","RGLD","RGLS","RGNX","RGP","RGR","RGS","RHI","RHP","RICE","RICK","RIGL","RILY","RIO","RJF","RKDA","RL","RLAY","RLGT","RLGY","RLI","RLJ","RLMD","RLX","RM","RMAX","RMBS","RMD","RMGB","RMNI","RMTI","RNLX","RNR","RNST","RNWK","ROAD","ROCK","ROG","ROIC","ROK","ROL","ROLL","ROOT","ROP","RPAI","RPAY","RPD","RPM","RPRX","RPT","RPTX","RRD","RRGB","RRR","RS","RSG","RSI","RSP","RTH","RTLR","RTP","RUBY","RUN","RUSHA","RUTH","RVMD","RVNC","RVP","RVPH","RVSB","RWLK","RWT","RWX","RXN","RXRX","RXT","RY","RYAAY","RYAM","RYB","RYI","RYN","RYTM","SA","SAFE","SAFM","SAFT","SAGE","SAH","SAIA","SAIC","SAII","SAIL","SAM","SAN","SANA","SAND","SANM","SANW","SAP","SASR","SATS","SAVA","SAVE","SB","SBAC","SBBP","SBCF","SBGI","SBH","SBLK","SBNY","SBRA","SBS","SBSI","SBSW","SC","SCCO","SCHL","SCHN","SCI","SCL","SCM","SCOR","SCPH","SCPL","SCR","SCS","SCSC","SCU","SCVL","SCWX","SCYX","SD","SDGR","SDY","SEAC","SEAH","SECO","SEDG","SEE","SEEL","SEER","SEIC","SELB","SEM","SENS","SESN","SF","SFBS","SFE","SFL","SFM","SFNC","SFT","SFTW","SGBX","SGC","SGEN","SGFY","SGH","SGLB","SGMO","SGMS","SGRY","SGU","SHC","SHCR","SHEN","SHLS","SHLX","SHO","SHOO","SHV","SHW","SHY","SHYF","SI","SIBN","SID","SIEB","SIEN","SIFY","SIGA","SIGI","SII","SILK","SILV","SIMO","SINO","SIOX","SITC","SITE","SIVB","SIX","SJI","SJM","SJR","SJT","SJW","SKIL","SKIN","SKM","SKT","SKY","SKYW","SLAB","SLCA","SLDB","SLF","SLG","SLGG","SLGL","SLGN","SLM","SLNO","SLP","SLQT","SLRC","SLS","SM","SMAR","SMBK","SMCI","SMED","SMFG","SMG","SMHI","SMMT","SMP","SMPL","SMSI","SMTC","SNA","SNBR","SNCR","SNCY","SND","SNDR","SNDX","SNEX","SNN","SNP","SNPR","SNR","SNV","SNX","SNY","SOAC","SOGO","SOHU","SOI","SON","SP","SPAL","SPAQ","SPB","SPFR","SPG","SPH","SPI","SPKE","SPNE","SPNS","SPNT","SPNV","SPOK","SPPI","SPR","SPRO","SPRT","SPSC","SPT","SPTN","SPWH","SPXC","SPY","SQM","SQSP","SQZ","SR","SRAC","SRAX","SRC","SRCE","SRCL","SRDX","SRE","SREV","SRG","SRGA","SRI","SRLP","SRNG","SRRK","SRT","SRTS","SSB","SSD","SSL","SSNC","SSP","SSRM","SSSS","SSTK","ST","STAA","STAG","STAR","STBA","STC","STCN","STE","STEP","STFC","STIM","STKL","STL","STLA","STLD","STM","STN","STNG","STOK","STON","STOR","STRA","STRL","STRO","STSA","STT","STWD","STXS","SUI","SUM","SUMO","SUN","SUNL","SUNS","SUNW","SUP","SUPN","SUPV","SURF","SVAC","SVC","SVFA","SVM","SVRA","SVVC","SWAV","SWBI","SWCH","SWI","SWIM","SWIR","SWM","SWTX","SWX","SXC","SXI","SXT","SY","SYBX","SYK","SYKE","SYNA","SYNH","SYNL","SYPR","SYRS","TA","TAC","TACO","TACT","TAK","TAL","TALK","TALO","TARA","TARO","TAST","TBBK","TBI","TBIO","TBK","TBLA","TBNK","TBPH","TCBI","TCBK","TCDA","TCMD","TCOM","TCON","TCPC","TCRR","TCS","TCX","TD","TDC","TDG","TDS","TDUP","TDW","TDY","TECH","TEF","TEL","TELL","TEN","TENB","TEO","TER","TEUM","TEX","TFC","TFFP","TFI","TFII","TFSL","TFX","TG","TGB","TGH","TGI","TGLS","TGNA","TGP","TGS","TGTX","TH","THCA","THCB","THD","THFF","THG","THO","THR","THRM","THRY","THS","TIGR","TILE","TIMB","TIP","TIPT","TISI","TITN","TIXT","TK","TKC","TKR","TLIS","TLMD","TLND","TLRDQ","TLS","TLSA","TLT","TLYS","TM","TMDX","TMHC","TMO","TMP","TMQ","TMST","TMX","TNC","TNET","TNK","TNL","TNP","TOUR","TOWN","TPB","TPC","TPGY","TPH","TPIC","TPST","TPTX","TPVG","TPX","TR","TRC","TREB","TREC","TREE","TREX","TRGP","TRHC","TRI","TRIB","TRIL","TRIT","TRMB","TRMK","TRN","TRNO","TROW","TROX","TRP","TRQ","TRS","TRST","TRTN","TRTX","TRU","TRUE","TRUP","TRV","TRVG","TRVN","TRX","TS","TSE","TSEM","TSLX","TSP","TSQ","TT","TTC","TTCF","TTE","TTEC","TTEK","TTGT","TTI","TTMI","TTNP","TTOO","TU","TUEM","TUFN","TUP","TUR","TURN","TUSK","TV","TVTX","TVTY","TW","TWCT","TWI","TWIN","TWNK","TWO","TWOU","TWST","TX","TXG","TXMD","TXRH","TXT","TYL","TYME","TZOO","U","UAMY","UAN","UAVS","UBA","UBS","UBSI","UBX","UCBI","UCTT","UDR","UE","UEC","UEIC","UEPS","UFCS","UFI","UFPI","UFS","UGI","UGP","UHAL","UHS","UHT","UI","UIHC","UIS","UL","ULBI","ULCC","UMBF","UMC","UMH","UMPQ","UNF","UNFI","UNIT","UNM","UNVR","UONEK","UP","UPH","UPLD","UPWK","URGN","USAC","USAK","USCR","USFD","USIO","USM","USNA","USO","USPH","USX","UTHR","UTI","UTL","UTSI","UTZ","UUUU","UVE","UVSP","UVV","UWMC","UXIN","VAC","VACQ","VAL","VAPO","VBIV","VBLT","VBTX","VC","VCEL","VCNX","VCRA","VCTR","VCVC","VCYT","VEC","VECO","VEDL","VEEV","VEL","VEON","VER","VERI","VERU","VERX","VET","VFF","VFH","VG","VGR","VGZ","VHC","VIACA","VIAV","VICI","VICR","VIEW","VIH","VIRT","VIRX","VISL","VITL","VIV","VIVO","VKTX","VLDR","VLRS","VLY","VMC","VMD","VMEO","VMI","VNDA","VNE","VNET","VNO","VNOM","VNQ","VNRX","VNT","VNTR","VOC","VOLT","VOXX","VOYA","VPG","VRA","VRAY","VRCA","VREX","VRM","VRNA","VRNS","VRNT","VRRM","VRS","VRSK","VRSN","VRT","VRTV","VS","VSAT","VSEC","VSH","VST","VSTM","VSTO","VTGN","VTI","VTIQ","VTNR","VTOL","VTR","VTSI","VUZI","VVI","VVNT","VVOS","VVPR","VVV","VWE","VWO","VWTR","VYGR","VYNE","VZIO","WAB","WABC","WAFD","WAL","WASH","WAT","WATT","WBS","WBT","WCC","WCN","WD","WDFC","WEC","WELL","WEN","WERN","WES","WETF","WEX","WFG","WFRD","WGO","WH","WHD","WHG","WIMI","WING","WIRE","WISA","WIT","WIX","WK","WKEY","WLDN","WLK","WLKP","WLL","WLTW","WM","WMC","WMG","WMK","WMS","WNC","WNEB","WNS","WOR","WOW","WPC","WPG","WPP","WPRT","WRAP","WRB","WRE","WRI","WRK","WRLD","WSBC","WSBF","WSC","WSFS","WSM","WSO","WSR","WST","WTBA","WTFC","WTI","WTRG","WTRH","WTS","WTTR","WU","WVE","WWD","WWE","WWR","WWW","WYY","XAIR","XBI","XBIT","XEC","XEL","XENE","XENT","XERS","XFOR","XHR","XIN","XL","XLB","XLF","XLRN","XLU","XLY","XM","XME","XNCR","XNET","XOG","XONE","XP","XPEL","XPER","XPO","XPOA","XRAY","XRX","XSPA","XXII","XYL","Y","YALA","YCBD","YELL","YEXT","YMAB","YMTX","YORW","YQ","YRD","YSG","YUMC","YVR","ZBH","ZBRA","ZDGE","ZEN","ZEPP","ZEUS","ZEV","ZG","ZGNX","ZH","ZI","ZIM","ZION","ZIOP","ZIP","ZIXI","ZKIN","ZLAB","ZNH","ZNTE","ZNTL","ZTO","ZTS","ZUMZ","ZUO","ZVO","ZY","ZYME","ZYNE","ZYXI"];
-</script>
-    
+
 
 	
+///// Trending stocks script /////////////////////////////////////////////////
+	
+
+function updateFinviz(elt, mainarray, query, title, shortTitle) {
+    return fetch("https://chatscrypt.herokuapp.com/cors/", 
+                 {cache:'no-cache', headers: {'Target-Screen': query }}).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+      //  if (data.length > 0) {
+            let prevWeekly = mainarray;
+            let newWeekly = [];
+            let stString = title + " (" + new Date().toLocaleTimeString() + "): ";
+            data.forEach(function(stockData) {
+                stString += printWeekly(stockData, newWeekly, prevWeekly, shortTitle);
+            });
+            elt.innerHTML = stString;
+			endpointCounter++;			
+			if (endpointCounter == 7) mergeAll();
+            return newWeekly;
+       // }
+    });
+}	
+
+
+function updateFinvizG() {
+    updateFinviz(D('finvizG'), finvizGWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u6&ft=4&o=-change&t=' + weeklys.join(), 
+	"<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u6&ft=4&o=-change'><strong style='color:#333'>Finviz Gainers</strong></a>", "Finviz gainers").then(function(data) {
+        if (data) finvizGWeeklyList = data;
+    });
+}
+function updateFinvizL() {
+    updateFinviz(D('finvizL'), finvizLWeeklyList, 'https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d6&ft=4&o=change&t=' + weeklys.join(),
+	"<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d6&ft=4&o=change'><strong style='color:#333'>Finviz Losers</strong></a>", "Finviz losers").then(function(data) {
+        if (data) finvizLWeeklyList = data;
+    });
+}
+function updateFinvizV() {
+	updateFinviz(D('finvizV'), finvizVWeeklyList, 'https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change&t=' + weeklys.join(),
+	"<a target='_blank' href='https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change'><strong style='color:#333'>Finviz Volatile</strong></a>", "Finviz volatile").then(function(data) {
+        if (data) finvizVWeeklyList = data;
+    });
+}
+
+function updateYolo() {
+	fetchData('https://yolostocks.live/downloads/wallstreetbets.csv', 'GET', null, true).then(function(data) {
+		let preYoloList = data.replaceAll(" ", ",").replaceAll("\n", ",").split(",");
+		let prevWeekly = yoloWeeklyList;
+		yoloWeeklyList = [];
+		let yoloString = "<a target='_blank' href='https://yolostocks.live/'><strong style='color:#333'>YoloStocks</strong></a> (" + new Date().toLocaleTimeString() + "): ";
+		preYoloList.forEach(function(symbol) {
+			if (symbol && /[A-Z]/.test(symbol[0])) yoloString += printWeekly(symbol, yoloWeeklyList, prevWeekly, "YoloStocks");
+		});
+		D('yolo').innerHTML = yoloString;
+		//D('yoloButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) mergeAll();
+	});
+}
+
+function updateWSB() {
+	fetchData('https://dashboard.nbshare.io/api/v1/apps/reddit', 'GET').then(function(data) {	
+		let prevWeekly = wsbWeeklyList;
+		wsbWeeklyList = [];
+		let wsbString = "<a target='_blank' href='https://dashboard.nbshare.io/apps/reddit/wallstreetbets/'><strong style='color:#333'>WSB</strong></a> (" + new Date().toLocaleTimeString() + "): ";
+		for (let i = 0; i < 15; i++) {
+			wsbString += printWeekly(data[i].ticker, wsbWeeklyList, prevWeekly, "WSB");
+		}
+		D('wsb').innerHTML = wsbString;
+		//D('wsbButton').textContent = "Monitor Weeklys";
+		endpointCounter++;			
+		if (endpointCounter == 7) mergeAll();
+	});
+}
+					 		      
+function updateStocktwits() {
+	fetchData('https://api.stocktwits.com/api/2/trending/symbols/equities.json', "GET").then(function(data) {
+		let prevWeekly = stWeeklyList;
+		stWeeklyList = [];
+		let stString = "<a target='_blank' href='https://stocktwits.com/symbol/AAPL'><strong style='color:#333'>Stocktwits</strong></a> (" + new Date().toLocaleTimeString() + "): ";
+		data.symbols.forEach(function(stockData) {
+			namesMap[stockData.symbol] = stockData.title;			
+			stString += printWeekly(stockData.symbol, stWeeklyList, prevWeekly, "Stocktwits");
+		});
+		D('stocktwits').innerHTML = stString;
+		
+		endpointCounter++;			
+		if (endpointCounter == 7) mergeAll();
+	});
+}
+
+function printWeekly(symbol, stWeeklyList, prevWeekly, sitename) {
+	if (weeklys.includes(symbol)) {
+		stWeeklyList.push(symbol);
+		if (prevWeekly.length > 0 && !prevWeekly.includes(symbol)) {
+			if (active(D('notificationButton'))) new Notification(symbol + " is newly trending on " + sitename + ".");
+			return stLinkify("<strong>" + symbol + "</strong>", symbol, "blue") + " ";
+		} else return stLinkify("<strong>" + symbol + "</strong>", symbol, "#333") + " ";
+	} else return stLinkify(symbol, symbol) + " ";
+}	
+
+
+function stLinkify(str, stock, color) {
+	let thistitle = "";
+	if (namesMap[stock]) thistitle = namesMap[stock];
+	let colorInsert = `style=''`;
+	if (color) colorInsert = `style='color:${color}'`;
+	if (postEarnings.includes(stock)) colorInsert = `style='color:#94b'`;
+	if (preEarnings.includes(stock)) colorInsert = `style='color:#07b'`;
+	return `<a onclick='linkClicker("${stock}")' ${colorInsert} title='${thistitle}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'>${str}</a>`;
+}
+	
+function linkClicker(symbol) {
+	if (!event.ctrlKey) {
+		event.preventDefault();		
+		D('optionsInput').value = symbol; 
+		updateOptions(true);
+		D('optionslist').scrollIntoView({behavior: "smooth", block:"nearest"});
+		D('optionslist').scrollTo(0, 0); 	
+	}
+}
+
+function updateEarnings() {		
+let weeklyQuery = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' + weeklys.join();
+fetchData(weeklyQuery, 'GET').then(function(data) { 
+	if (!data.quoteResponse.result) return false;
+	preEarnings = [];
+	postEarnings = [];
+	earningsTime = {};
+	let earningsString = "";
+	data.quoteResponse.result.forEach(function(stockData) {
+		if (stockData.earningsTimestampStart == stockData.earningsTimestampEnd) earningsTime[stockData.symbol] = stockData.earningsTimestampEnd;
+		namesMap[stockData.symbol] = stockData.longName;
+		
+		if (earningsTime[stockData.symbol] - Date.now()/1000 < 0 && earningsTime[stockData.symbol] - Date.now()/1000 > -2*24*60*60) postEarnings.push(stockData.symbol);		
+		if (earningsTime[stockData.symbol] - Date.now()/1000 >= 0 && earningsTime[stockData.symbol] - Date.now()/1000 < 2*24*60*60) preEarnings.push(stockData.symbol);
+	});	  
+	let earnings = preEarnings.concat(postEarnings);
+	earnings.sort(function(x, y) { return earningsTime[x]- earningsTime[y];	});    
+	preEarnings.sort(function(x, y) { return earningsTime[x]- earningsTime[y]; });
+	postEarnings.sort(function(x, y) { return  earningsTime[y] - earningsTime[x];	});
+	
+	earnings.forEach(function(stock) {
+		if (earningsTime[stock] - Date.now()/1000 < 0) earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#94b'>${stock}</strong></a> `;
+		else earningsString += `<a onclick='linkClicker("${stock}")' title='${namesMap[stock]}' target='_blank' href='https://finance.yahoo.com/quote/${stock}'><strong style='color:#07b'>${stock}</strong></a> `;							      
+	});
+	D('earnings').innerHTML = earningsString;	
+		endpointCounter++;			
+		if (endpointCounter == 7) mergeAll();
+});
+}
+
+
+</script>
+    
 <p>Some notes: </p>
 
 <ol>

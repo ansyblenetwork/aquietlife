@@ -16,63 +16,41 @@ title: "Options Tools II: Stock alert applet"
 
 	<div style="overflow:auto; max-height:50vh; margin-bottom:20px">
 	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://yolostocks.live/'><strong style='color:#333'>YoloStocks</strong></a>
-	<br>
-	<span id="yolo">Trending <strong>(weeklys)</strong></span>
-	<br>
-	<button id="yoloButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateYolo(); else addAll(yoloWeeklyList);">Load</button>
-</div>
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="yoloButton" style="margin-right:10px;" onclick="if (this.textContent == 'Load') updateYolo(); else addAll(yoloWeeklyList);">Load</button>
+		<div id="yolo"><a target='_blank' href='https://yolostocks.live/'><strong style='color:#333'>YoloStocks</strong></a></div>
+		</div>
 	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://dashboard.nbshare.io/apps/reddit/wallstreetbets/'><strong style='color:#333'>WSB</strong></a>
-	<br>
-	<span id="wsb">Trending <strong>(weeklys)</strong></span>
-	<br>
-	<button id="wsbButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateWSB(); else addAll(wsbWeeklyList);">Load</button>
-</div>
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="wsbButton" style="margin-right:10px;" onclick="if (this.textContent == 'Load') updateWSB(); else addAll(wsbWeeklyList);">Load</button>
+		<div id="wsb"><a target='_blank' href='https://dashboard.nbshare.io/apps/reddit/wallstreetbets/'><strong style='color:#333'>WSB</strong></a></div>
+		</div>
 	
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="finvizGButton" style="margin-right:10px;" onclick="if (this.textContent == 'Load') updateFinvizG(); else addAll(finvizGWeeklyList);">Load</button>
+		<div id="finvizG"><a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u6&ft=4&o=-change'><strong style='color:#333'>Finviz Gainers</strong></a></div>
+		</div>
+		
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="finvizLButton" style="margin-right:10px;" onclick="if (this.textContent == 'Load') updateFinvizL(); else addAll(finvizLWeeklyList);">Load</button>
+		<div id="finvizL"><a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d6&ft=4&o=change'><strong style='color:#333'>Finviz Losers</strong></a></div>
+		</div>
 	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_u7&ft=4&o=-change'><strong style='color:#333'>Finviz Gainers</strong></a>
-	<br>
-	<span id="finvizG">Gainers <strong>(weeklys)</strong></span>
-	<br>
-	<button id="finvizGButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizG(); else addAll(finvizGWeeklyList);">Load</button>
-</div>
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="finvizVButton" style="margin-right:10px;" onclick="if (this.textContent == 'Load') updateFinvizV(); else addAll(finvizVWeeklyList);">Load</button>
+		<div id="finvizV"><a target='_blank' href='https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change'><strong style='color:#333'>Finviz Volatile</strong></a></div>
+		</div>
+		
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="stButton" style="margin-right:10px;" onclick="updateStocktwits();">Load</button>
+		<div id="stocktwits"><a target='_blank' href='https://stocktwits.com/symbol/AAPL'><strong style='color:#333'>Stocktwits</strong></a></div>
+		</div>	
 	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://finviz.com/screener.ashx?v=150&f=sh_opt_option,ta_change_d7&ft=4&o=change'><strong style='color:#333'>Finviz Losers</strong></a>
-	<br>
-	<span id="finvizL">Losers <strong>(weeklys)</strong></span>
-	<br>
-	<button id="finvizLButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizL(); else addAll(finvizLWeeklyList);">Load</button>
-</div>
-	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://finviz.com/screener.ashx?v=150&s=ta_mostvolatile&f=sh_opt_option&ft=4&o=-change'><strong style='color:#333'>Finviz Volatile</strong></a>
-	<br>
-	<span id="finvizV">Volatile <strong>(weeklys)</strong></span>
-	<br>
-	<button id="finvizVButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateFinvizV(); else addAll(finvizVWeeklyList);">Load</button>
-</div>
-	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://stocktwits.com/'><strong style='color:#333'>Stocktwits</strong></a>
-	<br>
-	<span id="stocktwits">Trending <strong>(weeklys)</strong></span>
-	<br>
-	<button id="stButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateStocktwits(); else addAll(stWeeklyList);">Load</button>
-</div>
-	
-<div style="margin:0px auto 20px auto; text-align:center">
-	<a target='_blank' href='https://finance.yahoo.com/calendar/earnings'><strong style='color:#333'>Earnings</strong></a>
-	<br>
-	<span id="earnings">Earnings within a week <strong>(weeklys only)</strong></span>
-	<br>
-	<button id="earningsButton" style="margin:10px" onclick="if (this.textContent == 'Load') updateEarnings(); else addAll(earnings)">Load</button>
-</div>
-	
+		<div style="display:flex; margin:10px; align-items:center">
+		<button id="stButton" style="margin-right:10px;" onclick="updateEarnings();">Load</button>
+		<div id="earnings">Earnings within a week <strong>(weeklys only)</strong></div>
+		</div>
+		
 	</div>
 	
 <div id="controlPanel" style="position:fixed; bottom:10px; left:0px; max-width:920px; z-index:10">
